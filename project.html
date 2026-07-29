@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — Selected work</title>
+<meta name="description" content="Project case study.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#E9EDF2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="detail-nav">
+  <div class="wrap">
+    <a class="back" href="index.html#work"><span aria-hidden="true">←</span> All work</a>
+    <div class="crumbs" id="crumbs" aria-label="Breadcrumb"></div>
+    <span class="detail-nav-spacer"></span>
+  </div>
+</nav>
+
+<main id="detail"><!-- injected --></main>
+
+<!-- IN-SITE FULL VIEW (never opens a new tab) -->
+<div class="fv" id="fv" role="dialog" aria-modal="true" aria-label="Full view">
+  <div class="fv-bar">
+    <button class="fv-back" id="fvBack"><span aria-hidden="true">←</span> Back to project</button>
+    <div class="fv-crumbs" id="fvCrumbs"></div>
+    <span class="fv-spacer"></span>
+    <span class="fv-count" id="fvCount" hidden></span>
+    <button class="fv-close" id="fvClose" aria-label="Close full view">CLOSE <span aria-hidden="true">✕</span></button>
+  </div>
+  <div class="fv-body" id="fvBody"><!-- iframe or image viewer --></div>
+</div>
+
+<footer style="display:none"></footer>
+
+<script src="assets/js/projects.js"></script>
+<script src="assets/js/project.js"></script>
+</body>
+</html>
