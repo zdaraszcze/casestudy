@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BSU Transparency Register Case Manager</title>
+<link rel="stylesheet" href="https://unpkg.com/antd@4.24.16/dist/antd.min.css"/>
+<style>
+:root{
+  --red:#E00600;--red-h:#b80500;--red-lt:#fff1f0;--red-mid:#ffd6d6;
+  --g1:#f5f5f5;--g2:#e8e8e8;--g3:#bfbfbf;--g4:#8c8c8c;--g5:#595959;
+  --tx:#262626;--bd:#d9d9d9;--grn:#389e0d;--amb:#fa8c16;
+  --sw:200px;--th:52px;--bh:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f0f2f5;color:var(--tx);font-size:13px;}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sw);background:#fff;border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.sb-logo{height:var(--th);display:flex;align-items:center;padding:0 18px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+.sb-nav{flex:1;padding:6px 0;overflow-y:auto;}
+/* Case Manager = non-clickable section title */
+.nav-section-title{padding:14px 16px 6px;font-size:13px;font-weight:600;color:var(--tx);cursor:default;user-select:none;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:7px 16px 7px 28px;font-size:12px;color:var(--g5);cursor:pointer;transition:all .13s;border-left:3px solid transparent;user-select:none;}
+.nav-item:hover{background:var(--g1);color:var(--tx);}
+.nav-item.active{background:var(--red-lt);color:var(--red);border-left-color:var(--red);font-weight:600;}
+.ni{font-size:13px;width:16px;text-align:center;flex-shrink:0;}
+
+/* ── Main ── */
+.app-layout{display:flex;min-height:100vh;}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.top-bar{height:var(--bh);background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50;flex-shrink:0;}
+.breadcrumb{display:flex;align-items:center;list-style:none;font-size:12px;color:var(--g4);}
+.breadcrumb li{display:flex;align-items:center;}
+.breadcrumb li+li::before{content:'/';margin:0 7px;color:var(--g3);font-size:11px;}
+.breadcrumb a{color:var(--g4)!important;text-decoration:none;cursor:pointer;transition:color .12s;}
+.breadcrumb a:hover{color:var(--red)!important;text-decoration:underline;}
+.bc-cur{color:var(--tx);font-weight:600;}
+.view{display:none;}
+.view.active{display:block;animation:fi .18s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.pc{padding:20px 24px;flex:1;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 14px;border-radius:2px;font-size:12px;cursor:pointer;border:1px solid var(--bd);background:#fff;color:var(--tx);transition:all .13s;white-space:nowrap;font-family:inherit;}
+.btn:hover{border-color:var(--red);color:var(--red);}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:500;}
+.btn-primary:hover{background:var(--red-h);border-color:var(--red-h);color:#fff;}
+.btn-ghost{color:var(--g5);border-color:transparent;background:transparent;}
+.btn-ghost:hover{background:var(--g1);border-color:transparent;color:var(--tx);}
+.btn-danger{background:#fff;border-color:var(--red);color:var(--red);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-danger-solid{background:var(--red);border-color:var(--red);color:#fff;font-weight:500;}
+.btn-danger-solid:hover{background:var(--red-h);}
+
+/* ── Search ── */
+.search-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;justify-content:space-between;}
+.search-wrap{flex:1;max-width:600px;position:relative;}
+.search-wrap input{width:100%;height:32px;padding:0 12px 0 32px;border:1px solid var(--bd);border-radius:2px;font-size:13px;color:var(--tx);outline:none;font-family:inherit;transition:border-color .15s;}
+.search-wrap input:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(224,6,0,.08);}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--g3);font-size:13px;pointer-events:none;}
+
+/* ── Data grid ── */
+.dg-wrap{background:#fff;border:1px solid var(--bd);border-radius:2px;overflow:hidden;}
+.dg-toolbar{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;border-bottom:1px solid var(--bd);}
+.rc{font-size:12px;color:var(--g4);}
+.ti{display:flex;align-items:center;gap:14px;color:var(--g3);font-size:15px;}
+.ti span{cursor:pointer;transition:color .12s;}
+.ti span:hover{color:var(--g5);}
+.dg{width:100%;border-collapse:collapse;}
+.dg thead tr{background:#fafafa;}
+.dg th{padding:10px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--g5);border-bottom:1px solid var(--bd);white-space:nowrap;}
+.dg td{padding:10px 14px;font-size:13px;color:var(--tx);border-bottom:1px solid #f0f0f0;}
+.dg tbody tr:last-child td{border-bottom:none;}
+.dg tbody tr:hover td{background:#fafafa;}
+.sort{color:var(--g3);font-size:10px;margin-left:3px;}
+.case-link{color:var(--red)!important;text-decoration:none;cursor:pointer;font-weight:400;}
+.case-link:hover{text-decoration:underline;}
+.st-closed{color:var(--g5);}
+.st-disc{color:var(--tx);font-weight:600;}
+
+/* ── Detail header ── */
+.detail-header{display:grid;grid-template-columns:1fr auto;gap:16px;margin-bottom:14px;align-items:stretch;}
+.company-panel{background:#fff;border:1px solid var(--bd);border-radius:2px;padding:14px 18px;}
+.cp-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g3);margin-bottom:7px;}
+.cp-name{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:10px;}
+.cp-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 18px;}
+.cpl{font-size:11px;color:var(--g4);white-space:nowrap;line-height:1.9;}
+.cpv{font-size:12px;color:var(--tx);font-weight:500;line-height:1.9;}
+.alert-panel{background:var(--red);border-radius:2px;padding:16px 20px;display:flex;flex-direction:column;justify-content:center;min-width:248px;max-width:270px;color:#fff;position:relative;overflow:hidden;}
+.alert-panel::before{content:'';position:absolute;top:-18px;right:-18px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.07);}
+.alert-panel::after{content:'';position:absolute;bottom:-24px;left:-8px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);}
+.ap-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:4px;}
+.ap-status{font-size:14px;font-weight:800;margin-bottom:11px;line-height:1.2;}
+.ap-div{height:1px;background:rgba(255,255,255,.2);margin-bottom:11px;}
+.ap-days-row{display:flex;align-items:baseline;gap:5px;margin-bottom:2px;}
+.ap-days{font-size:38px;font-weight:900;line-height:1;}
+.ap-unit{font-size:12px;opacity:.85;}
+.ap-desc{font-size:11px;opacity:.7;line-height:1.4;}
+.ap-due{font-size:11px;opacity:.85;margin-top:7px;}
+.ap-due strong{font-weight:700;}
+
+/* ── Cards ── */
+.card{background:#fff;border:1px solid var(--bd);border-radius:2px;margin-bottom:13px;}
+.card-inner{padding:15px 18px;}
+.card h4{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:12px;}
+
+/* ── What to do — purely informative ── */
+.wtd-row{display:flex;gap:10px;}
+.wtd-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:11px 12px;flex:1;text-align:center;border:1px solid var(--bd);background:#fafafa;border-radius:2px;}
+.wtd-num{width:20px;height:20px;border-radius:50%;background:var(--tx);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wtd-icon{font-size:22px;}
+.wtd-lbl{font-size:11px;color:var(--g5);line-height:1.3;}
+
+/* ── Follow-up section ── */
+.fu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.fu-header h4{margin-bottom:0;}
+/* Toggle pill */
+.toggle-pill{display:flex;background:#f0f0f0;border-radius:20px;padding:2px;gap:2px;flex-shrink:0;}
+.tp-opt{padding:4px 12px;border-radius:18px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--g5);user-select:none;font-weight:500;}
+.tp-opt.on{background:#fff;color:var(--tx);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+
+/* Tab row */
+.fu-tabs{display:flex;border-bottom:1px solid var(--bd);background:#fff;overflow-x:auto;}
+.fu-tab{display:flex;align-items:center;gap:7px;padding:9px 16px;font-size:12px;cursor:pointer;color:var(--g4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .13s;white-space:nowrap;user-select:none;flex-shrink:0;}
+.fu-tab:hover{color:var(--tx);}
+.fu-tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600;}
+.fu-tab .tab-icon{font-size:16px;flex-shrink:0;}
+/* hide icons mode */
+.fu-tab.no-icon .tab-icon{display:none;}
+
+.fu-content{padding:15px 18px;}
+.fu-block{display:none;}
+.fu-block.visible{display:block;}
+.fu-steps{display:flex;flex-direction:column;gap:9px;}
+.fu-step{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;background:#fafafa;border:1px solid var(--bd);border-radius:2px;}
+.fu-snum{width:22px;height:22px;border-radius:50%;background:var(--tx);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.fu-stitle{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:3px;}
+.fu-stext{font-size:12px;color:var(--g5);line-height:1.5;}
+
+/* ── Discrepancy details card ── */
+.disc-list{list-style:none;padding:0;margin:0 0 10px;}
+.disc-list li{padding:3px 0;font-size:12px;color:var(--g5);}
+.disc-list li::before{content:"•";color:var(--red);margin-right:6px;font-weight:700;}
+.expandable{overflow:hidden;transition:max-height .28s ease;max-height:0;}
+.expandable.open{max-height:400px;}
+.comp-sub-title{font-size:12px;font-weight:700;color:var(--g5);margin:15px 0 6px;padding-top:13px;border-top:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;}
+.comp-sub-title:first-of-type{border-top:none;padding-top:0;margin-top:4px;}
+.comp-tbl{width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--bd);}
+.comp-tbl th{padding:7px 11px;text-align:left;background:#fafafa;border-bottom:1px solid var(--bd);font-weight:600;color:var(--g5);white-space:nowrap;}
+.comp-tbl td{padding:7px 11px;color:var(--tx);border-bottom:1px solid #f0f0f0;}
+.comp-tbl tbody tr:last-child td{border-bottom:none;}
+.comp-tbl .ro{color:var(--g4);}
+
+/* ── Action bar ── */
+.action-bar{background:#fff;border-top:1px solid var(--bd);padding:10px 24px;display:flex;justify-content:flex-end;align-items:center;gap:10px;position:sticky;bottom:0;z-index:40;}
+
+/* ── Sub-views ── */
+.sv-wrap{max-width:700px;}
+.sv-card{background:#fff;border:1px solid var(--bd);border-radius:2px;padding:22px;margin-bottom:13px;}
+.sv-card h3{font-size:15px;font-weight:700;margin-bottom:5px;}
+.sv-sub{font-size:12px;color:var(--g4);padding-bottom:13px;border-bottom:1px solid var(--bd);margin-bottom:17px;line-height:1.5;}
+.fg{margin-bottom:15px;}
+.fl{font-size:12px;font-weight:600;color:var(--g5);margin-bottom:5px;}
+.req{color:var(--red);margin-left:2px;}
+.cc{font-size:11px;color:var(--g3);text-align:right;margin-top:3px;}
+select.fi,textarea.fi{width:100%;border:1px solid var(--bd);border-radius:2px;font-size:12px;color:var(--tx);outline:none;font-family:inherit;transition:border-color .15s;background:#fff;}
+select.fi{height:32px;padding:0 10px;cursor:pointer;}
+textarea.fi{padding:7px 10px;resize:vertical;}
+select.fi:focus,textarea.fi:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(224,6,0,.08);}
+.ro{margin-bottom:11px;}
+.ro label{display:flex;gap:10px;cursor:pointer;align-items:flex-start;}
+.ro input[type=radio]{margin-top:3px;accent-color:var(--red);flex-shrink:0;}
+.rt{font-size:13px;font-weight:600;}
+.rd{font-size:11px;color:var(--g4);margin-top:2px;line-height:1.5;}
+.ro.sel .rt{color:var(--red);}
+.ob{margin-top:5px;padding:7px 11px;border-radius:0 2px 2px 0;border-left:3px solid var(--amb);background:#fffbe6;font-size:11px;color:var(--g5);line-height:1.5;display:none;}
+.ob.show{display:block;}
+.ob.pr{border-left-color:var(--red);background:var(--red-lt);}
+.cfm-row{background:#fafafa;border:1px solid var(--bd);border-radius:2px;padding:11px 13px;}
+.cfm-row label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;font-weight:600;}
+.cfm-row input[type=checkbox]{margin-top:2px;accent-color:var(--red);flex-shrink:0;}
+
+/* ── Compact context bar (sub-views) ── */
+.ctx-bar{background:#fff;border:1px solid var(--bd);border-radius:2px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px;}
+.ctx-co{font-size:13px;font-weight:700;}
+.ctx-meta{font-size:11px;color:var(--g4);margin-top:2px;}
+.ctx-alert{display:flex;align-items:center;gap:10px;background:var(--red-lt);border:1px solid var(--red-mid);border-radius:2px;padding:6px 12px;flex-shrink:0;}
+.ctx-badge{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--red);letter-spacing:.5px;}
+.ctx-days{font-size:20px;font-weight:900;color:var(--red);line-height:1;}
+.ctx-dlbl{font-size:10px;color:var(--red);opacity:.8;}
+.ctx-vd{width:1px;height:26px;background:var(--red-mid);}
+.ctx-due{font-size:11px;color:var(--red);}
+
+/* ── Warning banner ── */
+.warn{background:#fffbe6;border:1px solid #ffe58f;border-radius:2px;padding:10px 14px;margin-bottom:15px;display:flex;gap:10px;font-size:12px;line-height:1.5;}
+.warn strong{display:block;color:#7c4d00;font-size:12px;}
+
+/* ── Disabled btn tooltip ── */
+.bw{position:relative;display:inline-flex;}
+.bt{display:none;position:absolute;bottom:calc(100%+7px);right:0;background:#1a1a1a;color:#fff;font-size:11px;padding:5px 9px;border-radius:2px;white-space:nowrap;z-index:200;pointer-events:none;}
+.bt::after{content:'';position:absolute;top:100%;right:10px;border:5px solid transparent;border-top-color:#1a1a1a;}
+.bw:hover .bt{display:block;}
+
+/* ════════════════════════════════════
+   CONFIRMATION MODAL
+════════════════════════════════════ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:3px;width:440px;max-width:calc(100vw - 32px);box-shadow:0 8px 32px rgba(0,0,0,.18);animation:mfi .18s ease;}
+@keyframes mfi{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:700;color:var(--tx);}
+.modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g4);font-size:18px;border-radius:2px;transition:all .13s;}
+.modal-close:hover{background:var(--g1);color:var(--tx);}
+.modal-body{padding:18px 20px;}
+.modal-body p{font-size:13px;color:var(--g5);line-height:1.6;margin-bottom:0;}
+.modal-body .modal-detail{margin-top:12px;background:#fafafa;border:1px solid var(--bd);border-radius:2px;padding:10px 13px;font-size:12px;color:var(--g5);line-height:1.7;}
+.modal-body .modal-detail strong{color:var(--tx);}
+.modal-footer{padding:12px 20px 16px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--bd);}
+/* Destructive variant */
+.modal.destructive .modal-header{border-bottom-color:var(--red-mid);}
+.modal.destructive .modal-title{color:var(--red);}
+.modal-warn-strip{display:none;background:var(--red-lt);border-bottom:1px solid var(--red-mid);padding:8px 20px;font-size:11px;color:var(--red);font-weight:600;}
+.modal.destructive .modal-warn-strip{display:flex;align-items:center;gap:7px;}
+
+/* ── Success ── */
+.succ-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;}
+.succ{text-align:center;max-width:440px;}
+.succ-icon{font-size:52px;margin-bottom:12px;}
+.succ-title{font-size:18px;font-weight:700;margin-bottom:7px;}
+.succ-msg{font-size:13px;color:var(--g4);margin-bottom:22px;line-height:1.6;}
+
+/* ── Footer ── */
+.footer{border-top:1px solid var(--bd);padding:7px 24px;font-size:11px;color:var(--g3);background:#fff;display:flex;justify-content:space-between;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--g2);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <!-- BSU wordmark only — bold red, matching uploaded image -->
+    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:900;font-size:26px;color:#E00600;letter-spacing:-0.5px;line-height:1;">BSU</span>
+  </div>
+  <nav class="sb-nav">
+    <!-- Non-clickable section title -->
+    <div class="nav-section-title">Case Manager</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="navClick(this);showView('search')">
+      <span class="ni">◈</span>Dashboard
+    </div>
+  </nav>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+  <div class="top-bar">
+    <ol class="breadcrumb" id="breadcrumb"></ol>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:var(--g4);">Compliance Officer</span>
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">CA</div>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD / SEARCH ══ -->
+  <div id="view-search" class="view">
+    <div class="pc">
+      <div class="search-row">
+        <div class="search-wrap">
+          <span class="si">🔍</span>
+          <input type="text" value="xxdd" placeholder="Search by Case Number, Company Name, Advisor…"/>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn">Retrieve BO data from registry</button>
+          <button class="btn btn-primary">+ New Transparency Register Check</button>
+        </div>
+      </div>
+      <div class="dg-wrap">
+        <div class="dg-toolbar">
+          <span class="rc">4 results</span>
+          <div class="ti">
+            <span title="Bookmark">☆</span><span title="Settings">⚙</span>
+            <span title="Filter">▽</span><span title="Refresh">↺</span><span title="User">👤</span>
+          </div>
+        </div>
+        <table class="dg">
+          <thead><tr>
+            <th>Case Number<span class="sort">↕</span></th>
+            <th>Status<span class="sort">↕</span></th>
+            <th>Legal Entity Name<span class="sort">↕</span></th>
+            <th>Client Advisor<span class="sort">↕</span></th>
+            <th>Created At<span class="sort">↕</span></th>
+            <th>Case last update<span class="sort">↕</span></th>
+            <th>Case resolution date<span class="sort">↕</span></th>
+            <th>Reported to control body</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><a class="case-link" onclick="openCase('xxdd','CLOSED','TEST-COMPANY-Notion')">xxdd</a></td><td><span class="st-closed">CLOSED</span></td><td title="TEST-COMPANY-Notion">TEST-COMPANY-Notion</td><td>Paul</td><td>22.05.2020</td><td>15.10.2020</td><td>24.05.2026</td><td>—</td></tr>
+            <tr><td><a class="case-link" onclick="openCase('xxdd1','Material Discrepancy','TEST-COMPANY-Samsara')">xxdd1</a></td><td><span class="st-disc">Material Discrepancy</span></td><td title="TEST-COMPANY-Samsara">TEST-COMPANY-Samsara</td><td>Kyle</td><td>22.05.2020</td><td>14.10.2005</td><td>24.05.2026</td><td>—</td></tr>
+            <tr><td><a class="case-link" onclick="openCase('xxdd2','Material Discrepancy','TEST-COMPANY-Uber')">xxdd2</a></td><td><span class="st-disc">Material Discrepancy</span></td><td title="TEST-COMPANY-Uber">TEST-COMPANY-Uber</td><td>Paul</td><td>22.05.2020</td><td>01.11.2024</td><td>24.05.2026</td><td>—</td></tr>
+            <tr><td><a class="case-link" onclick="openCase('xxdd3','CLOSED','TEST-COMPANY-InterSystems')">xxdd3</a></td><td><span class="st-closed">CLOSED</span></td><td title="TEST-COMPANY-InterSystems">TEST-COMPANY-InterSystems</td><td>Ben</td><td>22.05.2020</td><td>16.07.2021</td><td>24.05.2026</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footer"><span>Transparency Register Case Manager</span><span>v2.1.0 &nbsp;|&nbsp; Session: 31b882c</span></div>
+  </div>
+
+  <!-- ══ CASE DETAIL ══ -->
+  <div id="view-detail" class="view">
+    <div class="pc">
+
+      <!-- Two-panel header -->
+      <div class="detail-header">
+        <div class="company-panel">
+          <div class="cp-label">Legal Entity</div>
+          <div class="cp-name" id="d-company">TEST-COMPANY-Box</div>
+          <div class="cp-grid">
+            <span class="cpl">Legal Entity ID (UID)</span><span class="cpv">LE4568</span>
+            <span class="cpl">Registered Address</span><span class="cpv">1 BahnofStrasse, Zürich 8001</span>
+            <span class="cpl">Industry</span><span class="cpv">Crude Oil</span>
+            <span class="cpl">Date of Incorporation</span><span class="cpv">2018-06-16</span>
+          </div>
+        </div>
+        <div class="alert-panel">
+          <div class="ap-label">Case Status</div>
+          <div class="ap-status" id="d-status">Material Discrepancy</div>
+          <div class="ap-div"></div>
+          <div class="ap-days-row"><div class="ap-days">90</div><div class="ap-unit">days</div></div>
+          <div class="ap-desc">remaining before government reporting</div>
+          <div class="ap-due">Due date: <strong>26.05.2026</strong></div>
+        </div>
+      </div>
+
+      <!-- What to do — informative only -->
+      <div class="card">
+        <div class="card-inner">
+          <h4>What do you have to do?</h4>
+          <div class="wtd-row">
+            <div class="wtd-item"><div class="wtd-num">1</div><div class="wtd-icon">👤</div><div class="wtd-lbl">Inform client about identified discrepancy</div></div>
+            <div class="wtd-item"><div class="wtd-num">2</div><div class="wtd-icon">👥</div><div class="wtd-lbl">Request client to provide explanation for discrepancy</div></div>
+            <div class="wtd-item"><div class="wtd-num">3</div><div class="wtd-icon">📍</div><div class="wtd-lbl">Follow the guidance in the case manager tool</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up — tab style + icon toggle -->
+      <div class="card">
+        <div class="card-inner" style="padding-bottom:0;">
+          <div class="fu-header">
+            <h4 style="margin-bottom:0;">What follow-up actions are required?</h4>
+            <!-- Toggle: show / hide icons in tabs -->
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;color:var(--g4);">Tab icons</span>
+              <div class="toggle-pill" onclick="toggleIcons(this)">
+                <div class="tp-opt on" id="tp-show">Show</div>
+                <div class="tp-opt" id="tp-hide">Hide</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fu-tabs" id="fuTabs">
+          <div class="fu-tab active" id="ft-bank"     onclick="selectFU('bank')">    <span class="tab-icon">🏛️</span>Discrepancy at Bank?</div>
+          <div class="fu-tab"        id="ft-registry" onclick="selectFU('registry')"><span class="tab-icon">🏢</span>Discrepancy at Registry?</div>
+          <div class="fu-tab"        id="ft-flag"     onclick="selectFU('flag')">    <span class="tab-icon">🚩</span>Flag at Register?</div>
+          <div class="fu-tab"        id="ft-nonresp"  onclick="selectFU('nonresp')"> <span class="tab-icon">💬</span>Non-responsive client?</div>
+          <div class="fu-tab"        id="ft-nonplaus" onclick="selectFU('nonplaus')"><span class="tab-icon">❓</span>Non-plausible feedback?</div>
+        </div>
+        <div class="fu-content">
+          <div class="fu-block visible" id="fb-bank"><div class="fu-steps">
+            <div class="fu-step"><div class="fu-snum">1</div><div><div class="fu-stitle">Inform the client</div><div class="fu-stext">Contact the client and inform them that a discrepancy has been identified between the bank's records and the Transparency Register. Provide the specific details of what does not match.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">2</div><div><div class="fu-stitle">Request corrected documentation</div><div class="fu-stext">The client confirmed the bank's files are incorrect. Obtain a new corrected form signed by the client. A new KYC Deficiency PICH will be triggered upon submit.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">3</div><div><div class="fu-stitle">Submit within deadline</div><div class="fu-stext">The corrected signed form must be submitted within <strong>90 days (before due date)</strong> to avoid government reporting. Use "Plausible Feedback Received" once confirmed.</div></div></div>
+          </div></div>
+          <div class="fu-block" id="fb-registry"><div class="fu-steps">
+            <div class="fu-step"><div class="fu-snum">1</div><div><div class="fu-stitle">Confirm the bank's records are correct</div><div class="fu-stext">Verify that BSU data matches original signed documentation. The client has confirmed the bank's files are accurate and the discrepancy originates at the federal registry.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">2</div><div><div class="fu-stitle">Advise client to initiate registry correction</div><div class="fu-stext">Advise the client to initiate correction at the federal registry before the due date. The client must provide evidence or confirmation that data has been corrected within the given time period.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">3</div><div><div class="fu-stitle">Await automatic recheck</div><div class="fu-stext">If correction is not confirmed, the case will be reported to government. The system will automatically reconduct a data recheck at the due date.</div></div></div>
+          </div></div>
+          <div class="fu-block" id="fb-flag"><div class="fu-steps">
+            <div class="fu-step"><div class="fu-snum">1</div><div><div class="fu-stitle">Initiate flag request</div><div class="fu-stext">Contact the relevant registry authority and initiate a formal flag on the entry. Document the case number, company name, and specific data fields in question.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">2</div><div><div class="fu-stitle">Log the flag in the case record</div><div class="fu-stext">Record the date of the flag request, authority contacted, and expected response time. Attach any confirmation receipts to the case documentation.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">3</div><div><div class="fu-stitle">Monitor response and follow up</div><div class="fu-stext">Monitor the registry for acknowledgement. If no response within the agreed timeframe, escalate to BAC. Do not close the case until the flag is confirmed.</div></div></div>
+          </div></div>
+          <div class="fu-block" id="fb-nonresp"><div class="fu-steps">
+            <div class="fu-step"><div class="fu-snum">1</div><div><div class="fu-stitle">Document all contact attempts</div><div class="fu-stext">Record every contact attempt — date, time, channel (phone, email, post). This log is required for the compliance audit trail and any potential government reporting.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">2</div><div><div class="fu-stitle">Issue a formal written notice</div><div class="fu-stext">If the client has not responded after multiple attempts, issue a formal written notice via registered mail advising them of their obligation and regulatory consequences.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">3</div><div><div class="fu-stitle">Escalate to BAC</div><div class="fu-stext">If the client remains unresponsive, escalate immediately. Government reporting may be required if no response is received before the due date.</div></div></div>
+          </div></div>
+          <div class="fu-block" id="fb-nonplaus"><div class="fu-steps">
+            <div class="fu-step"><div class="fu-snum">1</div><div><div class="fu-stitle">Assess the client's explanation</div><div class="fu-stext">Review the explanation against the discrepancy details. It must credibly account for how the data mismatch occurred. If it does not, proceed to escalation.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">2</div><div><div class="fu-stitle">Request additional evidence</div><div class="fu-stext">Ask the client for supporting documentation to substantiate their explanation. Note the request date and response deadline. Document all exchange in the case notes.</div></div></div>
+            <div class="fu-step"><div class="fu-snum">3</div><div><div class="fu-stitle">Escalate if explanation remains implausible</div><div class="fu-stext">If the explanation remains non-plausible, escalate using "Escalate to BAC" below. Do not mark as "Plausible Feedback Received" in this scenario.</div></div></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- Discrepancy Details + both BO grids -->
+      <div class="card">
+        <div class="card-inner">
+          <h4>Discrepancy Details</h4>
+          <ul class="disc-list">
+            <li>This is major Discrepancy — coming from properties file. Major discrepancy</li>
+            <li>New Line Beneficial owner "ABC Holding" is not matching</li>
+            <li>Date of Birth for "Michael" is not matching</li>
+            <li>First Name for "Michael" is not matching</li>
+          </ul>
+          <div class="expandable" id="discExpand">
+            <ul class="disc-list">
+              <li>Nationalities for "Michael" is not matching</li>
+              <li>Address for "Michael" is not matching</li>
+              <li>Ownership percentage changed from 85% to 100%</li>
+            </ul>
+          </div>
+          <button class="btn" style="font-size:11px;height:26px;margin-bottom:4px;" onclick="toggleExpand()" id="readMoreBtn">Read More ▾</button>
+
+          <div class="comp-sub-title">Beneficial Owner List (BSU, CI) <span style="color:var(--g3);font-weight:400;font-size:12px;cursor:pointer;">☆ &nbsp;▽</span></div>
+          <table class="comp-tbl"><thead><tr>
+            <th>First Name / Company<span class="sort">↕</span></th><th>Last Name<span class="sort">↕</span></th>
+            <th>Date of birth/incorp<span class="sort">↕</span></th><th>Nationalities<span class="sort">↕</span></th>
+            <th>Domicile<span class="sort">↕</span></th><th>Ownership<span class="sort">↕</span></th><th>%<span class="sort">↕</span></th>
+          </tr></thead><tbody><tr>
+            <td class="ro">David</td><td class="ro">—</td><td class="ro">—</td><td class="ro">IT</td><td class="ro">FI</td><td class="ro">—</td><td class="ro">100</td>
+          </tr></tbody></table>
+
+          <div class="comp-sub-title" style="margin-top:16px;">Beneficial Owner List (Federal Registry) <span style="color:var(--g3);font-weight:400;font-size:12px;cursor:pointer;">☆ &nbsp;▽</span></div>
+          <table class="comp-tbl"><thead><tr>
+            <th>First Name / Company<span class="sort">↕</span></th><th>Last Name<span class="sort">↕</span></th>
+            <th>Date of birth/incorp<span class="sort">↕</span></th><th>Nationalities<span class="sort">↕</span></th>
+            <th>Domicile</th><th>Ownership</th><th>%<span class="sort">↕</span></th>
+          </tr></thead><tbody><tr>
+            <td>David</td><td>—</td><td>08.03.2010</td><td>IT</td><td>FI</td><td>Business Owner</td><td>100</td>
+          </tr></tbody></table>
+        </div>
+      </div>
+
+    </div><!-- /pc -->
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="showView('search')">← Back to Dashboard</button>
+      <button class="btn" onclick="showView('closecasefull')">Close Case</button>
+      <button class="btn" onclick="showView('escalate')">Escalate to BAC</button>
+      <button class="btn btn-primary" onclick="showView('plausible')">Plausible Feedback Received</button>
+    </div>
+  </div>
+
+  <!-- ══ PLAUSIBLE FEEDBACK VIEW ══ -->
+  <div id="view-plausible" class="view">
+    <div class="pc">
+      <div class="ctx-bar">
+        <div><div class="ctx-co" id="ctx-plaus-co">TEST-COMPANY-Box</div><div class="ctx-meta">LE4568 &nbsp;·&nbsp; Crude Oil &nbsp;·&nbsp; 1 BahnofStrasse, Zürich 8001</div></div>
+        <div class="ctx-alert"><div><div class="ctx-badge">Material Discrepancy</div></div><div class="ctx-vd"></div><div style="text-align:center;"><div class="ctx-days">90</div><div class="ctx-dlbl">days remaining</div></div><div class="ctx-vd"></div><div class="ctx-due">Due <strong>26.05.2026</strong></div></div>
+      </div>
+      <div class="sv-wrap">
+        <div class="sv-card">
+          <h3>Confirmation on Plausible Feedback</h3>
+          <p class="sv-sub">Record where the discrepancy lies and confirm the client's explanation. Your selection determines the next workflow step.</p>
+          <div class="fg">
+            <div class="fl">Is the issue with the bank's records or with the federal registry?<span class="req">*</span></div>
+            <div class="ro" id="ro-bank"><label onclick="selectRadio('bank')"><input type="radio" name="discLoc"/><div><div class="rt">Discrepancy is at Bank</div><div class="rd">The client confirmed that the bank's files are incorrect.</div><div class="ob" id="ob-bank">⚡ <strong>Triggers:</strong> A new KYC Deficiency PICH process. Corrected form must be submitted within 90 days.</div></div></label></div>
+            <div class="ro sel" id="ro-registry"><label onclick="selectRadio('registry')"><input type="radio" name="discLoc" checked/><div><div class="rt">Discrepancy is at the Registry</div><div class="rd">The client confirmed the bank's files are correct. Data at the federal registry must be corrected.</div><div class="ob pr show" id="ob-registry">⚡ <strong>Triggers:</strong> Client must initiate registry correction before due date. Auto data recheck at due date.</div></div></label></div>
+            <div class="ro" id="ro-both"><label onclick="selectRadio('both')"><input type="radio" name="discLoc"/><div><div class="rt">Discrepancy is at both places</div><div class="rd">Both the bank's files and the federal registry must be corrected.</div><div class="ob" id="ob-both">⚡ <strong>Triggers:</strong> KYC Deficiency PICH + federal registry correction workflow. Auto-recheck at due date.</div></div></label></div>
+          </div>
+          <div class="cfm-row"><label><input type="checkbox" checked/>I confirm that the client was able to provide a credible answer on how the data mismatch occurred.<span class="req">*</span></label></div>
+        </div>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="showView('detail')">← Back to Case</button>
+      <button class="btn btn-primary" onclick="openModal('plausible')">Submit Case</button>
+    </div>
+  </div>
+
+  <!-- ══ ESCALATE VIEW ══ -->
+  <div id="view-escalate" class="view">
+    <div class="pc">
+      <div class="ctx-bar">
+        <div><div class="ctx-co">TEST-COMPANY-Box</div><div class="ctx-meta">LE4568 &nbsp;·&nbsp; Crude Oil &nbsp;·&nbsp; 1 BahnofStrasse, Zürich 8001</div></div>
+        <div class="ctx-alert"><div><div class="ctx-badge">Material Discrepancy</div></div><div class="ctx-vd"></div><div style="text-align:center;"><div class="ctx-days">90</div><div class="ctx-dlbl">days remaining</div></div><div class="ctx-vd"></div><div class="ctx-due">Due <strong>26.05.2026</strong></div></div>
+      </div>
+      <div class="sv-wrap">
+        <div class="sv-card">
+          <h3>Escalate Case to BAC</h3>
+          <p class="sv-sub">Provide a reason and justification for escalating this case to the Business Advisory Committee.</p>
+          <div class="fg"><div class="fl">Escalation Reason<span class="req">*</span></div>
+            <select class="fi" id="escReason" onchange="validateEsc()">
+              <option value="">— Select escalation reason —</option>
+              <option>Complex ownership structure</option><option>Non-cooperative client</option>
+              <option>Regulatory threshold exceeded</option><option>Potential legal implications</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><div class="fl">Justification Text<span class="req">*</span></div>
+            <textarea class="fi" id="escText" rows="5" maxlength="250" placeholder="Describe why this case requires BAC review…" oninput="updC('escText','escCC');validateEsc()"></textarea>
+            <div class="cc" id="escCC">0 / 250</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="showView('detail')">← Back to Case</button>
+      <div class="bw">
+        <button class="btn btn-primary" id="escBtn" disabled onclick="openModal('escalate')" style="opacity:.4;cursor:not-allowed;">Escalate Case to BAC</button>
+        <div class="bt">Select a reason and enter justification to continue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLOSE CASE VIEW ══ (full page — consistent with others) ══ -->
+  <div id="view-closecasefull" class="view">
+    <div class="pc">
+      <div class="ctx-bar">
+        <div><div class="ctx-co">TEST-COMPANY-Box</div><div class="ctx-meta">LE4568 &nbsp;·&nbsp; Crude Oil &nbsp;·&nbsp; 1 BahnofStrasse, Zürich 8001</div></div>
+        <div class="ctx-alert"><div><div class="ctx-badge">Material Discrepancy</div></div><div class="ctx-vd"></div><div style="text-align:center;"><div class="ctx-days">90</div><div class="ctx-dlbl">days remaining</div></div><div class="ctx-vd"></div><div class="ctx-due">Due <strong>26.05.2026</strong></div></div>
+      </div>
+      <div class="sv-wrap">
+        <div class="sv-card">
+          <h3>Close Case</h3>
+          <p class="sv-sub">Record the reason for closing this case. This action is permanent — the case will be archived with no further actions possible.</p>
+          <div class="warn"><div style="font-size:16px;flex-shrink:0;">⚠️</div><div><strong>This action is permanent</strong>Closing archives this case and removes it from the active queue. Ensure all discrepancies are addressed before proceeding.</div></div>
+          <div class="fg"><div class="fl">Closure Reason<span class="req">*</span></div>
+            <select class="fi" id="closeReason" onchange="validateClose()">
+              <option value="">— Select closure reason —</option>
+              <option>Discrepancy resolved by client</option><option>Registry data corrected</option>
+              <option>No actual discrepancy found</option><option>Reported to government body</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><div class="fl">Justification Text<span class="req">*</span></div>
+            <textarea class="fi" id="closeText" rows="5" maxlength="250" placeholder="Provide justification for case closure…" oninput="updC('closeText','closeCC');validateClose()"></textarea>
+            <div class="cc" id="closeCC">0 / 250</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="showView('detail')">← Back to Case</button>
+      <div class="bw">
+        <button class="btn btn-danger" id="closeBtn" disabled onclick="openModal('close')" style="opacity:.4;cursor:not-allowed;">Close Case</button>
+        <div class="bt">Select a reason and enter justification to continue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS VIEW ══ -->
+  <div id="view-success" class="view">
+    <div class="pc">
+      <div class="succ-wrap"><div class="succ">
+        <div class="succ-icon" id="sIcon">✅</div>
+        <div class="succ-title" id="sTitle">Action Completed</div>
+        <p class="succ-msg" id="sMsg"></p>
+        <button class="btn btn-primary" style="height:34px;padding:0 22px;font-size:13px;" onclick="showView('search')">← Return to Dashboard</button>
+      </div></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app-layout -->
+
+<!-- ════════════════════════════════════════
+     CONFIRMATION MODALS
+════════════════════════════════════════ -->
+
+<!-- Modal: Plausible Feedback -->
+<div class="modal-overlay" id="modal-plausible" onclick="overlayClose(event,'modal-plausible')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Submission</div>
+      <div class="modal-close" onclick="closeModal('modal-plausible')">✕</div>
+    </div>
+    <div class="modal-body">
+      <p>You are about to submit the plausible feedback confirmation for this case.</p>
+      <div class="modal-detail">
+        <strong>Case:</strong> TEST-COMPANY-Box &nbsp;·&nbsp; LE4568<br>
+        <strong>Action:</strong> Plausible Feedback Received<br>
+        <strong>Next step:</strong> Workflow will advance to Resolution stage
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-plausible')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAction('plausible')">Confirm &amp; Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Escalate -->
+<div class="modal-overlay" id="modal-escalate" onclick="overlayClose(event,'modal-escalate')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Escalation to BAC</div>
+      <div class="modal-close" onclick="closeModal('modal-escalate')">✕</div>
+    </div>
+    <div class="modal-body">
+      <p>You are about to escalate this case to the Business Advisory Committee. The BAC team will be notified immediately.</p>
+      <div class="modal-detail">
+        <strong>Case:</strong> TEST-COMPANY-Box &nbsp;·&nbsp; LE4568<br>
+        <strong>Reason:</strong> <span id="modal-esc-reason">—</span><br>
+        <strong>Justification:</strong> <span id="modal-esc-text" style="font-style:italic;">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-escalate')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAction('escalate')">Confirm &amp; Escalate</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Close Case — destructive variant -->
+<div class="modal-overlay" id="modal-close" onclick="overlayClose(event,'modal-close')">
+  <div class="modal destructive">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Case Closure</div>
+      <div class="modal-close" onclick="closeModal('modal-close')">✕</div>
+    </div>
+    <div class="modal-warn-strip">⚠️ &nbsp;This action is permanent and cannot be undone</div>
+    <div class="modal-body">
+      <p>You are about to permanently close and archive this case. No further actions will be possible once confirmed.</p>
+      <div class="modal-detail">
+        <strong>Case:</strong> TEST-COMPANY-Box &nbsp;·&nbsp; LE4568<br>
+        <strong>Closure reason:</strong> <span id="modal-close-reason">—</span><br>
+        <strong>Justification:</strong> <span id="modal-close-text" style="font-style:italic;">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-close')">Cancel</button>
+      <button class="btn btn-danger-solid" onclick="confirmAction('close')">Confirm &amp; Close Case</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Breadcrumb ── */
+const BC={
+  search:       [{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',cur:true}],
+  detail:       [{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',a:"showView('search')"},{l:'Case Detail',cur:true}],
+  plausible:    [{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',a:"showView('search')"},{l:'Case Detail',a:"showView('detail')"},{l:'Plausible Feedback',cur:true}],
+  escalate:     [{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',a:"showView('search')"},{l:'Case Detail',a:"showView('detail')"},{l:'Escalate to BAC',cur:true}],
+  closecasefull:[{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',a:"showView('search')"},{l:'Case Detail',a:"showView('detail')"},{l:'Close Case',cur:true}],
+  success:      [{l:'Case Manager',a:"showView('search')"},{l:'Dashboard',a:"showView('search')"},{l:'Completed',cur:true}]
+};
+function updateBC(n){
+  const el=document.getElementById('breadcrumb');
+  el.innerHTML=(BC[n]||BC.search).map(i=>i.cur?`<li><span class="bc-cur">${i.l}</span></li>`:`<li><a onclick="${i.a}">${i.l}</a></li>`).join('');
+}
+
+/* ── Views ── */
+function showView(n){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el=document.getElementById('view-'+n);
+  if(el) el.classList.add('active');
+  updateBC(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── Open case ── */
+function openCase(num,status,company){
+  document.getElementById('d-company').textContent=company;
+  document.getElementById('d-status').textContent=status;
+  const cc=document.getElementById('ctx-plaus-co');
+  if(cc) cc.textContent=company;
+  showView('detail');
+}
+
+/* ── Sidebar nav ── */
+function navClick(el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── Follow-up tabs ── */
+function selectFU(key){
+  document.querySelectorAll('.fu-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ft-'+key).classList.add('active');
+  document.querySelectorAll('.fu-block').forEach(b=>b.classList.remove('visible'));
+  document.getElementById('fb-'+key).classList.add('visible');
+}
+
+/* ── Icon toggle ── */
+let iconsVisible=true;
+function toggleIcons(pill){
+  iconsVisible=!iconsVisible;
+  document.getElementById('tp-show').classList.toggle('on',iconsVisible);
+  document.getElementById('tp-hide').classList.toggle('on',!iconsVisible);
+  document.querySelectorAll('.fu-tab').forEach(t=>t.classList.toggle('no-icon',!iconsVisible));
+}
+
+/* ── Read more ── */
+let exp=false;
+function toggleExpand(){
+  exp=!exp;
+  document.getElementById('discExpand').classList.toggle('open',exp);
+  document.getElementById('readMoreBtn').textContent=exp?'Read Less ▴':'Read More ▾';
+}
+
+/* ── Radio ── */
+function selectRadio(val){
+  ['bank','registry','both'].forEach(k=>{
+    document.getElementById('ro-'+k).classList.toggle('sel',k===val);
+    const ob=document.getElementById('ob-'+k);
+    ob.classList.toggle('show',k===val);
+    ob.classList.toggle('pr',k===val&&val==='registry');
+  });
+}
+
+/* ── Validation ── */
+function updC(taId,ccId){
+  const ta=document.getElementById(taId);
+  document.getElementById(ccId).textContent=`${ta.value.length} / ${ta.maxLength}`;
+}
+function setBtn(id,ok){
+  const b=document.getElementById(id);
+  b.disabled=!ok;b.style.opacity=ok?'1':'.4';b.style.cursor=ok?'pointer':'not-allowed';
+}
+function validateEsc(){
+  setBtn('escBtn',document.getElementById('escReason').value&&document.getElementById('escText').value.trim().length>=10);
+}
+function validateClose(){
+  setBtn('closeBtn',document.getElementById('closeReason').value&&document.getElementById('closeText').value.trim().length>=10);
+}
+
+/* ── Modals ── */
+function openModal(type){
+  if(type==='escalate'){
+    document.getElementById('modal-esc-reason').textContent=document.getElementById('escReason').value||'—';
+    const t=document.getElementById('escText').value.trim();
+    document.getElementById('modal-esc-text').textContent=t.length>80?t.slice(0,80)+'…':t||'—';
+  }
+  if(type==='close'){
+    document.getElementById('modal-close-reason').textContent=document.getElementById('closeReason').value||'—';
+    const t=document.getElementById('closeText').value.trim();
+    document.getElementById('modal-close-text').textContent=t.length>80?t.slice(0,80)+'…':t||'—';
+  }
+  const id=type==='close'?'modal-close':'modal-'+type;
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow='';
+}
+function overlayClose(e,id){
+  if(e.target===document.getElementById(id)) closeModal(id);
+}
+
+/* ── Confirm after modal ── */
+const SD={
+  plausible:{icon:'✅',title:'Plausible Feedback Recorded',msg:'The confirmation has been submitted and the next workflow step has been triggered.'},
+  escalate: {icon:'🔼',title:'Case Escalated to BAC',msg:'This case has been forwarded to the Business Advisory Committee. You will be notified when the assessment is complete.'},
+  close:    {icon:'🔒',title:'Case Closed',msg:'This case has been archived. The closure is recorded in the compliance audit trail. No further actions are available.'}
+};
+function confirmAction(type){
+  const id=type==='close'?'modal-close':'modal-'+type;
+  closeModal(id);
+  const d=SD[type];
+  document.getElementById('sIcon').textContent=d.icon;
+  document.getElementById('sTitle').textContent=d.title;
+  document.getElementById('sMsg').textContent=d.msg;
+  showView('success');
+}
+
+/* ── Init ── */
+showView('search');
+</script>
+</body>
+</html>

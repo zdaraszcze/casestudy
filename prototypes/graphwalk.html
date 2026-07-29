@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraphWalk · Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1B2D; --brand:#12358F; --brand2:#2B5FE3;
+    --bg:#EEF2F7; --surface:#FFFFFF; --surface2:#F7F9FC;
+    --line:#E2E8F0; --line2:#CBD5E1; --muted:#64748B; --muted2:#94A3B8;
+    --good:#059669; --goodbg:#ECFDF5; --goodln:#A7F3D0;
+    --warn:#B45309; --warnbg:#FEF6E7; --warnln:#F6D98A;
+    --bad:#DC2626; --badbg:#FDECEA; --badln:#F3B4AC;
+    --mono:'IBM Plex Mono',monospace;
+    --r:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    -webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45;
+  }
+  button{font-family:inherit;cursor:pointer}
+  .mono{font-family:var(--mono);font-size:.82em;letter-spacing:-.01em}
+
+  .app{display:grid;grid-template-columns:216px 1fr;grid-template-rows:56px 1fr;height:100vh;overflow:hidden}
+  .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--line);z-index:20}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.02em;font-size:15px;color:var(--brand)}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--brand2),var(--brand));display:grid;place-items:center}
+  .brand .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:6px 0 0 -2px rgba(255,255,255,.6)}
+
+  .search{flex:0 1 340px;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:7px 11px;color:var(--muted)}
+  .search input{border:0;background:transparent;outline:0;flex:1;font-size:13px;color:var(--ink)}
+  .search svg{flex:none}
+  .spacer{flex:1}
+
+  .rolewrap{position:relative}
+  .rolebtn{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line2);border-radius:9px;padding:5px 10px 5px 6px;font-weight:600;font-size:13px;color:var(--ink)}
+  .rolebtn .ava{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+  .rolebtn .cap{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1}
+  .rolebtn .nm{line-height:1.1}
+  .rolemenu{position:absolute;right:0;top:46px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 44px -12px rgba(15,27,45,.28);padding:6px;width:290px;z-index:60}
+  .rolemenu h6{margin:8px 10px 4px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2)}
+  .roleitem{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:9px;border:0;background:transparent;width:100%;text-align:left}
+  .roleitem:hover{background:var(--surface2)}
+  .roleitem.active{background:#EDF2FE;outline:1px solid #C7D6FA}
+  .roleitem .ava{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px}
+  .roleitem .t{font-weight:600;font-size:13px}
+  .roleitem .d{font-size:11.5px;color:var(--muted);line-height:1.3}
+
+  .demopill{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--surface2);border:1px solid var(--line);border-radius:20px;padding:5px 11px 5px 12px}
+  .toggle{width:34px;height:19px;border-radius:20px;background:var(--line2);position:relative;transition:.15s;border:0;padding:0}
+  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .toggle.on{background:var(--brand2)}
+  .toggle.on::after{left:17px}
+
+  .side{background:var(--surface);border-right:1px solid var(--line);padding:14px 12px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+  .navlbl{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted2);margin:12px 10px 5px;font-weight:600}
+  .nav{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:0;background:transparent;color:var(--ink);font-weight:500;font-size:13.5px;width:100%;text-align:left}
+  .nav svg{flex:none;color:var(--muted)}
+  .nav:hover{background:var(--surface2)}
+  .nav.active{background:#EDF2FE;color:var(--brand);font-weight:600}
+  .nav.active svg{color:var(--brand2)}
+  .nav .count{margin-left:auto;font-size:11px;font-weight:700;background:var(--brand2);color:#fff;border-radius:20px;padding:1px 7px}
+  .sidefoot{margin-top:auto;padding:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted2);line-height:1.4}
+
+  .main{overflow:auto;padding:22px 26px 60px}
+  .page-h{display:flex;align-items:flex-end;gap:14px;margin-bottom:4px}
+  .page-h h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.02em}
+  .page-h .sub{color:var(--muted);font-size:13px;margin-bottom:2px}
+  .rolebanner{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--brand);background:#EDF2FE;border:1px solid #D3E0FB;border-radius:9px;padding:8px 12px;margin:14px 0 18px}
+  .rolebanner b{font-weight:700}
+
+  .toolbar{display:flex;align-items:center;gap:10px;margin:16px 0 14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px}
+  .btn:hover{border-color:var(--muted2)}
+  .btn.primary{background:var(--brand2);border-color:var(--brand2);color:#fff}
+  .btn.primary:hover{background:#2450c8}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .selwrap{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+  select{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink);border:1px solid var(--line2);background:var(--surface);border-radius:8px;padding:6px 8px}
+
+  .alertband{border:1px solid var(--badln);background:linear-gradient(0deg,#fff, #FDECEA);border-radius:var(--r);margin-bottom:18px;overflow:hidden}
+  .alertband.calm{border-color:var(--line);background:var(--surface2)}
+  .ab-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none}
+  .ab-head .pip{width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 4px var(--badbg)}
+  .alertband.calm .ab-head .pip{background:var(--good);box-shadow:0 0 0 4px var(--goodbg)}
+  .ab-head b{font-weight:700}
+  .ab-head .chev{margin-left:auto;color:var(--muted);transition:.15s}
+  .ab-body{padding:0 12px 12px;display:grid;gap:8px}
+  .alert{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--badln);border-left:3px solid var(--bad);border-radius:8px;padding:10px 13px;cursor:pointer}
+  .alert .who{margin-left:auto;color:var(--muted);font-size:12px}
+  .alert .nmwrap{display:flex;flex-direction:column}
+  .alert .t{font-weight:600}
+  .collapsed .ab-body{display:none}
+  .collapsed .ab-head .chev{transform:rotate(-90deg)}
+
+  .section{margin-bottom:24px}
+  .sec-h{display:flex;align-items:center;gap:9px;margin:0 0 11px}
+  .sec-h h3{margin:0;font-size:13px;letter-spacing:.02em;font-weight:700;text-transform:uppercase;color:var(--ink)}
+  .sec-h .n{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface2);border:1px solid var(--line);border-radius:20px;padding:1px 8px}
+  .sec-h .rule{flex:1;height:1px;background:var(--line)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+
+  .tile{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px;cursor:pointer;transition:.12s;overflow:hidden}
+  .tile:hover{border-color:var(--line2);box-shadow:0 8px 22px -14px rgba(15,27,45,.35);transform:translateY(-1px)}
+  .tile .top{display:flex;align-items:flex-start;gap:9px}
+  .tile .ic{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff}
+  .tile .title{font-weight:600;font-size:13.5px;line-height:1.25;display:flex;align-items:center;gap:6px}
+  .tile .info{width:15px;height:15px;border-radius:50%;border:1px solid var(--line2);color:var(--muted2);display:inline-grid;place-items:center;font-size:10px;font-weight:700;cursor:help;flex:none}
+  .tile .ns{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px;opacity:0;max-height:0;transition:.15s;overflow:hidden}
+  .tile:hover .ns,.tile.shown .ns{opacity:1;max-height:20px;margin-top:3px}
+  .tile .meta{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+  .tile .badge{position:absolute;top:11px;right:12px;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;display:grid;place-items:center}
+  .tile .owner{display:inline-flex;align-items:center;gap:5px}
+  .tile .av{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;color:#fff;font-size:9px;font-weight:700}
+  .tile.hide{display:none}
+  .pri{display:inline-block;width:7px;height:7px;border-radius:50%}
+  .pri.high{background:var(--bad)} .pri.med{background:var(--warn)} .pri.low{background:var(--good)}
+
+  .emptyfolder{grid-column:1/-1;border:1.5px dashed var(--line2);border-radius:var(--r);padding:22px;text-align:center;color:var(--muted)}
+
+  .scrim{position:fixed;inset:0;background:rgba(15,27,45,.36);backdrop-filter:blur(1px);z-index:80;opacity:0;pointer-events:none;transition:.18s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:420px;background:var(--surface);border-left:1px solid var(--line);box-shadow:-24px 0 60px -30px rgba(15,27,45,.5);z-index:90;transform:translateX(100%);transition:.22s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .dr-h{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+  .dr-b{padding:18px 20px;overflow:auto}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .kv .k{color:var(--muted);font-size:12.5px}
+  .kv .v{font-weight:600;font-size:12.5px;text-align:right}
+  .x{margin-left:auto;border:0;background:var(--surface2);width:30px;height:30px;border-radius:8px;color:var(--muted);font-size:16px}
+
+  .modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:26px}
+  .modal.show{display:grid}
+  .modal .card{background:var(--surface);border-radius:16px;box-shadow:0 40px 100px -30px rgba(15,27,45,.6);width:min(1080px,96vw);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line)}
+  .m-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .m-h .ic{width:32px;height:32px;border-radius:9px;background:#EDF2FE;color:var(--brand2);display:grid;place-items:center}
+  .m-h h2{margin:0;font-size:16px;font-weight:700}
+  .m-h .sub{font-size:12px;color:var(--muted)}
+  .m-tabs{display:flex;gap:4px;margin-left:20px}
+  .m-tab{border:0;background:transparent;padding:8px 13px;border-radius:8px;font-weight:600;font-size:13px;color:var(--muted)}
+  .m-tab.on{background:#EDF2FE;color:var(--brand)}
+  .m-body{display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden;flex:1}
+  .m-left{padding:20px 22px;overflow:auto;border-right:1px solid var(--line)}
+  .m-right{padding:20px 22px;overflow:auto;background:var(--surface2)}
+  .m-foot{display:flex;align-items:center;gap:12px;padding:14px 20px;border-top:1px solid var(--line)}
+
+  .field{margin-bottom:16px;position:relative}
+  .field label{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .field .ctrl{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:9px;background:#fff;padding:9px 11px}
+  .field .ctrl:focus-within{border-color:var(--brand2);box-shadow:0 0 0 3px #E4ECFD}
+  .field .ctrl.filled{border-color:var(--good);background:var(--goodbg)}
+  .field input{border:0;outline:0;background:transparent;flex:1;font-size:13.5px;font-family:inherit;color:var(--ink)}
+  .field .chosen-id{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px}
+  .field .clear{border:0;background:transparent;color:var(--muted2);font-size:15px;line-height:1}
+  .ac{position:absolute;left:0;right:0;top:100%;margin-top:5px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 20px 40px -18px rgba(15,27,45,.4);z-index:30;overflow:hidden;display:none}
+  .ac.show{display:block}
+  .ac button{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:9px 12px;font-size:13px}
+  .ac button:hover{background:var(--surface2)}
+  .ac .nm2{font-weight:600}
+  .ac .id2{font-family:var(--mono);font-size:11px;color:var(--muted2)}
+
+  .validation{border-radius:9px;padding:10px 12px;font-size:12.5px;display:flex;align-items:flex-start;gap:9px;font-weight:500;margin-top:4px}
+  .validation.neutral{background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+  .validation.good{background:var(--goodbg);border:1px solid var(--goodln);color:#065f46}
+  .validation.bad{background:var(--badbg);border:1px solid var(--badln);color:#991b1b}
+  .validation.warn{background:var(--warnbg);border:1px solid var(--warnln);color:#8a4b09}
+  .validation b{font-weight:700}
+  .validation .fix{margin-top:3px;font-weight:500;opacity:.9}
+
+  .previewbox{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+  .previewbox .pv-h{padding:10px 13px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .cost{margin-top:14px}
+  .describe textarea{width:100%;border:1px solid var(--line2);border-radius:10px;padding:12px;font-family:inherit;font-size:14px;resize:vertical;min-height:92px;outline:0}
+  .describe textarea:focus{border-color:var(--brand2);box-shadow:0 0 0 3px #E4ECFD}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:12px;border:1px solid var(--line2);background:#fff;border-radius:20px;padding:5px 11px;color:var(--muted);font-weight:500}
+  .chip:hover{border-color:var(--brand2);color:var(--brand)}
+  .proposed{margin-top:16px;border:1px solid #D8C6F5;background:#F7F2FE;border-radius:11px;padding:14px}
+  .proposed .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6D28D9;display:flex;align-items:center;gap:7px}
+  .proposed .triple{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 6px;font-weight:600}
+  .proposed .node{background:#fff;border:1px solid #D8C6F5;border-radius:8px;padding:5px 10px}
+  .proposed .arw{color:#7C3AED;font-family:var(--mono);font-size:12px}
+  .proposed .resolved{font-family:var(--mono);font-size:11px;color:#7C3AED}
+
+  .board{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .board .b-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-weight:600}
+  .legendrow{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--muted)}
+  .legendrow span{display:inline-flex;align-items:center;gap:7px}
+  .lk{width:22px;height:0;border-top:2px solid var(--line2)}
+  .lk.solid{border-top-style:solid;border-color:var(--muted2)}
+  .lk.virt{border-top-style:dashed;border-color:var(--brand2)}
+
+  .rq{display:grid;gap:12px}
+  .rqcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .rqcard.published{border-color:var(--goodln);background:linear-gradient(0deg,#fff,#F3FBF6)}
+  .rqcard.returned{border-color:var(--warnln);background:linear-gradient(0deg,#fff,#FFFBF0)}
+  .rqcard .rq-top{display:flex;align-items:flex-start;gap:12px}
+  .rqcard .path{display:flex;align-items:center;gap:7px;font-weight:600;flex-wrap:wrap}
+  .rqcard .path .n{background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:3px 8px}
+  .rqcard .path .a{font-family:var(--mono);color:var(--muted2);font-size:12px}
+  .rqcard .st{margin-left:auto;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:20px}
+  .st.pending{background:var(--warnbg);color:var(--warn);border:1px solid var(--warnln)}
+  .st.published{background:var(--goodbg);color:var(--good);border:1px solid var(--goodln)}
+  .st.returned{background:var(--warnbg);color:#8a4b09;border:1px solid var(--warnln)}
+  .rq-actions{display:flex;gap:9px;margin-top:13px;align-items:center}
+  .notes{flex:1;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;outline:0}
+  .notes:focus{border-color:var(--brand2)}
+
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.03em}
+  .tag.fact{background:#EEF4FF;color:#1E40AF} .tag.assume{background:#FFF4E5;color:#9A5B00}
+  .tag.decide{background:#ECFDF3;color:#067647} .tag.risk{background:#FDECEA;color:#B42318}
+
+  .callout{border:1px solid var(--line);border-left:3px solid var(--brand2);background:var(--surface2);border-radius:9px;padding:11px 14px;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .callout b{color:var(--ink)}
+
+  .toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:9px;align-items:center}
+  .toast{background:var(--ink);color:#fff;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:500;box-shadow:0 18px 40px -14px rgba(0,0,0,.5);display:flex;align-items:center;gap:10px;animation:tin .25s ease}
+  .toast .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .toast.good .ic{background:var(--good)} .toast.info .ic{background:var(--brand2)} .toast.warn .ic{background:var(--warn)}
+  @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+
+  .helpnote{font-size:11.5px;color:var(--muted2);margin-top:5px;display:flex;gap:6px;align-items:flex-start}
+  .stub{border:1.5px dashed var(--line2);border-radius:14px;padding:26px;color:var(--muted);text-align:center;background:var(--surface)}
+  .stub h3{margin:0 0 6px;color:var(--ink)}
+  @media (max-width:1020px){ .m-body{grid-template-columns:1fr} .m-right{border-top:1px solid var(--line)} .app{grid-template-columns:64px 1fr} .side .navlbl,.nav span,.sidefoot,.brand span{display:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span><span>GraphWalk</span></div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+      <input id="globalSearch" placeholder="Search my work — charts, sets, analyses…">
+    </div>
+    <div class="spacer"></div>
+    <div id="demoWrap" style="display:none">
+      <div class="demopill">Demo-safe <button class="toggle" id="demoToggle" onclick="toggleDemo()"></button></div>
+    </div>
+    <div class="rolewrap">
+      <button class="rolebtn" onclick="toggleRoleMenu(event)">
+        <span class="ava" id="roleAva"></span>
+        <span class="nm"><span class="cap" id="roleCap"></span><br><span id="roleName"></span></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="rolemenu" id="roleMenu" style="display:none">
+        <h6>View this workspace as</h6>
+        <div id="roleList"></div>
+        <div class="callout" style="margin:8px 4px 4px">One dataset, many lenses. Switching role never moves your data — it re-surfaces the same items with role-appropriate defaults, columns, and permissions.</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="side" id="side"></nav>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeAll()"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="modal" id="builder"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ============================ DATA ============================ */
+const ROLES = {
+  investigator:{name:"Alex Rivera",cap:"Investigator",color:"#2B5FE3",
+    desc:"Operational analyst. Role-driven view, alerts first, own folders. Authors paths, then proposes for review.",
+    canFolder:true, authorMode:"propose", seesMeta:false, nav:["workspace","universe","linkchart","table","search","dashboard"]},
+  supervisor:{name:"Dana Cole",cap:"Supervisor",color:"#7C3AED",
+    desc:"Oversight across the team. Owns the review queue and can save paths directly.",
+    canFolder:true, authorMode:"save", seesMeta:true, nav:["workspace","review","universe","linkchart","table","search","dashboard"]},
+  presales:{name:"Sam Okafor",cap:"Presales / SE",color:"#0D9488",
+    desc:"Builds demo scenarios. Sees author & last-modified metadata; a demo-safe switch hides sensitive items.",
+    canFolder:true, authorMode:"save", seesMeta:true, demo:true, nav:["workspace","universe","linkchart","table","search","dashboard"]},
+  admin:{name:"Priya Nair",cap:"System Admin",color:"#475569",
+    desc:"Governs folders and permissions across the tenant. Not the day-to-day investigator.",
+    canFolder:true, authorMode:"save", seesMeta:true, nav:["workspace","governance","universe","review","table","search","dashboard"]},
+  enduser:{name:"Jordan Lee",cap:"End user",color:"#B45309",
+    desc:"Consumes shared work. No folder or category permissions — path authoring goes through review.",
+    canFolder:false, authorMode:"propose", seesMeta:false, nav:["workspace","universe","linkchart","table","search","dashboard"]}
+};
+
+const SETS = [
+  {name:"Individuals", ns:"helpdesk::individuals", id:1042, rows:18400},
+  {name:"Transactions", ns:"finance::transactions", id:2087, rows:2410000},
+  {name:"Window data", ns:"telemetry::window_events", id:3311, rows:5120000},
+  {name:"Criminal Organization", ns:"intel::crim_org", id:4501, rows:640},
+  {name:"People", ns:"registry::people", id:1001, rows:91000},
+  {name:"Vehicles", ns:"registry::vehicles", id:1120, rows:47000},
+  {name:"Locations", ns:"geo::locations", id:1330, rows:12800},
+  {name:"Communications", ns:"telco::comms", id:5220, rows:3380000},
+  {name:"Devices", ns:"telemetry::devices", id:3120, rows:220000},
+  {name:"Accounts", ns:"finance::accounts", id:2001, rows:88000},
+];
+const LINKTYPES = [
+  {name:"occurs at", id:71}, {name:"part of", id:72}, {name:"connected to", id:73},
+  {name:"owns", id:74}, {name:"communicates with", id:75}, {name:"located at", id:76},
+  {name:"transacts with", id:77},
+];
+
+let UNIVERSE_EDGES = [
+  ["People","owns","Vehicles"], ["People","communicates with","Communications"],
+  ["Individuals","part of","Criminal Organization"], ["Transactions","transacts with","Accounts"],
+  ["Devices","located at","Locations"],
+];
+
+const ITEMS = [
+  {sec:"alerts", title:"Suspicious txn cluster", ns:"finance::alert_txn", owner:"You", when:"2h ago", pri:"high", sensitive:true, badge:null, kind:"alert", note:"14 accounts moving in a ring pattern overnight."},
+  {sec:"alerts", title:"Flagged device handoff", ns:"telemetry::alert_dev", owner:"M. Costa", when:"5h ago", pri:"high", sensitive:false, badge:null, kind:"alert", note:"Device seen across 3 restricted zones in 40 min."},
+  {sec:"freq", title:"Operation Meridian", ns:"case::meridian", owner:"You", when:"1d ago", pri:"med", badge:34, kind:"chart"},
+  {sec:"freq", title:"Q2 Thematic scan", ns:"case::q2_thematic", owner:"You", when:"3d ago", pri:"low", badge:12, kind:"analysis"},
+  {sec:"freq", title:"Helpdesk — Individuals", ns:"helpdesk::individuals", owner:"M. Costa", when:"3d ago", pri:"low", badge:34, kind:"chart"},
+  {sec:"model", title:"Fraud connecting model", ns:"model::fraud_v4", owner:"D. Cole", when:"6d ago", pri:"med", badge:9, kind:"model"},
+  {sec:"model", title:"Comms correlation model", ns:"model::comms_corr", owner:"You", when:"2w ago", pri:"low", badge:5, kind:"model"},
+  {sec:"search", title:"High-value accounts", ns:"query::hv_accounts", owner:"You", when:"1d ago", pri:"low", badge:null, kind:"search"},
+  {sec:"search", title:"Vehicles near Locations", ns:"query::veh_loc", owner:"S. Okafor", when:"4d ago", pri:"low", badge:null, kind:"search"},
+  {sec:"analysis", title:"Ring-flow timeline", ns:"analysis::ring_flow", owner:"You", when:"1d ago", pri:"med", badge:7, kind:"analysis"},
+  {sec:"analysis", title:"Handoff sequence", ns:"analysis::handoff_seq", owner:"M. Costa", when:"1w ago", pri:"low", badge:3, kind:"analysis"},
+  {sec:"charts", title:"Transactions — Windows", ns:"finance::transactions", owner:"You", when:"1w ago", pri:"med", badge:12, kind:"chart"},
+  {sec:"charts", title:"Comms network — Cell 7", ns:"telco::comms", owner:"You", when:"2d ago", pri:"high", badge:41, kind:"chart", sensitive:true},
+  {sec:"charts", title:"Vehicle movement map", ns:"registry::vehicles", owner:"S. Okafor", when:"5d ago", pri:"low", badge:18, kind:"chart"},
+  {sec:"charts", title:"Org structure — Crim", ns:"intel::crim_org", owner:"D. Cole", when:"1w ago", pri:"med", badge:22, kind:"chart", sensitive:true},
+];
+
+const SEC_META = {
+  alerts:{label:"Alerts", n:null},
+  freq:{label:"Frequently used"},
+  model:{label:"Connecting set model"},
+  search:{label:"Searches"},
+  analysis:{label:"Analyses"},
+  charts:{label:"Link charts", n:"80+"},
+};
+
+const NAV_META = {
+  workspace:{label:"Workspace", icon:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'},
+  universe:{label:"Universe Viewer", icon:'<circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="7" r="2"/><circle cx="18" cy="18" r="2"/><path d="m7 7 3 3m8-1-4 2m3 6-4-3"/>'},
+  linkchart:{label:"Link Chart", icon:'<circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="7" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 8l3 8m5-8-3 8M8 7h8"/>'},
+  table:{label:"Table", icon:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>'},
+  search:{label:"Search", icon:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/>'},
+  dashboard:{label:"Dashboard", icon:'<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="12" width="8" height="9" rx="1.5"/><rect x="3" y="16" width="8" height="5" rx="1.5"/>'},
+  review:{label:"Review Queue", icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'},
+  governance:{label:"Governance", icon:'<path d="M12 3l8 4v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7z"/>'},
+};
+
+const kindIcon = {
+  alert:'<path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  chart:'<circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.5 8l3.5 7m5-7-3.5 7M8 7h8"/>',
+  analysis:'<path d="M3 3v18h18"/><path d="m7 14 3-4 3 3 4-6"/>',
+  model:'<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5 5.8 16m6.2-8.5L18.2 16M7 18h10"/>',
+  search:'<circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/>',
+};
+const kindColor = {alert:"#DC2626",chart:"#2B5FE3",analysis:"#0D9488",model:"#7C3AED",search:"#64748B"};
+
+/* ============================ STATE ============================ */
+let state = {
+  role:"investigator", screen:"workspace",
+  sortBy:"recent", groupBy:"section",
+  alertsCollapsed:false, demoSafe:false,
+  folders:[{name:"Operation Meridian", items:["Operation Meridian","Ring-flow timeline"]}],
+  virtualPaths:[], q:"",
+};
+const roleCfg = ()=>ROLES[state.role];
+const pendingCount = ()=> state.virtualPaths.filter(p=>p.status==="proposed").length;
+
+/* ============================ HELPERS ============================ */
+function initials(n){return n.split(/[ .]/).filter(Boolean).map(s=>s[0]).slice(0,2).join("").toUpperCase();}
+function fmtRows(r){ if(r>=1e6) return (r/1e6).toFixed(1)+"M"; if(r>=1e3) return Math.round(r/1e3)+"k"; return ""+r; }
+function ic(path,size=16,sw=2){return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">'+path+'</svg>';}
+function checkMark(){return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+function warnMark(){return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M12 9v4m0 4h.01"/></svg>';}
+function checkMarkDark(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+function xMark(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg>';}
+function infoMark(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>';}
+function warnMarkDark(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.6"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4m0 4h.01"/></svg>';}
+function toast(msg,type){ type=type||"info";
+  const el=document.createElement("div"); el.className="toast "+type;
+  el.innerHTML='<span class="ic">'+(type==="warn"?warnMark():checkMark())+'</span>'+msg;
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(function(){el.style.transition=".3s";el.style.opacity="0";el.style.transform="translateY(6px)";setTimeout(function(){el.remove();},320);},2600);
+}
+
+/* ============================ SHELL ============================ */
+function renderTopbar(){
+  const r=roleCfg();
+  document.getElementById("roleAva").style.background=r.color;
+  document.getElementById("roleAva").textContent=initials(r.name);
+  document.getElementById("roleCap").textContent=r.cap;
+  document.getElementById("roleName").textContent=r.name;
+  document.getElementById("demoWrap").style.display = r.demo?"block":"none";
+  document.getElementById("demoToggle").classList.toggle("on",state.demoSafe);
+  document.getElementById("roleList").innerHTML=Object.entries(ROLES).map(function(e){
+    const k=e[0],v=e[1];
+    return '<button class="roleitem '+(k===state.role?'active':'')+'" onclick="setRole(\''+k+'\')">'
+      +'<span class="ava" style="background:'+v.color+'">'+initials(v.name)+'</span>'
+      +'<span><span class="t">'+v.name+' · '+v.cap+'</span><span class="d">'+v.desc+'</span></span></button>';
+  }).join("");
+}
+function renderSide(){
+  const r=roleCfg(); let html='<div class="navlbl">Explore</div>';
+  r.nav.forEach(function(key,i){
+    if((key==="review"||key==="governance") && !(r.nav[i-1]==="review"||r.nav[i-1]==="governance")) html+='<div class="navlbl">Oversight</div>';
+    const m=NAV_META[key]; const active=state.screen===key?"active":"";
+    const badge = (key==="review" && pendingCount())? '<span class="count">'+pendingCount()+'</span>':"";
+    html+='<button class="nav '+active+'" onclick="go(\''+key+'\')">'+ic(m.icon)+'<span>'+m.label+'</span>'+badge+'</button>';
+  });
+  html+='<div class="sidefoot"><b>Prototype</b> · every finding from the case study is wired up. Switch roles (top-right) to see one dataset re-surface.</div>';
+  document.getElementById("side").innerHTML=html;
+}
+
+/* ============================ WORKSPACE ============================ */
+function visibleItems(){
+  const r=roleCfg();
+  return ITEMS.filter(function(it){ if(r.demo && state.demoSafe && it.sensitive) return false; return true; });
+}
+function sortItems(arr){
+  const pw={high:0,med:1,low:2}; const a=arr.slice();
+  if(state.sortBy==="name") a.sort(function(x,y){return x.title.localeCompare(y.title);});
+  else if(state.sortBy==="priority") a.sort(function(x,y){return (pw[x.pri]==null?3:pw[x.pri])-(pw[y.pri]==null?3:pw[y.pri]);});
+  return a;
+}
+function tileHTML(it){
+  const r=roleCfg(); const col=kindColor[it.kind]||"#2B5FE3"; const meta=[];
+  meta.push('<span class="pri '+(it.pri||'low')+'"></span>');
+  if(r.seesMeta) meta.push('<span class="owner"><span class="av" style="background:'+col+'">'+initials(it.owner)+'</span>'+it.owner+'</span>');
+  meta.push('<span>· '+it.when+'</span>');
+  const badge = it.badge!=null? '<span class="badge" title="Item badge — meaning undefined in current app (assumption)">'+it.badge+'</span>':"";
+  return '<div class="tile" data-title="'+it.title.toLowerCase()+'" data-ns="'+it.ns.toLowerCase()+'" onclick="openTile(\''+encodeURIComponent(it.title)+'\')">'
+    +badge
+    +'<div class="top"><span class="ic" style="background:'+col+'">'+ic(kindIcon[it.kind]||kindIcon.chart,16)+'</span>'
+    +'<div style="min-width:0"><div class="title">'+it.title+'<span class="info" title="Technical identity">i</span></div>'
+    +'<div class="ns">'+it.ns+'</div></div></div>'
+    +'<div class="meta">'+meta.join(" ")+'</div></div>';
+}
+function renderWorkspace(){
+  const r=roleCfg(); const items=sortItems(visibleItems());
+  const bannerText={
+    investigator:'Surfaced for the <b>investigator</b>: alerts pinned first, your folders, human-readable names. Author a path and it goes to review.',
+    supervisor:'Surfaced for the <b>supervisor</b>: team ownership shown on every item, and the <b>Review Queue</b> carries '+pendingCount()+' pending path'+(pendingCount()===1?'':'s')+'.',
+    presales:'Surfaced for <b>presales</b>: author & last-modified metadata on every tile. The <b>Demo-safe</b> switch hides sensitive items for live demos.',
+    admin:'Surfaced for the <b>admin</b>: governance is one click away. Day-to-day investigation is intentionally not this role\'s job.',
+    enduser:'Surfaced for an <b>end user</b>: consumes shared work. Folder creation is governed, and authored paths always go to review.'
+  };
+  let html='<div class="page-h"><h1>Workspace</h1><span class="sub">'+r.name+' · '+r.cap+'</span></div>'
+    +'<div class="rolebanner">'+ic('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>',16)+'<div>'+bannerText[state.role]+'</div></div>';
+
+  const alerts=items.filter(function(i){return i.sec==="alerts";}); const calm=alerts.length===0;
+  html+='<div class="alertband '+(state.alertsCollapsed?'collapsed':'')+' '+(calm?'calm':'')+'">'
+    +'<div class="ab-head" onclick="toggleAlerts()"><span class="pip"></span>'
+    +'<b>'+(calm?'All clear':'Needs attention')+'</b>'
+    +'<span style="color:var(--muted);font-size:12.5px">'+(calm?'no urgent items right now':alerts.length+' alert'+(alerts.length>1?'s':'')+' pinned above routine work')+'</span>'
+    +'<span class="chev">'+ic('<path d="m6 9 6 6 6-6"/>',18)+'</span></div><div class="ab-body">'
+    +(calm? '<div style="color:var(--muted);font-size:12.5px;padding:2px 2px 4px">The alert band collapses to a calm state when nothing is urgent — routine work is never buried under a permanent red banner.</div>'
+      : alerts.map(function(a){return '<div class="alert" onclick="event.stopPropagation();openTile(\''+encodeURIComponent(a.title)+'\')"><span class="pri high"></span><div class="nmwrap"><span class="t">'+a.title+'</span><span class="mono" style="color:var(--muted2);font-size:11px">'+a.ns+'</span></div><span class="who">'+(r.seesMeta?a.owner+' · ':'')+a.when+'</span></div>';}).join(""))
+    +'</div></div>';
+
+  const foldTip = r.canFolder? "" : "Folder creation is governed — an admin manages this permission.";
+  html+='<div class="toolbar">'
+    +'<button class="btn primary" onclick="openBuilder()">'+ic('<path d="M12 5v14M5 12h14"/>',16)+' New Virtual Path</button>'
+    +'<button class="btn '+(r.canFolder?'':'ghost')+'" '+(r.canFolder?'':'disabled')+' onclick="addFolder()" title="'+foldTip+'">'+ic('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',16)+' New folder</button>'
+    +'<div class="spacer"></div>'
+    +'<div class="selwrap">Group <select onchange="setGroup(this.value)">'
+      +'<option value="section" '+(state.groupBy==='section'?'selected':'')+'>by section</option>'
+      +'<option value="category" '+(state.groupBy==='category'?'selected':'')+'>by category</option>'
+      +'<option value="author" '+(state.groupBy==='author'?'selected':'')+'>by author</option></select></div>'
+    +'<div class="selwrap">Sort <select onchange="setSort(this.value)">'
+      +'<option value="recent" '+(state.sortBy==='recent'?'selected':'')+'>most recent</option>'
+      +'<option value="name" '+(state.sortBy==='name'?'selected':'')+'>name</option>'
+      +'<option value="priority" '+(state.sortBy==='priority'?'selected':'')+'>priority</option></select></div></div>';
+
+  if(!r.canFolder) html+='<div class="helpnote">'+infoMark()+' You can browse shared folders, but creating them is an admin-governed permission — the tenant model still applies.</div>';
+  if(state.groupBy!=="section") html+='<div class="callout" style="margin-top:12px"><span class="tag assume">assumption</span> &nbsp;“Group by '+state.groupBy+'” is an open question in the case study — does it reshape the existing tiles, or query the DB into a grid? This prototype reshapes the loaded items; the backing behaviour is a dependency (§12).</div>';
+
+  const nonAlert=items.filter(function(i){return i.sec!=="alerts";});
+  if(state.groupBy==="section"){
+    html+='<div class="section"><div class="sec-h"><h3>Folders</h3><span class="n">'+state.folders.length+'</span><span class="rule"></span></div><div class="grid">';
+    if(state.folders.length===0) html+='<div class="emptyfolder">No folders yet. '+(r.canFolder?'Use <b>New folder</b> to organise your work — no admin ticket required.':'Ask an admin to set up shared folders.')+'</div>';
+    else html+=state.folders.map(function(f){return '<div class="tile" onclick="openFolder(\''+encodeURIComponent(f.name)+'\')"><div class="top"><span class="ic" style="background:#12358F">'+ic('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',16)+'</span><div><div class="title">'+f.name+'</div><div class="ns" style="opacity:1;max-height:20px;color:var(--muted)">'+f.items.length+' items · your folder</div></div></div></div>';}).join("");
+    html+='</div></div>';
+    Object.keys(SEC_META).filter(function(s){return s!=="alerts";}).forEach(function(sec){
+      const list=nonAlert.filter(function(i){return i.sec===sec;}); if(!list.length) return;
+      const m=SEC_META[sec];
+      html+='<div class="section"><div class="sec-h"><h3>'+m.label+'</h3>'+(m.n?'<span class="n">'+m.n+'</span>':'<span class="n">'+list.length+'</span>')+'<span class="rule"></span></div><div class="grid">'+list.map(tileHTML).join("")+'</div></div>';
+    });
+  } else {
+    const keyer = state.groupBy==="category"
+      ? function(i){return ({chart:"Link charts",analysis:"Analyses",model:"Connecting models",search:"Searches",alert:"Alerts"}[i.kind]||i.kind);}
+      : function(i){return i.owner;};
+    const groups={}; nonAlert.forEach(function(i){const k=keyer(i);(groups[k]=groups[k]||[]).push(i);});
+    Object.keys(groups).sort().forEach(function(k){
+      html+='<div class="section"><div class="sec-h"><h3>'+k+'</h3><span class="n">'+groups[k].length+'</span><span class="rule"></span></div><div class="grid">'+groups[k].map(tileHTML).join("")+'</div></div>';
+    });
+  }
+  document.getElementById("main").innerHTML=html;
+  applySearchFilter();
+}
+
+/* ============================ UNIVERSE ============================ */
+function renderUniverse(){
+  const edges=UNIVERSE_EDGES.map(function(e){return {s:e[0],l:e[1],t:e[2],virt:false};})
+    .concat(state.virtualPaths.filter(function(p){return p.status==="published";}).map(function(p){return {s:p.source.name,l:p.link.name,t:p.target.name,virt:true};}));
+  const names=[]; edges.forEach(function(e){[e.s,e.t].forEach(function(n){if(names.indexOf(n)<0)names.push(n);});});
+  const cx=430,cy=230,R=170,pos={};
+  names.forEach(function(n,i){const a=-Math.PI/2 + i*2*Math.PI/names.length; pos[n]={x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};});
+  const edgeSVG=edges.map(function(e){
+    const A=pos[e.s],B=pos[e.t],mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
+    return '<line x1="'+A.x+'" y1="'+A.y+'" x2="'+B.x+'" y2="'+B.y+'" stroke="'+(e.virt?'#2B5FE3':'#94A3B8')+'" stroke-width="'+(e.virt?2.2:1.4)+'" stroke-dasharray="'+(e.virt?'6,5':'0')+'"/>'
+      +'<rect x="'+(mx-e.l.length*3.1)+'" y="'+(my-8)+'" width="'+(e.l.length*6.2)+'" height="16" rx="8" fill="#fff" stroke="'+(e.virt?'#C7D6FA':'#E2E8F0')+'"/>'
+      +'<text x="'+mx+'" y="'+(my+4)+'" font-size="10" fill="'+(e.virt?'#2B5FE3':'#64748B')+'" text-anchor="middle" font-weight="'+(e.virt?600:400)+'">'+e.l+'</text>';
+  }).join("");
+  const nodeSVG=names.map(function(n){return '<g><circle cx="'+pos[n].x+'" cy="'+pos[n].y+'" r="8" fill="#12358F"/><rect x="'+(pos[n].x-n.length*3.4-8)+'" y="'+(pos[n].y+12)+'" width="'+(n.length*6.8+16)+'" height="20" rx="10" fill="#0F1B2D"/><text x="'+pos[n].x+'" y="'+(pos[n].y+26)+'" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="600">'+n+'</text></g>';}).join("");
+  const newlyPub=state.virtualPaths.filter(function(p){return p.status==="published";});
+  document.getElementById("main").innerHTML=
+    '<div class="page-h"><h1>Universe Viewer</h1><span class="sub">the data model as a graph of sets and link types</span></div>'
+    +'<div class="rolebanner">'+ic('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>',16)+'<div>A saved Virtual Path appears here as a <b>new link type</b> — the same object shows up on the Link Chart too. This is the payoff of the builder: authored connections become first-class, reusable edges.</div></div>'
+    +'<div class="board"><div class="b-h">'+ic(NAV_META.universe.icon,18)+' Model graph <span style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:500">'+names.length+' sets · '+edges.length+' link types</span></div>'
+    +'<svg viewBox="0 0 860 470" style="width:100%;height:auto;display:block">'+edgeSVG+nodeSVG+'</svg></div>'
+    +'<div class="legendrow"><span><span class="lk solid"></span> Existing link type</span><span><span class="lk virt"></span> Virtual Path (authored)</span></div>'
+    +(newlyPub.length? '<div class="callout" style="margin-top:16px"><b>'+newlyPub.length+' authored path'+(newlyPub.length>1?'s':'')+' now live:</b> '+newlyPub.map(function(p){return '<span class="mono">'+p.source.name+' —'+p.link.name+'→ '+p.target.name+'</span>';}).join(" · ")+'. Investigators can now traverse '+(newlyPub.length>1?'these edges':'this edge')+' like any other.</div>'
+      : '<div class="callout" style="margin-top:16px">No authored paths are live yet. Build one from the Workspace — as an investigator it goes to review; approve it as a supervisor and it appears here as a dashed edge.</div>');
+}
+function renderLinkchart(){
+  document.getElementById("main").innerHTML=
+    '<div class="page-h"><h1>Link Chart</h1><span class="sub">out of scope for this redesign — shown for context</span></div>'
+    +'<div class="stub" style="margin-top:16px"><div style="margin-bottom:6px">'+ic(NAV_META.linkchart.icon,40,1.6)+'</div>'
+    +'<h3>Link Chart is intentionally unchanged</h3>'
+    +'<p style="max-width:520px;margin:6px auto 0">The redesign scope covers the <b>Workspace</b> and <b>Virtual Path authoring</b> only. Existing surfaces — Link Chart, Table, Search, Dashboard — keep their current behaviour. A published Virtual Path simply becomes an available link type here.</p>'
+    +'<button class="btn" style="margin-top:14px" onclick="go(\'universe\')">See where authored paths land →</button></div>';
+}
+function renderGenericStub(title,desc){
+  document.getElementById("main").innerHTML='<div class="page-h"><h1>'+title+'</h1><span class="sub">unchanged in this redesign</span></div><div class="stub" style="margin-top:16px"><h3>'+title+'</h3><p style="max-width:520px;margin:6px auto 0">'+desc+'</p></div>';
+}
+function renderReview(){
+  const props=state.virtualPaths.filter(function(p){return p.status==="proposed";});
+  const done=state.virtualPaths.filter(function(p){return p.status!=="proposed"&&p.status!=="draft";});
+  function card(p,idx){
+    return '<div class="rqcard '+(p.status==='published'?'published':'')+' '+(p.status==='returned'?'returned':'')+'">'
+      +'<div class="rq-top"><span class="ic" style="width:30px;height:30px;border-radius:8px;background:#EDF2FE;color:#2B5FE3;display:grid;place-items:center;flex:none">'+ic('<circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.5 8l3.5 7m5-7-3.5 7M8 7h8"/>',16)+'</span>'
+      +'<div><div style="font-weight:700;margin-bottom:4px">'+p.name+'</div>'
+      +'<div class="path"><span class="n">'+p.source.name+'</span><span class="a">—'+p.link.name+'→</span><span class="n">'+p.target.name+'</span></div>'
+      +'<div class="mono" style="color:var(--muted2);font-size:11px;margin-top:6px">resolves '+p.source.ns+' · lt:'+p.link.id+' · '+p.target.ns+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:6px">Proposed by '+p.author+(p.expensive?' · <span style="color:var(--warn);font-weight:600">high-compute path</span>':'')+'</div>'
+      +(p.notes?'<div style="font-size:12px;color:#8a4b09;margin-top:6px">↩ Returned with note: “'+p.notes+'”</div>':'')
+      +'</div><span class="st '+(p.status==='proposed'?'pending':p.status)+'">'+(p.status==='proposed'?'pending':p.status)+'</span></div>'
+      +(p.status==='proposed'? '<div class="rq-actions"><input class="notes" id="note_'+idx+'" placeholder="Optional note to the author (used when returning)…"><button class="btn" onclick="returnPath('+idx+')">Return</button><button class="btn primary" onclick="approvePath('+idx+')">Approve &amp; publish</button></div>':'')
+      +'</div>';
+  }
+  const idxOf=function(p){return state.virtualPaths.indexOf(p);};
+  document.getElementById("main").innerHTML=
+    '<div class="page-h"><h1>Review Queue</h1><span class="sub">tenant-wide objects get oversight before they publish</span></div>'
+    +'<div class="rolebanner">'+ic('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>',16)+'<div>A Virtual Path is a <b>model-level object</b> — it affects the whole tenant. Investigators author freely, but publishing runs through this gate. Approve to make it a live link type, or return with a note.</div></div>'
+    +(props.length? '<div class="rq">'+props.map(function(p){return card(p,idxOf(p));}).join("")+'</div>'
+      : '<div class="stub" style="margin-top:8px"><h3>Nothing waiting</h3><p style="max-width:480px;margin:6px auto 0">When an investigator proposes a path, it lands here. Switch to <b>Alex Rivera · Investigator</b>, build a path, and it will appear for review.</p></div>')
+    +(done.length? '<div class="navlbl" style="margin:22px 0 8px">Recently decided</div><div class="rq">'+done.map(function(p){return card(p,idxOf(p));}).join("")+'</div>':'');
+}
+function renderGovernance(){
+  const rows=Object.entries(ROLES).map(function(e){const v=e[1];
+    return '<div class="kv"><div class="k"><b style="color:var(--ink)">'+v.cap+'</b><div style="font-size:11.5px">'+v.name+'</div></div><div class="v">'+(v.canFolder?'<span class="tag decide">can create folders</span>':'<span class="tag risk">no folder permission</span>')+'</div></div>';
+  }).join("");
+  document.getElementById("main").innerHTML=
+    '<div class="page-h"><h1>Governance</h1><span class="sub">folder & permission model — the admin\'s surface</span></div>'
+    +'<div class="rolebanner">'+ic('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>',16)+'<div>Enabling <b>end-user folders</b> removed the admin bottleneck — but folder permissions still respect the tenant model. This is where that boundary is governed.</div></div>'
+    +'<div class="board" style="max-width:620px"><div class="b-h">'+ic('<path d="M12 3l8 4v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7z"/>',18)+' Folder-creation permission by role</div><div style="padding:6px 18px 14px">'+rows+'</div></div>'
+    +'<div class="callout" style="margin-top:16px"><span class="tag decide">decision</span> &nbsp;End users have no folder or category permissions by design; investigators and above self-serve. The backend data model and API contract are unchanged — governance is enforced at the permission layer, not by new backend structures.</div>';
+}
+
+/* ============================ BUILDER ============================ */
+let bstate=null;
+function openBuilder(prefill){
+  bstate={mode:"build", source:null, link:null, target:null, name:"", ai:null, aiText:""};
+  if(prefill){ bstate.source=prefill.source; bstate.link=prefill.link; bstate.target=prefill.target; autoName(); }
+  const m=document.getElementById("builder"); m.classList.add("show"); document.getElementById("scrim").classList.add("show");
+  m.innerHTML='<div class="card"><div class="m-h"><span class="ic">'+ic('<circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.5 8l3.5 7m5-7-3.5 7M8 7h8"/>',18)+'</span>'
+    +'<div><h2>Create Virtual Path</h2><div class="sub">a new relationship over your existing sets — no JSON, no raw IDs</div></div>'
+    +'<div class="m-tabs"><button class="m-tab on" id="tabBuild" onclick="setMode(\'build\')">Build</button><button class="m-tab" id="tabDescribe" onclick="setMode(\'describe\')">Describe it (AI)</button></div>'
+    +'<button class="x" onclick="closeBuilder()">✕</button></div>'
+    +'<div class="m-body"><div class="m-left" id="bLeft"></div><div class="m-right" id="bRight"></div></div>'
+    +'<div class="m-foot" id="bFoot"></div></div>';
+  renderBuilder();
+}
+function setMode(mode){ bstate.mode=mode;
+  document.getElementById("tabBuild").classList.toggle("on",mode==="build");
+  document.getElementById("tabDescribe").classList.toggle("on",mode==="describe");
+  renderBuilder();
+}
+function autoName(){ if(bstate.source&&bstate.link&&bstate.target) bstate.name=bstate.source.name+" "+bstate.link.name+" "+bstate.target.name; }
+function validate(){
+  const s=bstate.source,l=bstate.link,t=bstate.target;
+  if(!s||!l||!t) return {level:"neutral",msg:"Pick a source set, a link type, and a target set.",fix:"Start typing a set name — matches resolve by name; the raw ID is kept as hidden metadata."};
+  if(s.id===t.id){ const alt=SETS.find(function(x){return x.id!==s.id;}); return {level:"bad",msg:"Source and target can’t be the same set.",fix:'Try a different target — e.g. “'+alt.name+'”. Caught here, in-form — you’ll never hit a post-submit 400.'}; }
+  return {level:"good",msg:"Valid · 1 hop resolves.",fix:"Names mapped to IDs. This path is ready to save."};
+}
+function costOf(){ if(!bstate.source||!bstate.target) return null; const load=bstate.source.rows*bstate.target.rows; return {expensive: load>5e11, srows:bstate.source.rows, trows:bstate.target.rows}; }
+function trim(n){return n.length>12?n.slice(0,11)+'…':n;}
+function pathPreviewSVG(){
+  const s=bstate.source,l=bstate.link,t=bstate.target;
+  const on=function(x){return x?'#12358F':'#CBD5E1';}, tx=function(x){return x?'#fff':'#94A3B8';};
+  const lbl=l?l.name:"link type";
+  return '<svg viewBox="0 0 360 150" style="width:100%;height:auto">'
+    +'<line x1="70" y1="75" x2="290" y2="75" stroke="'+(l?'#2B5FE3':'#CBD5E1')+'" stroke-width="2" stroke-dasharray="'+(l?'6,5':'2,4')+'"/>'
+    +'<rect x="'+(180-lbl.length*3.4-8)+'" y="60" width="'+(lbl.length*6.8+16)+'" height="20" rx="10" fill="#fff" stroke="'+(l?'#C7D6FA':'#E2E8F0')+'"/>'
+    +'<text x="180" y="74" font-size="11" text-anchor="middle" fill="'+(l?'#2B5FE3':'#94A3B8')+'" font-weight="600">'+lbl+'</text>'
+    +'<circle cx="70" cy="75" r="26" fill="'+on(s)+'"/><text x="70" y="79" font-size="10" fill="'+tx(s)+'" text-anchor="middle" font-weight="700">'+(s?trim(s.name):'source')+'</text>'
+    +'<circle cx="290" cy="75" r="26" fill="'+on(t)+'"/><text x="290" y="79" font-size="10" fill="'+tx(t)+'" text-anchor="middle" font-weight="700">'+(t?trim(t.name):'target')+'</text>'
+    +(s?'<text x="70" y="120" font-size="9" text-anchor="middle" fill="#94A3B8">'+fmtRows(s.rows)+' rows</text>':'')
+    +(t?'<text x="290" y="120" font-size="9" text-anchor="middle" fill="#94A3B8">'+fmtRows(t.rows)+' rows</text>':'')
+    +'</svg>';
+}
+function renderBuilder(){
+  const r=roleCfg(); const L=document.getElementById("bLeft"),R=document.getElementById("bRight"),F=document.getElementById("bFoot");
+  if(bstate.mode==="describe"){
+    L.innerHTML='<div class="describe"><div class="field"><label>Describe the relationship you need</label>'
+      +'<textarea id="aiText" placeholder="e.g. connect Transactions to Window data">'+(bstate.aiText||'')+'</textarea></div>'
+      +'<div class="chips"><button class="chip" onclick="fillAI(\'connect Transactions to Window data\')">connect Transactions to Window data</button>'
+      +'<button class="chip" onclick="fillAI(\'link People who own Vehicles\')">link People who own Vehicles</button>'
+      +'<button class="chip" onclick="fillAI(\'Individuals part of Criminal Organization\')">Individuals part of Criminal Organization</button></div>'
+      +'<button class="btn primary" style="margin-top:14px" onclick="runAI()">'+ic('<path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>',15)+' Propose a path</button>'
+      +'<div id="aiOut"></div></div>'
+      +'<div class="callout" style="margin-top:18px"><b>AI is an on-ramp, not the road.</b> It reads your intent, matches set names, and resolves them to IDs — then hands you a proposal to review on the graph. Everything it produces you can build by hand; it never becomes the only way through.</div>';
+    R.innerHTML='<div class="previewbox"><div class="pv-h">'+ic('<circle cx="12" cy="12" r="9"/>',13)+' Path preview</div><div style="padding:14px">'+pathPreviewSVG()+'</div></div>'
+      +'<div class="callout" style="margin-top:14px">Describe a relationship on the left. The proposal drops into the <b>Build</b> tab, where the same live validation, preview, and save gate apply.</div>';
+    F.innerHTML='<span style="font-size:12px;color:var(--muted)">Natural-language intent → reviewed, editable path.</span>';
+    if(bstate.ai) renderAIout();
+    return;
+  }
+  const v=validate(), cost=costOf();
+  L.innerHTML=fieldHTML("source","Source set",bstate.source,false)
+    +fieldHTML("link","Link type",bstate.link,true)
+    +fieldHTML("target","Target set",bstate.target,false)
+    +'<div class="field" style="margin-bottom:8px"><label>Path name</label><div class="ctrl"><input id="pathName" value="'+(bstate.name||'')+'" placeholder="Auto-named from your selections" oninput="bstate.name=this.value"></div></div>'
+    +'<div class="validation '+v.level+'"><span style="flex:none;margin-top:1px">'+(v.level==='good'?checkMarkDark():v.level==='bad'?xMark():infoMark())+'</span><div><b>'+v.msg+'</b><div class="fix">'+v.fix+'</div></div></div>';
+  R.innerHTML='<div class="previewbox"><div class="pv-h">'+ic('<circle cx="12" cy="12" r="9"/>',13)+' Path preview on the graph</div><div style="padding:14px">'+pathPreviewSVG()+'</div></div>'
+    +'<div class="cost">'+(
+      !cost? '<div class="validation neutral"><span>'+infoMark()+'</span><div>Pick source and target to estimate compute.</div></div>'
+      : cost.expensive? '<div class="validation warn"><span style="flex:none;margin-top:1px">'+warnMarkDark()+'</span><div><b>Large path — high compute on demand.</b><div class="fix">'+fmtRows(cost.srows)+' × '+fmtRows(cost.trows)+' rows resolve at query time. It’ll work, but it can be slow and costly — narrow the sets, or proceed knowingly.</div></div></div>'
+      : '<div class="validation good"><span style="flex:none;margin-top:1px">'+checkMarkDark()+'</span><div><b>Light path.</b><div class="fix">Resolves comfortably on demand.</div></div></div>'
+    )+'</div>'
+    +'<div class="callout" style="margin-top:14px">Selections are made <b>by name</b>. Under the hood the UI composes the exact JSON the API already expects — raw set and link-type IDs are held as hidden metadata, never typed by hand.</div>';
+  const ready=v.level==="good";
+  if(r.authorMode==="save"){
+    F.innerHTML='<span style="font-size:12px;color:var(--muted)">'+r.cap+' · path + permission saved in one action.</span><div class="spacer" style="flex:1"></div><button class="btn" onclick="closeBuilder()">Cancel</button><button class="btn primary" '+(ready?'':'disabled')+' onclick="savePath(\'save\')">'+ic('<path d="M20 6 9 17l-5-5"/>',15)+' Save path</button>';
+  } else {
+    F.innerHTML='<span style="font-size:12px;color:var(--muted)">'+r.cap+' · a tenant-wide object goes to a supervisor before it publishes.</span><div class="spacer" style="flex:1"></div><button class="btn" onclick="closeBuilder()">Cancel</button><button class="btn primary" '+(ready?'':'disabled')+' onclick="savePath(\'propose\')">'+ic('<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',15)+' Propose for review</button>';
+  }
+}
+function fieldHTML(key,label,chosen,isLink){
+  const filled=chosen?"filled":"";
+  return '<div class="field"><label>'+label+'</label><div class="ctrl '+filled+'">'
+    +(chosen? '<span style="font-weight:600">'+chosen.name+'</span><span class="chosen-id" style="margin:0 auto 0 6px">'+(isLink?('lt:'+chosen.id):chosen.ns)+'</span><button class="clear" onclick="clearField(\''+key+'\')">✕</button>'
+      : '<input id="in_'+key+'" autocomplete="off" placeholder="Type to search by name…" oninput="onType(\''+key+'\',this.value,'+(!!isLink)+')" onfocus="onType(\''+key+'\',this.value,'+(!!isLink)+')">')
+    +'</div><div class="ac" id="ac_'+key+'"></div>'
+    +(chosen&&!isLink? '<div class="chosen-id">resolves '+chosen.ns+' · id '+chosen.id+' · '+fmtRows(chosen.rows)+' rows</div>':'')+'</div>';
+}
+function onType(key,val,isLink){
+  const list=(isLink?LINKTYPES:SETS).filter(function(o){return o.name.toLowerCase().indexOf(val.toLowerCase())>=0;});
+  const ac=document.getElementById("ac_"+key);
+  if(!list.length){ac.classList.remove("show");ac.innerHTML="";return;}
+  ac.innerHTML=list.map(function(o){return '<button onclick="pick(\''+key+'\','+o.id+','+(!!isLink)+')"><span class="nm2">'+o.name+'</span><span class="id2">'+(isLink?('lt:'+o.id):o.ns)+'</span></button>';}).join("");
+  ac.classList.add("show");
+}
+function pick(key,id,isLink){ const o=(isLink?LINKTYPES:SETS).find(function(x){return x.id===id;}); bstate[key]=o; autoName(); renderBuilder(); }
+function clearField(key){ bstate[key]=null; renderBuilder(); }
+function fillAI(t){ bstate.aiText=t; const el=document.getElementById("aiText"); if(el)el.value=t; }
+function inferLink(txt){
+  if(txt.indexOf("own")>=0) return LINKTYPES.find(function(l){return l.name==="owns";});
+  if(txt.indexOf("part of")>=0) return LINKTYPES.find(function(l){return l.name==="part of";});
+  if(txt.indexOf("communicat")>=0||txt.indexOf("call")>=0) return LINKTYPES.find(function(l){return l.name==="communicates with";});
+  if(txt.indexOf("transact")>=0||txt.indexOf("pay")>=0) return LINKTYPES.find(function(l){return l.name==="transacts with";});
+  return null;
+}
+function runAI(){
+  const txt=((document.getElementById("aiText")||{}).value||"").toLowerCase(); bstate.aiText=txt;
+  const foundSets=SETS.filter(function(s){return txt.indexOf(s.name.toLowerCase())>=0;});
+  const foundLink=LINKTYPES.find(function(l){return txt.indexOf(l.name.toLowerCase())>=0;});
+  const src=foundSets[0]||null, tgt=foundSets[1]||null;
+  const link=foundLink||inferLink(txt)||LINKTYPES.find(function(l){return l.name==="connected to";});
+  bstate.ai = (!src||!tgt)? {error:true} : {source:src,link:link,target:tgt};
+  renderAIout();
+}
+function renderAIout(){
+  const out=document.getElementById("aiOut"); if(!out)return; const a=bstate.ai;
+  if(!a){out.innerHTML="";return;}
+  if(a.error){ out.innerHTML='<div class="validation bad" style="margin-top:14px"><span>'+xMark()+'</span><div><b>Couldn’t match two sets in that sentence.</b><div class="fix">Name two known sets — e.g. “Transactions” and “Window data”. AI resolves names it recognises; you can always switch to <b>Build</b> and pick them directly.</div></div></div>'; return; }
+  out.innerHTML='<div class="proposed"><div class="lbl">'+ic('<path d="M12 3v3m0 12v3M3 12h3m12 0h3"/>',13)+' Proposed path · review & edit</div>'
+    +'<div class="triple"><span class="node">'+a.source.name+'</span><span class="arw">—'+a.link.name+'→</span><span class="node">'+a.target.name+'</span></div>'
+    +'<div class="resolved">names resolved to IDs automatically · '+a.source.ns+' · lt:'+a.link.id+' · '+a.target.ns+'</div>'
+    +'<div style="display:flex;gap:9px;margin-top:13px"><button class="btn primary" onclick="acceptAI()">Edit on graph →</button><button class="btn" onclick="bstate.ai=null;renderAIout()">Start over</button></div></div>';
+}
+function acceptAI(){ const a=bstate.ai; bstate.source=a.source; bstate.link=a.link; bstate.target=a.target; autoName(); setMode("build"); toast("Proposal moved to Build — validate & save","info"); }
+function savePath(kind){
+  const cost=costOf();
+  const p={ name:bstate.name||(bstate.source.name+" "+bstate.link.name+" "+bstate.target.name),
+    source:bstate.source, link:bstate.link, target:bstate.target,
+    expensive:cost&&cost.expensive, author:roleCfg().name, notes:null,
+    status: kind==="save"?"published":"proposed" };
+  state.virtualPaths.push(p); closeBuilder();
+  if(kind==="save") toast('Published “'+p.name+'” — now a link type in the Universe',"good");
+  else toast('Proposed “'+p.name+'” — sent to the review queue',"info");
+  render();
+}
+
+/* ============================ REVIEW actions ============================ */
+function approvePath(i){ state.virtualPaths[i].status="published"; state.virtualPaths[i].notes=null; toast('Approved & published “'+state.virtualPaths[i].name+'”',"good"); render(); }
+function returnPath(i){ const note=((document.getElementById("note_"+i)||{}).value||"").trim(); state.virtualPaths[i].status="returned"; state.virtualPaths[i].notes=note||"Please narrow the sets and resubmit."; toast("Returned to "+state.virtualPaths[i].author,"warn"); render(); }
+
+/* ============================ DRAWER ============================ */
+function openTile(enc){
+  const title=decodeURIComponent(enc); const it=ITEMS.find(function(x){return x.title===title;}); if(!it)return;
+  const r=roleCfg(); const col=kindColor[it.kind]||"#2B5FE3"; const d=document.getElementById("drawer");
+  d.innerHTML='<div class="dr-h"><span class="ic" style="width:34px;height:34px;border-radius:9px;background:'+col+';color:#fff;display:grid;place-items:center;flex:none">'+ic(kindIcon[it.kind]||kindIcon.chart,18)+'</span>'
+    +'<div><div style="font-weight:700;font-size:15px">'+it.title+'</div><div class="mono" style="color:var(--muted);font-size:11.5px">'+it.ns+'</div></div><button class="x" onclick="closeAll()">✕</button></div>'
+    +'<div class="dr-b">'+(it.note?'<div class="callout" style="margin:0 0 14px">'+it.note+'</div>':'')
+    +'<div class="kv"><span class="k">Type</span><span class="v" style="text-transform:capitalize">'+it.kind+'</span></div>'
+    +'<div class="kv"><span class="k">Human-readable name</span><span class="v">'+it.title+'</span></div>'
+    +'<div class="kv"><span class="k">Technical identity</span><span class="v mono">'+it.ns+'</span></div>'
+    +'<div class="kv"><span class="k">Priority</span><span class="v" style="text-transform:capitalize">'+(it.pri||'—')+'</span></div>'
+    +(it.badge!=null?'<div class="kv"><span class="k">Badge <span class="tag assume" style="margin-left:4px">assumption</span></span><span class="v">'+it.badge+' · meaning undefined in current app</span></div>':'')
+    +'<div class="kv"><span class="k">Owner</span><span class="v">'+it.owner+'</span></div>'
+    +'<div class="kv"><span class="k">Last modified</span><span class="v">'+it.when+'</span></div>'
+    +(!r.seesMeta?'<div class="helpnote" style="margin-top:10px">'+infoMark()+' As an investigator, owner/last-modified are de-emphasised on tiles. Presales & supervisors see them inline — same data, role-driven emphasis.</div>':'')
+    +'</div>';
+  d.classList.add("show"); document.getElementById("scrim").classList.add("show");
+}
+function openFolder(enc){
+  const name=decodeURIComponent(enc); const f=state.folders.find(function(x){return x.name===name;}); if(!f)return;
+  const d=document.getElementById("drawer");
+  d.innerHTML='<div class="dr-h"><span class="ic" style="width:34px;height:34px;border-radius:9px;background:#12358F;color:#fff;display:grid;place-items:center;flex:none">'+ic('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',18)+'</span>'
+    +'<div><div style="font-weight:700;font-size:15px">'+f.name+'</div><div style="color:var(--muted);font-size:12px">'+f.items.length+' items · your folder</div></div><button class="x" onclick="closeAll()">✕</button></div>'
+    +'<div class="dr-b">'+(f.items.length?f.items.map(function(t){const it=ITEMS.find(function(i){return i.title===t;})||{}; return '<div class="kv"><span class="k">'+t+'</span><span class="v mono" style="color:var(--muted2)">'+(it.ns||'')+'</span></div>';}).join(""):'<div class="emptyfolder">Empty — drag work here to organise it.</div>')
+    +'<div class="callout" style="margin-top:14px">Created by you — no admin ticket. Folder permissions still respect the tenant model.</div></div>';
+  d.classList.add("show"); document.getElementById("scrim").classList.add("show");
+}
+function addFolder(){ state.folders.push({name:"New folder "+(state.folders.length+1), items:[]}); toast("Folder created — organise without an admin ticket","good"); render(); }
+
+/* ============================ NAV / STATE ============================ */
+function render(){
+  renderTopbar(); renderSide(); const s=state.screen;
+  if(s==="workspace") renderWorkspace();
+  else if(s==="universe") renderUniverse();
+  else if(s==="linkchart") renderLinkchart();
+  else if(s==="review") renderReview();
+  else if(s==="governance") renderGovernance();
+  else if(s==="table") renderGenericStub("Table","The tabular view of any set. Unchanged by this redesign — a known slow load (5–10s) is a backend concern tracked as a deliberate exclusion.");
+  else if(s==="search") renderGenericStub("Search","Global search across sets and items. Unchanged; the Workspace redesign reduces reliance on it by adding hierarchy, folders, sort and group.");
+  else if(s==="dashboard") renderGenericStub("Dashboard","Case dashboards. Out of scope for this redesign.");
+}
+function go(screen){ state.screen=screen; closeAll(); render(); document.getElementById("main").scrollTop=0; }
+function setRole(role){ state.role=role; document.getElementById("roleMenu").style.display="none";
+  if(ROLES[role].nav.indexOf(state.screen)<0) state.screen="workspace";
+  if(!ROLES[role].demo) state.demoSafe=false;
+  render(); toast("Viewing as "+ROLES[role].name+" · "+ROLES[role].cap,"info"); }
+function toggleRoleMenu(e){ e.stopPropagation(); const m=document.getElementById("roleMenu"); m.style.display=m.style.display==="none"?"block":"none"; }
+function toggleAlerts(){ state.alertsCollapsed=!state.alertsCollapsed; renderWorkspace(); }
+function toggleDemo(){ state.demoSafe=!state.demoSafe; render(); toast(state.demoSafe?"Demo-safe on — sensitive items hidden":"Demo-safe off","info"); }
+function setSort(v){ state.sortBy=v; renderWorkspace(); }
+function setGroup(v){ state.groupBy=v; renderWorkspace(); }
+function closeBuilder(){ document.getElementById("builder").classList.remove("show"); document.getElementById("scrim").classList.remove("show"); }
+function closeAll(){ document.getElementById("drawer").classList.remove("show"); document.getElementById("builder").classList.remove("show"); document.getElementById("scrim").classList.remove("show"); document.getElementById("roleMenu").style.display="none"; }
+function applySearchFilter(){
+  const q=state.q.toLowerCase();
+  document.querySelectorAll(".tile[data-title]").forEach(function(t){
+    const hit=!q || t.dataset.title.indexOf(q)>=0 || (t.dataset.ns||"").indexOf(q)>=0;
+    t.classList.toggle("hide",!hit);
+  });
+}
+document.getElementById("globalSearch").addEventListener("input",function(e){ state.q=e.target.value; if(state.screen==="workspace") applySearchFilter(); });
+document.addEventListener("click",function(e){
+  if(!e.target.closest(".rolewrap")) document.getElementById("roleMenu").style.display="none";
+  if(!e.target.closest(".field")) document.querySelectorAll(".ac").forEach(function(a){a.classList.remove("show");});
+});
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeAll(); });
+
+render();
+</script>
+</body>
+</html>

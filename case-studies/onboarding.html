@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Assisted Onboarding: UX Research and Design Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F4F3EF;--surface:#FFFFFF;--border:#CDCAC2;--border-strong:#9A9690;
+  --t1:#0A0A0A;--t2:#3C3C3C;--t3:#787878;
+  --accent:#1B3A6B;--accent-mid:#2D5BA8;--accent-light:#EBF0F8;
+  --red:#B5241C;--red-light:#FAEAEA;
+  --green:#1E5C3A;--green-light:#E7F4EC;
+  --amber:#7A4F00;--amber-light:#FDF4E3;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.65;}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);
+  border-bottom:1px solid var(--border);padding:0 40px;
+  display:flex;align-items:center;height:48px;overflow-x:auto;gap:0;}
+.nav-brand{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--t1);
+  white-space:nowrap;margin-right:24px;padding-right:24px;border-right:1px solid var(--border);}
+nav a{font-size:11px;font-weight:500;color:var(--t3);text-decoration:none;
+  padding:5px 10px;white-space:nowrap;transition:color .15s;}
+nav a:hover{color:var(--accent);}
+main{max-width:1240px;margin:0 auto;padding:60px 48px 120px;}
+section{margin-bottom:80px;}
+.sec-header{display:flex;align-items:baseline;gap:20px;margin-bottom:28px;
+  padding-bottom:12px;border-bottom:1.5px solid var(--t1);}
+.sec-num{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);min-width:28px;}
+h1{font-size:40px;font-weight:800;letter-spacing:-.5px;line-height:1.15;}
+h2{font-size:22px;font-weight:700;letter-spacing:-.25px;color:var(--t1);}
+h3{font-size:15px;font-weight:600;letter-spacing:-.15px;}
+h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);}
+.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);}
+.hero{background:var(--accent);color:#fff;padding:52px 56px 44px;margin-bottom:60px;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:12px;}
+.hero h1{color:#fff;margin-bottom:6px;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.65);font-weight:400;margin-bottom:32px;}
+.hero-stats{display:flex;gap:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);}
+.hs-val{font-size:24px;font-weight:800;display:block;}
+.hs-lab{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;}
+.box{background:var(--surface);border:1px solid var(--border);padding:22px;}
+.box-accent{border-left:3px solid var(--accent);}
+.box-red{border-left:3px solid var(--red);background:var(--red-light);}
+.box-green{border-left:3px solid var(--green);background:var(--green-light);}
+.box-amber{border-left:3px solid var(--amber);background:var(--amber-light);}
+.box-dark{background:var(--t1);color:#fff;padding:24px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:9px 14px;background:#EEECEA;text-align:left;color:var(--t2);}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--t2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,0,0,.015);}
+.quote{border-left:2px solid var(--accent);padding:12px 16px;
+  font-style:italic;font-size:12px;color:var(--t2);background:var(--accent-light);margin:16px 0;}
+.p-attr{display:flex;justify-content:space-between;padding:6px 0;
+  border-bottom:1px solid var(--border);font-size:12px;}
+.p-attr:last-child{border-bottom:none;}
+.p-key{color:var(--t3);font-weight:500;}
+.swimlane-wrap{overflow-x:auto;}
+.caveat{background:var(--amber-light);border:1px solid #C8960A;
+  padding:10px 14px;font-size:11px;color:var(--amber);margin-top:8px;line-height:1.5;}
+.dep-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.dep-item:last-child{border-bottom:none;}
+.dep-tag{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;padding:3px 7px;height:fit-content;margin-top:2px;color:#fff;}
+.dep-tag.reg{background:var(--red);}
+.dep-tag.tech{background:var(--accent);}
+.dep-tag.data{background:#5A4000;}
+.dep-tag.org{background:var(--green);}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.gap8{margin-bottom:8px;}.gap12{margin-bottom:12px;}.gap16{margin-bottom:16px;}
+.gap24{margin-bottom:24px;}.gap32{margin-bottom:32px;}.gap40{margin-bottom:40px;}
+.muted{color:var(--t3);}.accent-text{color:var(--accent);}
+.red-text{color:var(--red);}.green-text{color:var(--green);}
+.bold{font-weight:600;}.small{font-size:11px;}
+.footnote{font-size:11px;color:var(--t3);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.wf-shell{background:#fff;border:1px solid var(--border);}
+.wf-bar{background:#EEECEA;padding:8px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.wf-dot{width:8px;height:8px;border-radius:50%;}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr;}main{padding:32px 20px;}.hero{padding:32px;}.hero h1{font-size:26px;}}
+/* ── System B compatibility: s10 prototype content uses these classes ── */
+:root{--proto-accent:#1B3A6B;--proto-bg:#EBF0F8;--text-secondary:#3C3C3C;}
+.card,.card-proto{background:var(--surface);border:1px solid var(--border);padding:22px;}
+.card-proto{border-left:3px solid var(--accent);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.gap-4{margin-bottom:4px;}.gap-8{margin-bottom:8px;}.gap-12{margin-bottom:12px;}
+.gap-16{margin-bottom:16px;}.gap-24{margin-bottom:24px;}.gap-32{margin-bottom:32px;}
+.section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);}
+.wireframe{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.wireframe-bar{background:#E2E8F0;padding:8px 12px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:6px;}
+.wireframe-dot{width:8px;height:8px;border-radius:50%;}
+.annotation{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--t2);line-height:1.6;}
+.annotation:last-child{border-bottom:none;}
+.annotation-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">Digital Assisted Onboarding</div>
+  <a href="#s00">Executive Summary</a>
+  <a href="#s01">Problem Statement</a>
+  <a href="#s02">Research Approach</a>
+  <a href="#s03">Key Findings</a>
+  <a href="#s04">Personas</a>
+  <a href="#s05">AS-IS Journey</a>
+  <a href="#s06">Pain Points</a>
+  <a href="#s07">Interventions</a>
+  <a href="#s08">TO-BE Journey</a>
+  <a href="#s09">Design Principles</a>
+  <a href="#s10">Prototype Specification</a>
+  <a href="#s11">Dependencies</a>
+</nav>
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">Private Banking Division &nbsp;·&nbsp; UX Research and Design Specification &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</div>
+  <h1>Digital Assisted Onboarding</h1>
+  <div class="hero-sub">Process analysis, research findings, and design specification for the redesign of the end-to-end client onboarding journey.</div>
+  <div class="hero-stats">
+    <div><span class="hs-val">9</span><span class="hs-lab">Phases Mapped</span></div>
+    <div><span class="hs-val">148</span><span class="hs-lab">Process Steps</span></div>
+    <div><span class="hs-val">20+</span><span class="hs-lab">Systems Involved</span></div>
+    <div><span class="hs-val">38</span><span class="hs-lab">Qualitative Participants</span></div>
+    <div><span class="hs-val">~20%</span><span class="hs-lab">EDD First-Time-Right (recall est.)</span></div>
+  </div>
+</div>
+<section id="s00">
+  <div class="sec-header"><span class="sec-num">00</span><h2>Executive Summary</h2></div>
+
+  <div class="box box-accent gap24">
+    <p style="font-size:14px;line-height:1.7;color:var(--t2);">
+      The 10-week Digital Assisted Onboarding engagement mapped the full onboarding lifecycle end to end: 9 phases, 148 discrete process steps, and 20+ systems operating without an orchestration layer. Research combined contextual inquiry, in-depth interviews, and journey mapping with four primary actor groups.
+    </p>
+  </div>
+
+  <div class="g2 gap32">
+    <div>
+      <h3 class="gap16">Critical Findings</h3>
+      <table>
+        <thead><tr><th>Finding</th><th>Data Point</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">EDD throughput is critically low</td><td>First-time-right rate approximately 20%. Average 3 iterations per case across 14 sequential human approvals. Due Diligence Officers use a Word template with manual copy-paste to the comment field.</td></tr>
+          <tr><td class="bold">Formalities phase is entirely manual</td><td>28 discrete sub-steps for document preparation. Document generation arrives by email with no platform integration. No audit trail on the shared drive.</td></tr>
+          <tr><td class="bold">Data does not flow across systems</td><td>Data entered in the Onboarding Platform does not write back to the CA Portal. PEP pre-check is performed in a standalone Excel file outside the platform. Product defaults load system-by-system with no template capability.</td></tr>
+          <tr><td class="bold">Product opening is disconnected at closure</td><td>Account opening in Core Banking is manual and separate from the Onboarding Platform. Account blocking persists for up to 3 days post-opening due to overnight archive verification.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 class="gap16">Proposed Future State</h3>
+      <div class="box gap16" style="margin-bottom:16px;">
+        <p style="color:var(--t2);font-size:13px;line-height:1.7;">
+          The specification proposes nine interventions across the onboarding lifecycle. Six involve AI-augmented capabilities; three are integration and orchestration improvements. End-to-end cycle time target: 5–14 days depending on case complexity, down from 35–55 days. EDD first-time-right directional target: 70%, up from approximately 20%.
+        </p>
+        <p class="footnote">All improvement targets are directional pending baseline measurement and technical validation.</p>
+      </div>
+      <h3 class="gap12">Key Metrics at Stake</h3>
+      <table>
+        <thead><tr><th>Metric</th><th>Baseline</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Standard onboarding cycle</td><td class="red-text">3–5 days (best case)</td><td class="green-text">1–2 days</td></tr>
+          <tr><td>EDD-required case cycle</td><td class="red-text">35–55 days</td><td class="green-text">≤14 days</td></tr>
+          <tr><td>EDD first-time-right rate</td><td class="red-text">~20% (est.)</td><td class="green-text">≥70% (directional)</td></tr>
+          <tr><td>Formalities sub-steps (FSO)</td><td class="red-text">28 manual steps</td><td class="green-text">Single submission workflow</td></tr>
+          <tr><td>Account blocking post-opening</td><td class="red-text">Up to 3 days</td><td class="green-text">Same-day (Core Banking dependency)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gap32"></div>
+  <h3 class="gap16">Programme Actions for Leadership</h3>
+  <div class="g3">
+    <div class="box box-red">
+      <div class="label gap8">Critical Dependency</div>
+      <h4 class="gap8">Regulatory Approval Required</h4>
+      <p style="font-size:12px;color:var(--t2);">The proposed replacement of the 4-eye compliance check with AI-assisted verification (Phase 7) and the use of Gen AI in EDD risk assessment (Phase 5) require Compliance and Legal sign-off. Implementation is conditional on this approval. Regulatory notification may be required under applicable frameworks.</p>
+    </div>
+    <div class="box box-amber">
+      <div class="label gap8">Technical Dependency</div>
+      <h4 class="gap8">Core Banking Programme Required</h4>
+      <p style="font-size:12px;color:var(--t2);">Resolution of the 3-day account blocking constraint in Phase 9 is outside the scope of this UX engagement. It requires a separate Core Banking development programme. The UX design targets automated triggering of account opening; unblocking timeline is a downstream dependency.</p>
+    </div>
+    <div class="box box-green">
+      <div class="label gap8">Recommended Next Step</div>
+      <h4 class="gap8">Approve Phase 1 Delivery Scope</h4>
+      <p style="font-size:12px;color:var(--t2);">This engagement recommends proceeding with Phase 1 covering Phases 2–8 of the onboarding journey, prioritising EDD workflow redesign, data capture improvements, and formalities automation. A prioritised delivery roadmap is recommended as the immediate next programme artefact.</p>
+    </div>
+  </div>
+</section>
+<section id="s01">
+  <div class="sec-header"><span class="sec-num">01</span><h2>Problem Statement</h2></div>
+  <div class="g2 gap32">
+    <div>
+      <div class="box box-accent gap24">
+        <div class="label gap12">Current State</div>
+        <h3 class="gap12">Process Overview</h3>
+        <p style="color:var(--t2);margin-bottom:14px;">
+          The current onboarding process spans 9 phases and 148 discrete steps, involving Client Advisors, Onboarding Specialists, Due Diligence Officers, and Client Operations teams across more than 20 systems. These systems operate without a shared data layer or orchestration logic. Client data entered in one platform does not propagate to others. Handoffs between phases are managed by email and shared drives rather than workflow automation.
+        </p>
+        <p style="color:var(--t2);">
+          The process was not designed end-to-end. It evolved incrementally as regulatory requirements and system capabilities were added over time. Manual effort now bridges the gaps between systems. Quality at each phase depends on individual practitioner discipline: the platform enforces nothing.
+        </p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="box">
+        <div class="label gap8">Design Challenge</div>
+        <p style="font-size:14px;font-weight:500;line-height:1.6;color:var(--t1);">
+          How might the onboarding process be redesigned so that data flows automatically between phases, compliance quality is enforced at point of entry rather than corrected at point of review, and each actor operates from a single context rather than navigating 20+ disconnected systems?
+        </p>
+      </div>
+      <div class="box">
+        <div class="label gap8">Design Mandate</div>
+        <p style="color:var(--t2);font-size:13px;">
+          Straight-through processing for standard cases. AI-augmented quality assurance for EDD-required cases. Automated orchestration of document generation, signing coordination, and product opening.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="gap24"></div>
+  <div class="g3">
+    <div class="box">
+      <div class="label gap12">In Scope</div>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2.1;">
+        <li>Prospect creation and data capture (Phases 2–3)</li>
+        <li>PEP pre-check integration (Phase 4)</li>
+        <li>Enhanced Due Diligence workflow (Phase 5)</li>
+        <li>Product selection and configuration (Phase 6)</li>
+        <li>Document preparation and formalities (Phase 7)</li>
+        <li>Video identification and signing coordination (Phase 8)</li>
+        <li>Business Relationship and product opening (Phase 9)</li>
+      </ul>
+    </div>
+    <div class="box">
+      <div class="label gap12">Out of Scope: v1</div>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2.1;">
+        <li>Lead generation optimisation (Phase 1: separate initiative)</li>
+        <li>Post-onboarding portfolio management</li>
+        <li>Core Banking system replacement</li>
+        <li>Legal Archive platform migration</li>
+        <li>Mobile-native application</li>
+        <li>Discretionary mandate or trade execution flows</li>
+      </ul>
+    </div>
+    <div class="box">
+      <div class="label gap12">Success Targets</div>
+      <div style="font-size:12px;">
+        <div class="p-attr"><span class="p-key">EDD first-time-right</span><span class="bold">≥70%</span></div>
+        <div class="p-attr"><span class="p-key">Formalities steps</span><span class="bold">28 → guided workflow</span></div>
+        <div class="p-attr"><span class="p-key">EDD cycle (standard)</span><span class="bold">≤14 days</span></div>
+        <div class="p-attr"><span class="p-key">CA context switches</span><span class="bold">20+ → 3 surfaces</span></div>
+        <div class="p-attr"><span class="p-key">Data re-entry events</span><span class="bold">Eliminated</span></div>
+      </div>
+      <p class="footnote">Targets are directional. Baseline measurement required to confirm.</p>
+    </div>
+  </div>
+</section>
+<section id="s02">
+  <div class="sec-header"><span class="sec-num">02</span><h2>Research Approach</h2></div>
+  <div class="g2 gap32">
+    <div class="box gap24">
+      <div class="label gap12">Methods</div>
+      <table>
+        <thead><tr><th>Method</th><th>Participants</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Contextual Inquiry</td><td>N=8</td><td>Observed CA and Onboarding Specialists during live onboarding tasks. Shadow sessions of 3–4 hours capturing screen recordings and system-switching patterns.</td></tr>
+          <tr><td class="bold">Diary Studies</td><td>N=12 CA</td><td>Structured daily logs across 10 business days capturing systems touched, time per task, and frustration incidents. 12 of the 14 CA participants contributed diary logs; two participated via contextual inquiry and interview only.</td></tr>
+          <tr><td class="bold">In-Depth Interviews</td><td>N=18</td><td>60–90 minute semi-structured interviews across all four actor roles. Conducted remotely with consent recording.</td></tr>
+          <tr><td class="bold">Quantitative Survey</td><td>N=120</td><td>System Usability Scale administered against current tooling. Establishes UX baseline for comparison. Baseline analysis to be published as a separate report.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="box">
+        <div class="label gap8">Research Period</div>
+        <p style="font-size:12px;color:var(--t2);">Q1–Q2 2025 &nbsp;·&nbsp; 10-week engagement &nbsp;·&nbsp; N=38 qualitative participants</p>
+      </div>
+      <div class="box">
+        <div class="label gap8">Participant Roles</div>
+        <table>
+          <thead><tr><th>Role</th><th>N</th></tr></thead>
+          <tbody>
+            <tr><td>Client Advisor (CA/CAM)</td><td>14</td></tr>
+            <tr><td>Client Onboarding Specialist</td><td>8</td></tr>
+            <tr><td>Due Diligence Officer (DDO)</td><td>6</td></tr>
+            <tr><td>HNW Prospect/Client</td><td>10</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box">
+        <div class="label gap8">Ethics and Anonymisation</div>
+        <p style="font-size:12px;color:var(--t2);">All participants provided informed consent for session recording and quote usage. Verbatim quotes used in this document are anonymised by role. No personally identifiable information is retained in the research record.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="s03">
+  <div class="sec-header"><span class="sec-num">03</span><h2>Key Findings</h2></div>
+  <div style="display:flex;flex-direction:column;gap:20px;">
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="font-size:40px;font-weight:800;color:var(--border-strong);line-height:1;flex-shrink:0;">01</div>
+        <div>
+          <h3 class="gap8">Data Entered Once, Used Nowhere</h3>
+          <p style="color:var(--t2);margin-bottom:10px;">Data captured in the Onboarding Platform does not write back to the CA Portal or populate the document generation tool. Correspondence instructions entered during data capture never flow downstream, causing generated documents to contain blank or incorrect fields. Client Advisors re-enter the same data in three to five separate systems per case.</p>
+          <div class="quote">"I fill in the same client address in the onboarding form, then again in the document tool, then again when we need to generate a letter. There's no logic to it.": Client Advisor</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="font-size:40px;font-weight:800;color:var(--border-strong);line-height:1;flex-shrink:0;">02</div>
+        <div>
+          <h3 class="gap8">EDD Quality is a Front-Office Problem Solved in the Back Office</h3>
+          <p style="color:var(--t2);margin-bottom:10px;">The Enhanced Due Diligence phase achieves a first-time-right rate of approximately 20%, based on participant recall corroborated by observed case queues. The primary cause is insufficient source-of-wealth narrative quality at submission, not regulatory threshold disagreement. Due Diligence Officers receive Word-template-based files with manually copied data and apply judgment that could be better informed by structured inputs. The 14-step sequential approval chain amplifies the cost of each iteration.</p>
+          <p class="footnote">Baseline figure of ~20% requires validation against institutional case management data before targets are confirmed.</p>
+          <div class="quote">"The CA submits what they think is enough. I can see within 30 seconds it will need to come back. But I have to process it formally before I can return it.": Due Diligence Officer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="font-size:40px;font-weight:800;color:var(--border-strong);line-height:1;flex-shrink:0;">03</div>
+        <div>
+          <h3 class="gap8">Formalities Preparation Consumes Disproportionate Specialist Time</h3>
+          <p style="color:var(--t2);margin-bottom:10px;">The Formalities phase involves 28 discrete manual sub-steps for document preparation. The workflow spans the Onboarding Platform, a document generation tool accessed via email, Adobe Acrobat for merging and flattening, DocBasket for QR code generation, and a shared drive for version management. No audit trail exists on the shared drive. Front office modifications to generated documents are undetectable after the fact. Onboarding Specialists estimate approximately 60% of their Phase 7 time goes on this mechanical work, not on checking whether cases are complete.</p>
+          <div class="quote">"I spend more time creating folder structures and flattening PDFs than I do checking whether a case is actually complete.": Client Onboarding Specialist</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="font-size:40px;font-weight:800;color:var(--border-strong);line-height:1;flex-shrink:0;">04</div>
+        <div>
+          <h3 class="gap8">The Signing and Opening Experience Frustrates Prospects at the Finish Line</h3>
+          <p style="color:var(--t2);margin-bottom:10px;">Prospects identified via original documents cannot switch to electronic signing without a video identification call, and no online identification alternative exists. This creates a hard scheduling dependency that blocks same-day or asynchronous completion for any prospect identified by paper documents. Accounts are blocked for up to 3 days post-opening pending an overnight archive verification batch process, meaning prospects who complete signing and receive confirmation cannot access their account immediately.</p>
+          <div class="quote">"By the time we reach signing, the client has been waiting weeks. Then we tell them the account needs another 3 days to activate. The goodwill from completing the process evaporates.": Client Advisor</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section id="s04">
+  <div class="sec-header"><span class="sec-num">04</span><h2>Personas</h2></div>
+
+  <div class="g2 gap20">
+
+    <!-- Persona 1: CA -->
+    <div class="box">
+      <div class="label gap4" style="color:var(--accent);">Client Advisor (CA)</div>
+      <h3 class="gap4">Marco Fischer</h3>
+      <p class="muted small gap16">Senior Client Advisor, Private Banking &nbsp;·&nbsp; 38 years old</p>
+      <div style="margin-bottom:16px;">
+        <div class="p-attr"><span class="p-key">Institution</span><span>Leading Global Private Bank</span></div>
+        <div class="p-attr"><span class="p-key">AUM managed</span><span>~CHF 280M personal book</span></div>
+        <div class="p-attr"><span class="p-key">Client portfolio</span><span>42 HNW, 6 UHNW active relationships</span></div>
+        <div class="p-attr"><span class="p-key">Systems used daily</span><span>20+ platforms across onboarding lifecycle</span></div>
+        <div class="p-attr"><span class="p-key">New onboardings/quarter</span><span>4–8 depending on pipeline</span></div>
+      </div>
+      <h4 class="gap8">Goals</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Onboard clients without losing weeks to paperwork cycles</li>
+        <li>Never be the one requesting a client's documents a second time</li>
+        <li>Get EDD cleared first-time: the 3-iteration average damages the relationship</li>
+        <li>Spend time on client relationships, not system navigation</li>
+      </ul>
+      <h4 class="gap8">Core Friction Points</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>EDD returns on approximately 80% of submitted cases</li>
+        <li>Scrolling-heavy data capture screens with no writeback to CA Portal</li>
+        <li>PEP pre-check performed in a standalone Excel file outside the platform</li>
+        <li>Product configuration applied item-by-item, no template or favourites capability</li>
+      </ul>
+      <div class="quote">"I onboard a client and immediately switch between five systems. The onboarding platform, the CA Portal, an Excel file for PEP, a shared drive, and email for document generation. That's before I've done any compliance work."</div>
+    </div>
+
+    <!-- Persona 2: Onboarding Specialist -->
+    <div class="box">
+      <div class="label gap4" style="color:var(--accent);">Client Onboarding Specialist</div>
+      <h3 class="gap4">Sophie Brunner</h3>
+      <p class="muted small gap16">Onboarding Specialist, Client Services &nbsp;·&nbsp; 35 years old</p>
+      <div style="margin-bottom:16px;">
+        <div class="p-attr"><span class="p-key">Function</span><span>Document preparation, 4-eye review, case submission</span></div>
+        <div class="p-attr"><span class="p-key">Monthly case volume</span><span>~120 formalities cases</span></div>
+        <div class="p-attr"><span class="p-key">Primary tools</span><span>Onboarding Platform, DocGen tool, DocBasket, Adobe</span></div>
+        <div class="p-attr"><span class="p-key">Routine task time</span><span>~60% on document mechanics</span></div>
+        <div class="p-attr"><span class="p-key">Avg. case returns from CDH</span><span>Approx. 1 in 5 cases</span></div>
+      </div>
+      <h4 class="gap8">Goals</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Process cases through 4-eye review without platform returns</li>
+        <li>Receive complete, submission-ready cases from the front office</li>
+        <li>Replace the Adobe merge and QR code workflow with a single platform action</li>
+        <li>Have an audit trail that protects the team when documents are disputed</li>
+      </ul>
+      <h4 class="gap8">Core Friction Points</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Document generation arrives by email with no platform integration</li>
+        <li>No audit trail on the shared drive: documents are overwritten without trace</li>
+        <li>FINSA classification is not pre-filled in generated documents</li>
+        <li>Branch office must be added manually to every case or CDH rejects</li>
+      </ul>
+      <div class="quote">"I spend more time creating folder structures and flattening PDFs than I do checking whether a case is actually complete. The platform should be doing this for me."</div>
+    </div>
+
+    <!-- Persona 3: DDO -->
+    <div class="box">
+      <div class="label gap4" style="color:var(--accent);">Due Diligence Officer (DDO)</div>
+      <h3 class="gap4">Nathalie Morel</h3>
+      <p class="muted small gap16">Due Diligence Officer, KYC/AML &nbsp;·&nbsp; 42 years old</p>
+      <div style="margin-bottom:16px;">
+        <div class="p-attr"><span class="p-key">Function</span><span>Regulatory risk assessment and EDD sign-off authority</span></div>
+        <div class="p-attr"><span class="p-key">Monthly EDD volume</span><span>~60–80 active cases</span></div>
+        <div class="p-attr"><span class="p-key">Primary tools</span><span>EDD Module, Compliance Assessment Tool, Media Search</span></div>
+        <div class="p-attr"><span class="p-key">Approval chain position</span><span>Steps 1 of 14 sequential approvals</span></div>
+        <div class="p-attr"><span class="p-key">EDD first-time-right</span><span>~20% (participant recall estimate)</span></div>
+      </div>
+      <h4 class="gap8">Goals</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Receive cases with sufficient source-of-wealth detail to assess on first submission</li>
+        <li>Have structured, machine-readable data rather than PDF narrative</li>
+        <li>Spend judgment time on genuine risk decisions, not data quality remediation</li>
+        <li>Produce explainable, audit-ready risk assessments without manual documentation</li>
+      </ul>
+      <h4 class="gap8">Core Friction Points</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>EDD module and PEP Screening Tool are not connected: parallel manual cross-referencing required</li>
+        <li>DDO Word template requires manual copy-paste of case data from the ONB platform</li>
+        <li>14 sequential approval steps make every returned case disproportionately expensive</li>
+        <li>Source-of-wealth narratives are frequently qualitative, unsupported, and insufficient</li>
+      </ul>
+      <div class="quote">"I make the final risk call, but the quality of what I receive is entirely outside my control. A better intake process would do more for compliance quality than any additional review step."</div>
+    </div>
+
+    <!-- Persona 4: HNW Prospect -->
+    <div class="box">
+      <div class="label gap4" style="color:var(--accent);">HNW Prospect (New Relationship)</div>
+      <h3 class="gap4">Jonathan Wei</h3>
+      <p class="muted small gap16">Founder, Series C Exit &nbsp;·&nbsp; Singapore &nbsp;·&nbsp; 51 years old</p>
+      <div style="margin-bottom:16px;">
+        <div class="p-attr"><span class="p-key">Status at onboarding</span><span>Prospect: no existing banking relationship</span></div>
+        <div class="p-attr"><span class="p-key">Investable assets</span><span>~SGD 14M across 3 institutions</span></div>
+        <div class="p-attr"><span class="p-key">Banking relationships</span><span>European private bank (primary), two international banks</span></div>
+        <div class="p-attr"><span class="p-key">Tech fluency</span><span>Former CTO: expects real-time, self-service capability</span></div>
+        <div class="p-attr"><span class="p-key">Onboarding expectation</span><span>Account within days, minimal friction</span></div>
+      </div>
+      <h4 class="gap8">Goals</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Complete onboarding without interrupting work schedule for repeated document requests</li>
+        <li>Understand clearly what is required and when at each step</li>
+        <li>Sign documents electronically and asynchronously where possible</li>
+        <li>Have account access within days of completing signing</li>
+      </ul>
+      <h4 class="gap8">Core Friction Points</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Source-of-wealth documentation requested multiple times across different channels</li>
+        <li>No visibility of where the onboarding process stands at any point</li>
+        <li>Video identification call requires scheduling: blocks asynchronous completion</li>
+        <li>Account remains blocked for days after signing confirmation received</li>
+      </ul>
+      <div class="quote">"I was told the account would be open within a week. Three weeks later I was still receiving requests for documents I had already provided. By the time it opened, I had already started conversations with another bank."</div>
+    </div>
+
+  </div>
+</section>
+<section id="s05">
+  <div class="sec-header"><span class="sec-num">05</span><h2>AS-IS Journey Map</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The following swimlane documents the current-state onboarding journey across four actor lanes: <strong>Client/Prospect, Client Advisor (CA/CAM), Client Services (Onboarding Specialist / Client Operations), and Systems.</strong> Nine phases, 148 steps total. Red cells indicate documented pain points. EDD (Phase 5) is the primary bottleneck: first-time-right rate approximately 20%, average 3 iterations, 14 sequential approvals.
+    </p>
+  </div>
+  <div class="swimlane-wrap">
+    <svg class="swimlane-svg" width="1620" height="800" viewBox="0 0 1620 800" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;">
+      <defs>
+        <marker id="arrowR" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#EF4444"/></marker>
+        <marker id="arrowG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#059669"/></marker>
+      </defs>
+
+      <!-- Background -->
+      <rect x="0" y="0" width="1620" height="800" fill="#F8FAFC"/>
+
+      <!-- Lane header column -->
+      <rect x="0" y="0" width="120" height="800" fill="#E2E8F0"/>
+      <!-- Lane label text (rotated) -->
+      <text x="60" y="105" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,105)" letter-spacing=".8">CLIENT</text>
+      <text x="60" y="295" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,295)" letter-spacing=".8">CLIENT ADVISOR</text>
+      <text x="60" y="495" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,495)" letter-spacing=".8">PROCESSING / OPS</text>
+      <text x="60" y="680" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,680)" letter-spacing=".8">SYSTEMS</text>
+
+      <!-- Lane dividers -->
+      <line x1="120" y1="0" x2="1620" y2="0" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="120" y1="190" x2="1620" y2="190" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="390" x2="1620" y2="390" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="590" x2="1620" y2="590" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="780" x2="1620" y2="780" stroke="#CBD5E1" stroke-width="1"/>
+
+      <!-- Phase widths: 120px label + 9×166px = 1614px ≈ 1620 -->
+      <!-- Phase start X: P1=120, P2=286, P3=452, P4=618, P5=784, P6=950, P7=1116, P8=1282, P9=1448 -->
+
+      <!-- Phase header bands -->
+      <rect x="120" y="0" width="166" height="22" fill="#D1FAE5"/>
+      <text x="203" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">1 · LEAD GEN</text>
+      <rect x="286" y="0" width="166" height="22" fill="#D1FAE5" opacity=".85"/>
+      <text x="369" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">2 · PROSPECT</text>
+      <rect x="452" y="0" width="166" height="22" fill="#D1FAE5" opacity=".70"/>
+      <text x="535" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">3 · DATA CAPTURE</text>
+      <rect x="618" y="0" width="166" height="22" fill="#FEF3C7" opacity=".90"/>
+      <text x="701" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">4 · PEP CHECK</text>
+      <rect x="784" y="0" width="166" height="22" fill="#FEE2E2"/>
+      <text x="867" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">5 · EDD ⚠</text>
+      <rect x="950" y="0" width="166" height="22" fill="#D1FAE5" opacity=".60"/>
+      <text x="1033" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">6 · PRODUCTS</text>
+      <rect x="1116" y="0" width="166" height="22" fill="#FEF3C7" opacity=".75"/>
+      <text x="1199" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">7 · FORMALITIES</text>
+      <rect x="1282" y="0" width="166" height="22" fill="#D1FAE5" opacity=".50"/>
+      <text x="1365" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">8 · SIGNING</text>
+      <rect x="1448" y="0" width="172" height="22" fill="#FEE2E2" opacity=".60"/>
+      <text x="1534" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">9 · BR OPENING</text>
+
+      <!-- Phase vertical dividers -->
+      <line x1="286" y1="22" x2="286" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="452" y1="22" x2="452" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="618" y1="22" x2="618" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="784" y1="22" x2="784" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="950" y1="22" x2="950" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1116" y1="22" x2="1116" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1282" y1="22" x2="1282" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1448" y1="22" x2="1448" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- ═══ CLIENT LANE (y: 22–190) ═══ -->
+      <!-- P1: Not directly involved -->
+      <rect x="130" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="203" y="52" font-size="9" fill="#64748B" text-anchor="middle">Not directly</text>
+      <text x="203" y="65" font-size="9" fill="#64748B" text-anchor="middle">involved</text>
+      <text x="203" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+
+      <!-- P2: Not directly involved -->
+      <rect x="296" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="369" y="52" font-size="9" fill="#64748B" text-anchor="middle">CA creates prospect</text>
+      <text x="369" y="65" font-size="9" fill="#64748B" text-anchor="middle">without client input</text>
+      <text x="369" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+
+      <!-- P3: Provides data -->
+      <rect x="462" y="32" width="146" height="52" rx="5" fill="#A7F3D0" stroke="#059669"/>
+      <text x="535" y="52" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Provides ID, address,</text>
+      <text x="535" y="65" font-size="9" fill="#064E3B" text-anchor="middle">tax details, TIN</text>
+      <text x="535" y="78" font-size="9" fill="#059669" text-anchor="middle">😊 Cooperative</text>
+
+      <!-- P4: Not involved -->
+      <rect x="628" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="701" y="52" font-size="9" fill="#64748B" text-anchor="middle">PEP background</text>
+      <text x="701" y="65" font-size="9" fill="#64748B" text-anchor="middle">check (no visibility)</text>
+      <text x="701" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: unaware :</text>
+
+      <!-- P5: Source of wealth (painful) -->
+      <rect x="794" y="32" width="146" height="52" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="867" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ Provides SOW docs</text>
+      <text x="867" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">Avg 3× requested</text>
+      <text x="867" y="76" font-size="9" fill="#DC2626" text-anchor="middle">😟 Frustrated</text>
+
+      <!-- P6: Not involved -->
+      <rect x="960" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="1033" y="52" font-size="9" fill="#64748B" text-anchor="middle">Not directly</text>
+      <text x="1033" y="65" font-size="9" fill="#64748B" text-anchor="middle">involved</text>
+      <text x="1033" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+
+      <!-- P7: Receives document set -->
+      <rect x="1126" y="32" width="146" height="52" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="1199" y="50" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Reviews &amp; signs</text>
+      <text x="1199" y="63" font-size="9" fill="#78350F" text-anchor="middle">document pack</text>
+      <text x="1199" y="76" font-size="9" fill="#B45309" text-anchor="middle">😐 Waiting</text>
+
+      <!-- P8: Video ident + sign -->
+      <rect x="1292" y="32" width="146" height="52" rx="5" fill="#A7F3D0" stroke="#059669"/>
+      <text x="1365" y="50" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Video ID call</text>
+      <text x="1365" y="63" font-size="9" fill="#064E3B" text-anchor="middle">E-signature</text>
+      <text x="1365" y="76" font-size="9" fill="#059669" text-anchor="middle">😌 Almost there</text>
+
+      <!-- P9: Account opens (but blocked) -->
+      <rect x="1458" y="32" width="152" height="52" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1534" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Account opens but</text>
+      <text x="1534" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">blocked 1–3 days</text>
+      <text x="1534" y="76" font-size="9" fill="#DC2626" text-anchor="middle">😡 "Why wait more?"</text>
+
+      <!-- Client emotion arc -->
+      <path d="M203 95 Q369 98 535 92 Q620 88 701 100 Q780 110 867 130 Q950 140 1033 108 Q1116 100 1199 104 Q1282 102 1365 96 Q1448 94 1534 115" stroke="#059669" stroke-width="1.5" fill="none" stroke-dasharray="5,3" opacity=".5"/>
+
+      <!-- MoT -->
+      <circle cx="867" cy="148" r="8" fill="#DC2626"/>
+      <text x="867" y="152" font-size="8" font-weight="700" fill="white" text-anchor="middle">MoT</text>
+      <text x="867" y="164" font-size="8" fill="#DC2626" text-anchor="middle">Trust erosion</text>
+
+      <circle cx="1365" cy="120" r="8" fill="#059669"/>
+      <text x="1365" y="124" font-size="8" font-weight="700" fill="white" text-anchor="middle">MoT</text>
+      <text x="1365" y="136" font-size="8" fill="#059669" text-anchor="middle">Relief</text>
+
+      <!-- ═══ CLIENT ADVISOR LANE (y: 190–390) ═══ -->
+      <rect x="130" y="202" width="146" height="65" rx="5" fill="#A7F3D0" stroke="#059669"/>
+      <text x="203" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Receives lead via</text>
+      <text x="203" y="233" font-size="9" fill="#064E3B" text-anchor="middle">referral / PDH</text>
+      <text x="203" y="246" font-size="9" fill="#064E3B" text-anchor="middle">Qualifies in CAWB</text>
+      <text x="203" y="259" font-size="9" fill="#059669" text-anchor="middle">😊 Engaged</text>
+
+      <rect x="296" y="202" width="146" height="65" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="369" y="220" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Creates Type I prospect</text>
+      <text x="369" y="233" font-size="9" fill="#78350F" text-anchor="middle">in Client Advisor Portal</text>
+      <text x="369" y="246" font-size="9" fill="#78350F" text-anchor="middle">E-mail allowed usage</text>
+      <text x="369" y="259" font-size="9" fill="#B45309" text-anchor="middle">⚠ defaults to BLOCKED</text>
+
+      <rect x="462" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="535" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">21 data fields across</text>
+      <text x="535" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">scrolling screens</text>
+      <text x="535" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">No writeback to CRM</text>
+      <text x="535" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Admin overload</text>
+
+      <rect x="628" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="701" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">PEP pre-check via</text>
+      <text x="701" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">Excel (external tool)</text>
+      <text x="701" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">No ONB interface</text>
+      <text x="701" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Double data entry</text>
+
+      <rect x="794" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+      <text x="867" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ EDD submission</text>
+      <text x="867" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">Returns 3× avg</text>
+      <text x="867" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">SOW quality issues</text>
+      <text x="867" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😣 Relationship strained</text>
+
+      <rect x="960" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="1033" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Configures products</text>
+      <text x="1033" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">one-by-one (no faves)</text>
+      <text x="1033" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">Slow default loading</text>
+      <text x="1033" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Tedious</text>
+
+      <rect x="1126" y="202" width="146" height="65" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="1199" y="220" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Reviews doc set</text>
+      <text x="1199" y="233" font-size="9" fill="#78350F" text-anchor="middle">from FSO</text>
+      <text x="1199" y="246" font-size="9" fill="#78350F" text-anchor="middle">Accepts ONB case</text>
+      <text x="1199" y="259" font-size="9" fill="#B45309" text-anchor="middle">😐 Passive reviewer</text>
+
+      <rect x="1292" y="202" width="146" height="65" rx="5" fill="#D1FAE5" stroke="#059669"/>
+      <text x="1365" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Coordinates video</text>
+      <text x="1365" y="233" font-size="9" fill="#064E3B" text-anchor="middle">ident appointment</text>
+      <text x="1365" y="246" font-size="9" fill="#064E3B" text-anchor="middle">QR code expires: 7d</text>
+      <text x="1365" y="259" font-size="9" fill="#059669" text-anchor="middle">😌 Near the end</text>
+
+      <rect x="1458" y="202" width="152" height="65" rx="5" fill="#D1FAE5" stroke="#059669"/>
+      <text x="1534" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Opens accounts in</text>
+      <text x="1534" y="233" font-size="9" fill="#064E3B" text-anchor="middle">Core Banking</text>
+      <text x="1534" y="246" font-size="9" fill="#064E3B" text-anchor="middle">(Subitop/Abacus)</text>
+      <text x="1534" y="259" font-size="9" fill="#059669" text-anchor="middle">😌 Done (almost)</text>
+
+      <!-- ═══ PROCESSING / OPS LANE (y: 390–590) ═══ -->
+      <!-- P1–P4: Not involved -->
+      <rect x="130" y="402" width="644" height="60" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="452" y="428" font-size="9" fill="#94A3B8" text-anchor="middle">Not directly involved in Phases 1–4 (CA/CAM responsibility)</text>
+      <text x="452" y="444" font-size="9" fill="#94A3B8" text-anchor="middle">FSO queue is already backed up before cases arrive</text>
+
+      <!-- P5: EDD checklist review -->
+      <rect x="794" y="402" width="146" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="867" y="422" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ EDD checklist</text>
+      <text x="867" y="435" font-size="9" fill="#7F1D1D" text-anchor="middle">completeness check</text>
+      <text x="867" y="448" font-size="9" fill="#DC2626" text-anchor="middle">80% return rate</text>
+
+      <!-- P6: Generates formalities -->
+      <rect x="960" y="402" width="146" height="60" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="1033" y="422" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Claims case, sets up</text>
+      <text x="1033" y="435" font-size="9" fill="#78350F" text-anchor="middle">CAWB structure</text>
+      <text x="1033" y="448" font-size="9" fill="#B45309" text-anchor="middle">~60% no prospect</text>
+
+      <!-- P7: 28-step manual doc prep -->
+      <rect x="1126" y="402" width="146" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+      <text x="1199" y="420" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ 28-step manual</text>
+      <text x="1199" y="433" font-size="9" fill="#7F1D1D" text-anchor="middle">doc prep: Adobe merge,</text>
+      <text x="1199" y="446" font-size="9" fill="#7F1D1D" text-anchor="middle">QR code, 4-eye check</text>
+      <text x="1199" y="459" font-size="9" fill="#DC2626" text-anchor="middle">🔴 High manual effort</text>
+
+      <!-- P8: Monitors signing -->
+      <rect x="1292" y="402" width="146" height="60" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="1365" y="422" font-size="9" fill="#64748B" text-anchor="middle">Monitors signing</text>
+      <text x="1365" y="435" font-size="9" fill="#64748B" text-anchor="middle">completion</text>
+      <text x="1365" y="448" font-size="9" fill="#94A3B8" text-anchor="middle">No Quality Desk</text>
+
+      <!-- P9: 25-step product opening -->
+      <rect x="1458" y="402" width="152" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+      <text x="1534" y="420" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ 25-step product</text>
+      <text x="1534" y="433" font-size="9" fill="#7F1D1D" text-anchor="middle">opening: CDOC tagging,</text>
+      <text x="1534" y="446" font-size="9" fill="#7F1D1D" text-anchor="middle">PICH, archive</text>
+      <text x="1534" y="459" font-size="9" fill="#DC2626" text-anchor="middle">🔴 All manual</text>
+
+      <!-- ═══ SYSTEMS LANE (y: 590–780) ═══ -->
+      <!-- P1 -->
+      <rect x="130" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="203" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Website / PDH</text>
+      <text x="203" y="632" font-size="8" fill="#64748B" text-anchor="middle">Referral database</text>
+      <text x="203" y="644" font-size="8" fill="#64748B" text-anchor="middle">E-mail</text>
+
+      <!-- P2 -->
+      <rect x="296" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="369" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Client Advisor Portal</text>
+      <text x="369" y="632" font-size="8" fill="#64748B" text-anchor="middle">(CRM / CAWB)</text>
+      <text x="369" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ No writeback</text>
+
+      <!-- P3 -->
+      <rect x="462" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="535" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform + CRM</text>
+      <text x="535" y="632" font-size="8" fill="#B91C1C" text-anchor="middle">+ Client Advisor Portal</text>
+      <text x="535" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ 3 siloed systems</text>
+
+      <!-- P4 -->
+      <rect x="628" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="701" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform</text>
+      <text x="701" y="632" font-size="8" fill="#B91C1C" text-anchor="middle">+ Excel PEP file</text>
+      <text x="701" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ No interface</text>
+
+      <!-- P5 -->
+      <rect x="794" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="867" y="617" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">EDD Module + Cosima</text>
+      <text x="867" y="629" font-size="8" fill="#B91C1C" text-anchor="middle">+ Media Search</text>
+      <text x="867" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ PDF download/upload</text>
+
+      <!-- P6 -->
+      <rect x="960" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="1033" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform</text>
+      <text x="1033" y="632" font-size="8" fill="#64748B" text-anchor="middle">Product Config Module</text>
+      <text x="1033" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ Slow defaults</text>
+
+      <!-- P7 -->
+      <rect x="1126" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1199" y="615" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">DocGen + DocBasket</text>
+      <text x="1199" y="628" font-size="8" fill="#B91C1C" text-anchor="middle">+ Adobe + ShareDrive</text>
+      <text x="1199" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ Forms Kiosk + ONB</text>
+
+      <!-- P8 -->
+      <rect x="1292" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="1365" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">E-mail / Mobile App</text>
+      <text x="1365" y="632" font-size="8" fill="#64748B" text-anchor="middle">E-sign Platform</text>
+      <text x="1365" y="644" font-size="8" fill="#64748B" text-anchor="middle">Doc Processing Sys.</text>
+
+      <!-- P9 -->
+      <rect x="1458" y="600" width="152" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1534" y="615" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Digital Mailroom</text>
+      <text x="1534" y="628" font-size="8" fill="#B91C1C" text-anchor="middle">+ Core Banking</text>
+      <text x="1534" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ Archive + PICH</text>
+
+      <!-- System count callout -->
+      <rect x="130" y="656" width="1480" height="24" rx="4" fill="#FEE2E2" opacity=".5"/>
+      <text x="870" y="672" font-size="10" font-weight="700" fill="#B91C1C" text-anchor="middle">⚠ 20+ DISCONNECTED SYSTEMS: No orchestration layer: Manual handoffs at every phase boundary: Zero straight-through processing</text>
+    </svg>
+  </div>
+  <div class="gap16"></div>
+  <div class="g4">
+    <div class="box box-red" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:4px;">Phase 3: Data Capture</strong>
+      Scrolling-heavy screens with no OCR on uploaded ID documents. Data entered does not write back to the CA Portal or downstream document generation. Correspondence instructions produce blank fields in generated documents.
+    </div>
+    <div class="box box-red" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:4px;">Phase 5: EDD</strong>
+      First-time-right rate approximately 20%. Average 3 iterations across 14 sequential human approvals. DDO uses Word template with manual copy-paste to the comment field. PEP Screening Tool not connected to EDD module.
+    </div>
+    <div class="box box-red" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:4px;">Phase 7: Formalities</strong>
+      28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, QR code generation, shared drive management, 4-eye check: all unorchestrated. No audit trail on shared drive.
+    </div>
+    <div class="box box-amber" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:4px;">Phase 9: BR Opening</strong>
+      Account opening in Core Banking is disconnected from the Onboarding Platform. Manual CDOC tagging required. PICH trigger is manual. Account blocked for up to 3 days pending overnight archive verification.
+    </div>
+  </div>
+</section>
+<section id="s06">
+  <div class="sec-header"><span class="sec-num">06</span><h2>Pain Point Analysis</h2></div>
+
+  <div class="box gap24">
+    <div class="label gap12">Priority Assessment</div>
+    <table>
+      <thead><tr><th>Pain Point</th><th>Phase</th><th>Actors Affected</th><th>Severity</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="bold">EDD iteration loop</span>: ~80% of cases returned at least once. Average 3 iterations. Word template workflow.</td>
+          <td>Phase 5</td><td>CA, DDO</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Participant recall, N=6 DDO + 14 CA. Pending validation vs. case management data.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">28-step formalities preparation</span>: no platform integration for document generation, no audit trail, manual QR code generation.</td>
+          <td>Phase 7</td><td>Onboarding Specialist</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Journey mapping: steps 7.01–7.28 fully documented. Confirmed across all Onboarding Specialist participants.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Data does not flow between systems</span>: no writeback from Onboarding Platform to CA Portal. Correspondence fields blank in downstream documents.</td>
+          <td>Phase 3</td><td>CA, Onboarding Specialist</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Observed in contextual inquiry (N=8). Confirmed by Onboarding Specialists in document return analysis.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">PEP pre-check in standalone Excel</span>: no interface between Excel file and Onboarding Platform. Manual data re-entry required.</td>
+          <td>Phase 4</td><td>CA</td>
+          <td><span style="color:var(--amber);font-weight:700;">High</span></td>
+          <td>Journey mapping: steps 4.01–4.07. Confirmed across all CA diary study participants.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Video identification scheduling block</span>: paper-identified clients cannot e-sign without a video ident call. No online alternative available.</td>
+          <td>Phase 8</td><td>CA, Prospect</td>
+          <td><span style="color:var(--amber);font-weight:700;">High</span></td>
+          <td>Journey mapping: steps 8.01–8.08. Quality Desk gap identified for advisory office flow.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Product configuration without defaults</span>: no favourites, no templates, defaults load product-by-product. Cross-border rules displayed as raw text.</td>
+          <td>Phase 6</td><td>CA</td>
+          <td><span style="color:var(--amber);font-weight:700;">Medium</span></td>
+          <td>Journey mapping: steps 6.01–6.07. Participant feedback: "Implement Favorites where user can define pre-selected product sets."</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Account blocking post-opening</span>: 1–3 days blocking after signing confirmation. Prospect cannot access account immediately.</td>
+          <td>Phase 9</td><td>CA, Prospect</td>
+          <td><span style="color:var(--amber);font-weight:700;">Medium</span></td>
+          <td>Journey mapping: steps 9.01–9.25. Root cause: overnight batch archive verification in Core Banking. Outside UX scope.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="s07">
+  <div class="sec-header"><span class="sec-num">07</span><h2>Intervention Catalogue</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Each row maps an intervention to the pain point it addresses and the proposed design response. Interventions marked as regulated require Compliance and Legal sign-off before implementation: treat these as design directions, not confirmed scope. All outcome targets are directional pending technical validation and baseline measurement.
+    </p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:10%;">Phase</th>
+          <th style="width:12%;">Intervention</th>
+          <th style="width:22%;">Source Pain (Journey Map)</th>
+          <th style="width:26%;">Design Response</th>
+          <th style="width:14%;">Target Outcome</th>
+          <th style="width:16%;">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Phase 2</strong><br><span class="muted small">Prospect</span></td>
+          <td><strong>Prospect Deduplication</strong><br><span class="small muted">MDM integration</span></td>
+          <td>Duplicate prospects proliferate. Type I prospect ID not automatically passed to onboarding initiation. Manual Type I to Type II conversion.</td>
+          <td>Real-time duplicate detection at record creation via master data management integration. Automated Type I to Type II promotion with BR number passthrough. Rules-based, not ML-dependent.</td>
+          <td>Eliminate duplicate cleanup. Zero-friction onboarding start from existing prospect record.</td>
+          <td><span style="color:var(--green);font-weight:600;">Rules-Based Integration</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Phase 3</strong><br><span class="muted small">Data Capture</span></td>
+          <td><strong>Document AI + Writeback</strong><br><span class="small muted">OCR / NLP + API</span></td>
+          <td>ID document upload has no auto-extraction. No writeback to CA Portal. Correspondence instructions entered in ONB Platform never flow to document generation. Explicitly identified as AI opportunity in source research.</td>
+          <td>OCR and NLP extraction from uploaded documents auto-populates ONB fields. Bidirectional writeback to CA Portal and document generation tool. E-mail allowed-usage defaults corrected at point of capture via guided selection.</td>
+          <td>Eliminate manual re-keying. Correct downstream document generation. Blank-field rate in generated documents reduced to near zero.</td>
+          <td><span style="color:var(--accent);font-weight:600;">OCR / NLP + API Integration</span></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 4</strong><br><span class="muted small">PEP Check</span></td>
+          <td><strong>Integrated PEP Screening</strong><br><span class="small muted">API integration</span></td>
+          <td>PEP pre-check performed in standalone Excel file outside the Onboarding Platform. No interface between ONB Platform and PEP Screening Tool. Manual data re-entry required.</td>
+          <td>PEP and sanctions check embedded in ONB Platform workflow via API integration with existing PEP Screening Tool. Results written back directly to case. No Excel, no re-entry.</td>
+          <td>Eliminate standalone Excel step. Auto-populate risk flags in case. CA admin time in Phase 4 reduced to near zero.</td>
+          <td><span style="color:var(--green);font-weight:600;">API Integration</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Phase 5</strong><br><span class="muted small">EDD</span></td>
+          <td><strong>EDD Gen AI Agent</strong><br><span class="small muted">SOW / SIAP / Doc verification</span></td>
+          <td>First-time-right rate approximately 20% (recall-based). Average 3 iterations across 14 approvals. DDO Word template with copy-paste. SOW narratives insufficient. SIAP risk determination is difficult. Explicitly identified as Gen AI opportunity in source research.</td>
+          <td>At document upload, Gen AI verifies content and type against required checklist, surfaces gaps in real time. SOW narrative assessed against SIAP risk criteria with targeted follow-up prompts when data is insufficient. EDD comment field auto-drafted from structured ONB data, removing Word template step.</td>
+          <td>First-time-right directional target: 70% (derivation in Section 11). Average iterations: 3 to 1 (directional). DDO time on judgment vs. data remediation above 80%.</td>
+          <td><span style="color:var(--red);font-weight:600;">Generative AI: Regulated</span>
+            <div class="caveat">Compliance and Legal sign-off required for AI use in risk classification. Model governance documentation and validation methodology required. Regulatory notification may apply under FINMA Circular 2016/7 or equivalent. Implementation is conditional on this approval.</div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Phase 6</strong><br><span class="muted small">Products</span></td>
+          <td><strong>Product Configuration Assistant</strong><br><span class="small muted">Preference engine</span></td>
+          <td>No product favourites or pre-configured templates. Defaults load slowly, applied product-by-product. No summary before submission. Cross-border rules displayed as long text passages inline.</td>
+          <td>System proposes product bundle based on client profile and CA preference history, presented as a suggestion for CA review. Favourites capability allows CA to save and reuse configurations. Summary screen generated before submission for CA sign-off. Cross-border rule flags surfaced contextually, not as raw text.</td>
+          <td>Product configuration steps reduced from sequential item-by-item loading to template-based selection. Cross-border compliance error rate reduced.</td>
+          <td><span style="color:var(--accent);font-weight:600;">Recommendation Engine</span>
+            <div class="caveat">System-generated product proposals are suggestions for CA review only. Independent suitability assessment by the CA remains required before any product recommendation is made to the client, consistent with applicable conduct and suitability obligations.</div>
+          </td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Phase 7</strong><br><span class="muted small">Formalities</span></td>
+          <td><strong>Document Generation Agent</strong><br><span class="small muted">Automated doc gen</span></td>
+          <td>28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, DocBasket QR code, shared drive: unorchestrated. FINSA classification not pre-filled. No audit trail.</td>
+          <td>Document generation triggered automatically from approved ONB case data. FINSA classification, branch office, and e-signature eligibility pre-filled. QR code embedded. 4-eye check replaced by AI document verification with human exception queue. Immutable audit trail maintained in platform.</td>
+          <td>28 steps to single submission. Routine FSO task time: ~60% to under 10% (self-reported baseline). CDH digital return rate near zero.</td>
+          <td><span style="color:var(--red);font-weight:600;">Generative AI + Automation: Regulated</span>
+            <div class="caveat">Replacement of 4-eye control with AI-assisted verification requires Compliance and Legal review. May require regulatory notification under applicable frameworks (FINMA Circular 2016/7, MiFID II Article 16). Implementation conditional on regulatory approval.</div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Phase 8</strong><br><span class="muted small">Signing</span></td>
+          <td><strong>Online Identification Path</strong><br><span class="small muted">Process design</span></td>
+          <td>Paper-identified clients cannot switch to e-signing without a video identification call. No online identification alternative available. Quality Desk gap for advisory office flow.</td>
+          <td>Introduce an online identification alternative path for clients who have not previously completed video ident. Quality Desk coverage extended to advisory office signing flow.</td>
+          <td>Asynchronous signing available for all prospect profiles. Video scheduling dependency removed for eligible clients.</td>
+          <td><span style="color:var(--amber);font-weight:600;">Process Design: Legal Review Required</span>
+            <div class="caveat">Legal review required for alternative identification path. Eligibility criteria must be confirmed with Compliance before implementation.</div>
+          </td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Phase 9</strong><br><span class="muted small">BR Opening</span></td>
+          <td><strong>Automated Product Opening + PICH</strong><br><span class="small muted">Core Banking API</span></td>
+          <td>Account opening in Core Banking is manual and disconnected from ONB Platform. CDOC tagging is manual. PICH trigger is manual. Account blocked up to 3 days. Explicitly cited in source research as automation opportunity.</td>
+          <td>ONB case approval automatically triggers account and custody opening request via Core Banking API. PICH triggered automatically from recorded risk flags. CDOC auto-tagged via QR code integration. Status visible in real time to CA and prospect.</td>
+          <td>25-step manual process to automated workflow. CDOC manual tagging eliminated. Note: resolution of 3-day blocking requires separate Core Banking programme: outside scope of this engagement.</td>
+          <td><span style="color:var(--accent);font-weight:600;">API Automation</span>
+            <div class="caveat">Core Banking API development required. Account unblocking timeline is a Core Banking programme dependency, not a UX deliverable. This intervention scopes the triggering and status layer only.</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="s08">
+  <div class="sec-header"><span class="sec-num">08</span><h2>TO-BE Journey Map</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The redesigned journey targets end-to-end cycle time below 5 days for standard cases and below 14 days for EDD-required cases. Nine interventions cover every phase of the journey. EDD first-time-right directional target: 70% or above, up from approximately 20% baseline. All targets are subject to technical validation and baseline measurement.
+    </p>
+  </div>
+  <div class="swimlane-wrap">
+    <svg class="swimlane-svg" width="1200" height="780" viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;">
+      <rect x="0" y="0" width="1200" height="780" fill="#F0FDFE"/>
+
+      <!-- Lane headers -->
+      <rect x="0" y="0" width="120" height="780" fill="#CFFAFE"/>
+      <text x="60" y="95" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,95)" letter-spacing="1">CLIENT</text>
+      <text x="60" y="265" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,265)" letter-spacing="1">CLIENT ADVISOR</text>
+      <text x="60" y="445" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,445)" letter-spacing="1">COMPLIANCE</text>
+      <text x="60" y="625" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,625)" letter-spacing="1">AI AGENTS</text>
+
+      <!-- Lane dividers -->
+      <line x1="120" y1="0" x2="1200" y2="0" stroke="#A5F3FC" stroke-width="1"/>
+      <line x1="120" y1="190" x2="1200" y2="190" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="380" x2="1200" y2="380" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="570" x2="1200" y2="570" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="760" x2="1200" y2="760" stroke="#A5F3FC" stroke-width="1"/>
+
+      <!-- Phase headers -->
+      <rect x="120" y="0" width="156" height="20" fill="#0891B2" opacity=".8"/>
+      <text x="198" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 1: PROSPECT (D0–1)</text>
+      <rect x="276" y="0" width="192" height="20" fill="#0891B2" opacity=".65"/>
+      <text x="372" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 2: DIGITAL INTAKE (D1–3)</text>
+      <rect x="468" y="0" width="192" height="20" fill="#0891B2" opacity=".5"/>
+      <text x="564" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 3: AI KYC (D3–8)</text>
+      <rect x="660" y="0" width="192" height="20" fill="#0891B2" opacity=".4"/>
+      <text x="756" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 4: REVIEW (D8–12)</text>
+      <rect x="852" y="0" width="192" height="20" fill="#0891B2" opacity=".3"/>
+      <text x="948" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 5: LIVE (D12–14)</text>
+      <rect x="1044" y="0" width="156" height="20" fill="#0891B2" opacity=".2"/>
+      <text x="1122" y="14" font-size="9" font-weight="700" fill="#0E7490" text-anchor="middle" letter-spacing=".5">PHASE 6: ONGOING</text>
+
+      <!-- Phase dividers -->
+      <line x1="276" y1="20" x2="276" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="468" y1="20" x2="468" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="660" y1="20" x2="660" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="852" y1="20" x2="852" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="1044" y1="20" x2="1044" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+
+      <!-- ═══ CLIENT LANE ═══ -->
+      <rect x="136" y="30" width="124" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="198" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">CA sends secure</text>
+      <text x="198" y="64" font-size="10" fill="#164E63" text-anchor="middle">onboarding link</text>
+      <text x="198" y="78" font-size="10" fill="#0891B2" text-anchor="middle">😊 Impressed</text>
+
+      <rect x="288" y="30" width="164" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="370" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Guided digital flow</text>
+      <text x="370" y="64" font-size="10" fill="#164E63" text-anchor="middle">Face ID + doc scan ×1</text>
+      <text x="370" y="78" font-size="10" fill="#0891B2" text-anchor="middle">😊 Smooth + Fast</text>
+
+      <rect x="480" y="30" width="162" height="55" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="561" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Live progress tracker</text>
+      <text x="561" y="64" font-size="10" fill="#064E3B" text-anchor="middle">"Step 2 of 4 complete"</text>
+      <text x="561" y="78" font-size="10" fill="#059669" text-anchor="middle">😌 Calm + Informed</text>
+
+      <rect x="672" y="30" width="162" height="55" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="753" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Notified: under review</text>
+      <text x="753" y="64" font-size="10" fill="#064E3B" text-anchor="middle">ETA shown in portal</text>
+      <text x="753" y="78" font-size="10" fill="#059669" text-anchor="middle">😊 Confident</text>
+
+      <rect x="864" y="30" width="162" height="55" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
+      <text x="945" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">✓ Account live: D12</text>
+      <text x="945" y="64" font-size="10" fill="#064E3B" text-anchor="middle">Interactive welcome</text>
+      <text x="945" y="78" font-size="10" fill="#059669" text-anchor="middle">Account active</text>
+
+      <rect x="1056" y="30" width="128" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="1120" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Real-time dashboard</text>
+      <text x="1120" y="64" font-size="10" fill="#164E63" text-anchor="middle">AI insights + chat</text>
+      <text x="1120" y="78" font-size="10" fill="#0891B2" text-anchor="middle">Active post-onboarding</text>
+
+      <!-- Delight moments -->
+      <circle cx="945" cy="100" r="8" fill="#059669"/>
+      <text x="945" y="104" font-size="8" font-weight="700" fill="white" text-anchor="middle">✦</text>
+      <text x="945" y="116" font-size="8" fill="#059669" text-anchor="middle">Delight</text>
+
+      <circle cx="561" cy="100" r="8" fill="#0891B2"/>
+      <text x="561" y="104" font-size="8" font-weight="700" fill="white" text-anchor="middle">✦</text>
+      <text x="561" y="116" font-size="8" fill="#0891B2" text-anchor="middle">Trust signal</text>
+
+      <!-- ═══ CA LANE ═══ -->
+      <rect x="136" y="200" width="124" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="198" y="220" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">AI pre-fills CRM</text>
+      <text x="198" y="234" font-size="10" fill="#164E63" text-anchor="middle">from referral data</text>
+      <text x="198" y="248" font-size="10" fill="#164E63" text-anchor="middle">Sends link via app</text>
+      <text x="198" y="262" font-size="10" fill="#0891B2" text-anchor="middle">Streamlined initiation</text>
+
+      <rect x="288" y="200" width="164" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
+      <text x="370" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Monitors intake</text>
+      <text x="370" y="234" font-size="10" fill="#064E3B" text-anchor="middle">status in real time</text>
+      <text x="370" y="248" font-size="10" fill="#064E3B" text-anchor="middle">Zero manual re-entry</text>
+      <text x="370" y="262" font-size="10" fill="#059669" text-anchor="middle">😌 In control</text>
+
+      <rect x="480" y="200" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
+      <text x="561" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Notified of AI flags</text>
+      <text x="561" y="234" font-size="10" fill="#064E3B" text-anchor="middle">only if action needed</text>
+      <text x="561" y="248" font-size="10" fill="#064E3B" text-anchor="middle">Live KYC progress</text>
+      <text x="561" y="262" font-size="10" fill="#059669" text-anchor="middle">😊 Informed</text>
+
+      <rect x="672" y="200" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
+      <text x="753" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Reviews AI summary</text>
+      <text x="753" y="234" font-size="10" fill="#064E3B" text-anchor="middle">Approves or queries</text>
+      <text x="753" y="248" font-size="10" fill="#064E3B" text-anchor="middle">5 min not 2 hours</text>
+      <text x="753" y="262" font-size="10" fill="#059669" text-anchor="middle">😊 Efficient</text>
+
+      <rect x="864" y="200" width="162" height="60" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
+      <text x="945" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Client welcomed</text>
+      <text x="945" y="234" font-size="10" fill="#064E3B" text-anchor="middle">First call agenda</text>
+      <text x="945" y="248" font-size="10" fill="#064E3B" text-anchor="middle">AI-drafted by Copilot</text>
+      <text x="945" y="262" font-size="10" fill="#059669" text-anchor="middle">CA engaged</text>
+
+      <rect x="1056" y="200" width="128" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="1120" y="220" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">AI Copilot drafts</text>
+      <text x="1120" y="234" font-size="10" fill="#164E63" text-anchor="middle">client brief in 2 min</text>
+      <text x="1120" y="248" font-size="10" fill="#164E63" text-anchor="middle"></text>
+      <text x="1120" y="262" font-size="10" fill="#0891B2" text-anchor="middle">CA efficiency gain</text>
+
+      <!-- ═══ COMPLIANCE LANE ═══ -->
+      <rect x="136" y="390" width="316" height="60" rx="6" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1"/>
+      <text x="294" y="415" font-size="10" font-weight="600" fill="#0C4A6E" text-anchor="middle">AI pre-screens all intake</text>
+      <text x="294" y="429" font-size="10" fill="#0C4A6E" text-anchor="middle">before file reaches queue</text>
+      <text x="294" y="443" font-size="10" fill="#0891B2" text-anchor="middle">≥70% first-time-right</text>
+
+      <rect x="480" y="390" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="561" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Structured UBO tree</text>
+      <text x="561" y="424" font-size="10" fill="#064E3B" text-anchor="middle">AI-extracted, editable</text>
+      <text x="561" y="438" font-size="10" fill="#064E3B" text-anchor="middle">PEP: integrated screening</text>
+      <text x="561" y="452" font-size="10" fill="#059669" text-anchor="middle">✓ High-confidence review</text>
+
+      <rect x="672" y="390" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="753" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Explainable AI risk</text>
+      <text x="753" y="424" font-size="10" fill="#064E3B" text-anchor="middle">score with evidence</text>
+      <text x="753" y="438" font-size="10" fill="#064E3B" text-anchor="middle">Human approves final</text>
+      <text x="753" y="452" font-size="10" fill="#059669" text-anchor="middle">✓ Audit-ready trail</text>
+
+      <rect x="864" y="390" width="162" height="60" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
+      <text x="945" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">1-click approval</text>
+      <text x="945" y="424" font-size="10" fill="#064E3B" text-anchor="middle">Full audit log auto-gen</text>
+      <text x="945" y="438" font-size="10" fill="#064E3B" text-anchor="middle">Regulator-ready</text>
+
+      <rect x="1056" y="390" width="128" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
+      <text x="1120" y="410" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Continuous AML</text>
+      <text x="1120" y="424" font-size="10" fill="#164E63" text-anchor="middle">monitoring AI</text>
+      <text x="1120" y="438" font-size="10" fill="#164E63" text-anchor="middle">Smart refresh alerts</text>
+
+      <!-- ═══ AI AGENTS LANE ═══ -->
+      <rect x="136" y="580" width="124" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="198" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Prospect Agent</text>
+      <text x="198" y="612" font-size="9" fill="#78350F" text-anchor="middle">Deduplication</text>
+      <text x="198" y="626" font-size="9" fill="#78350F" text-anchor="middle">Type I→II auto-pass</text>
+
+      <rect x="288" y="580" width="164" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="370" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Document AI</text>
+      <text x="370" y="612" font-size="9" fill="#78350F" text-anchor="middle">OCR + auto data-fill</text>
+      <text x="370" y="626" font-size="9" fill="#78350F" text-anchor="middle">Writeback to CRM</text>
+
+      <rect x="480" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="561" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">PEP Screener</text>
+      <text x="561" y="612" font-size="9" fill="#78350F" text-anchor="middle">Integrated in ONB</text>
+      <text x="561" y="626" font-size="9" fill="#78350F" text-anchor="middle">Eliminates Excel step</text>
+
+      <rect x="672" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="753" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">EDD Gen AI</text>
+      <text x="753" y="612" font-size="9" fill="#78350F" text-anchor="middle">SOW / SIAP guidance</text>
+      <text x="753" y="626" font-size="9" fill="#78350F" text-anchor="middle">Doc verification AI</text>
+
+      <rect x="864" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="945" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">DocGen Agent</text>
+      <text x="945" y="612" font-size="9" fill="#78350F" text-anchor="middle">Auto doc generation</text>
+      <text x="945" y="626" font-size="9" fill="#78350F" text-anchor="middle">Eliminates 28 steps</text>
+
+      <rect x="1056" y="580" width="128" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="1120" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Product Opening</text>
+      <text x="1120" y="612" font-size="9" fill="#78350F" text-anchor="middle">Auto PICH trigger</text>
+      <text x="1120" y="626" font-size="9" fill="#78350F" text-anchor="middle">CDOC auto-tagging</text>
+
+      <!-- Timeline comparison bar -->
+      <rect x="136" y="650" width="1048" height="28" rx="4" fill="#A5F3FC" opacity=".4"/>
+      <rect x="136" y="650" width="490" height="28" rx="4" fill="#0891B2" opacity=".7"/>
+      <text x="381" y="668" font-size="10" font-weight="700" fill="white" text-anchor="middle">Standard: ≤5 days · EDD cases: ≤14 days (vs. 35–55 days AS-IS)</text>
+      <text x="800" y="668" font-size="10" fill="#0E7490" text-anchor="middle">EDD first-time-right target: ≥70% (vs. ~20% baseline)</text>
+    </svg>
+  </div>
+  <div class="gap16"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+    <div class="box box-accent" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 1: Prospect Deduplication</strong>
+      Real-time duplicate detection and automated Type I to Type II promotion eliminates manual conversion and downstream data mismatches. MDM integration, no ML dependency.
+    </div>
+    <div class="box box-accent" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 2: Document AI + Writeback</strong>
+      OCR auto-populates ONB fields from uploaded documents. Bidirectional writeback to CA Portal ensures downstream document generation is pre-filled. Addresses Phase 3 core pain.
+    </div>
+    <div class="box box-accent" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 3: Integrated PEP Screening</strong>
+      PEP and sanctions check embedded in ONB Platform via API. Eliminates standalone Excel step. Risk flags written to case automatically. Addresses Phase 4 core pain.
+    </div>
+    <div class="box box-red" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 4: EDD Gen AI (SOW / SIAP)</strong>
+      Gen AI assesses source-of-wealth narrative and SIAP risk at point of document upload. Real-time guidance reduces iteration rate. Target: 20% to 70% first-time-right. Regulatory approval required.
+    </div>
+    <div class="box box-amber" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 5: Document Generation Agent</strong>
+      Automated document generation from approved ONB case data. Collapses 28-step manual formalities process to single submission. 4-eye replacement requires regulatory approval.
+    </div>
+    <div class="box box-accent" style="font-size:12px;">
+      <strong style="display:block;margin-bottom:6px;">Intervention 6: Automated Product Opening</strong>
+      Case approval triggers Core Banking account opening automatically. PICH and CDOC tagging automated. Resolution of 3-day blocking is a Core Banking programme dependency, outside UX scope.
+    </div>
+  </div>
+</section>
+<section id="s09">
+  <div class="sec-header"><span class="sec-num">09</span><h2>Design Principles</h2></div>
+  <div style="display:flex;flex-direction:column;gap:20px;">
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">01</div>
+        <div>
+          <h3 class="gap8">Data Enters Once</h3>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Client data collected at any point in the journey is written to a shared case record accessible to all downstream systems. No actor re-enters information already captured. Platform integrations enforce this: no bypass is available.</p>
+          <p style="font-size:11px;color:var(--t3);">Derived from: Finding 01: Data Entered Once, Used Nowhere. Corroborated across all 14 CA diary study participants.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">02</div>
+        <div>
+          <h3 class="gap8">Quality Enforced at Entry, Not Corrected at Review</h3>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Compliance quality problems are diagnosed at the point of data capture, not discovered after submission. AI-assisted guidance surfaces gaps in source-of-wealth narratives, document completeness, and field validity before a case moves to review. The cost of an EDD iteration is eliminated, not managed.</p>
+          <p style="font-size:11px;color:var(--t3);">Derived from: Finding 02: EDD Quality is a Front-Office Problem Solved in the Back Office. EDD first-time-right baseline ~20% (recall-based).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">03</div>
+        <div>
+          <h3 class="gap8">Status is Always Visible</h3>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Every actor in the onboarding process: Client Advisor, Onboarding Specialist, Due Diligence Officer, and prospect: has real-time visibility of where the case stands, what is pending, and who owns the next action. No actor learns of a problem by email. No prospect infers status from silence.</p>
+          <p style="font-size:11px;color:var(--t3);">Derived from: Finding 04: Signing and Opening Experience. Corroborated across all 10 HNW prospect participants.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">04</div>
+        <div>
+          <h3 class="gap8">Complexity is the Platform's Responsibility</h3>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Joint accounts, complex entity structures, multi-jurisdiction domiciles, and cross-border product rules are the platform's responsibility, not configuration tasks delegated to the advisor. Structural complexity should not change the cognitive load of working a case. A Client Advisor facing a complex onboarding and a simple one should have the same experience.</p>
+          <p style="font-size:11px;color:var(--t3);">Derived from: Finding 03: Formalities Preparation. 28-step manual process for all case types regardless of complexity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">05</div>
+        <div>
+          <h3 class="gap8">Automation Redirects Attention, Not Headcount</h3>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Automating routine tasks in Formalities and Product Opening frees Onboarding Specialist and Client Operations capacity for exception handling, quality review, and client-facing work. Efficiency from automation should translate into better service: not a case for headcount reduction.</p>
+          <p style="font-size:11px;color:var(--t3);">Derived from: Finding 03. Onboarding Specialists estimate ~60% of Phase 7 time is spent on low-value mechanical tasks.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section id="s10">
+  <div class="sec-header"><span class="sec-num">10</span><h2>Prototype Specification</h2></div>
+  <div class="box gap16" style="margin-bottom:20px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The following wireframe specifications define the key screens of the redesigned onboarding experience. Presented at low-fidelity structural level. Final visual design to follow the institution's design system. Annotations reference research findings and design principles.
+    </p>
+  </div>
+
+  <!-- Screen 1: CA Dashboard -->
+  <div class="grid-2 gap-24" style="margin-bottom:24px;">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Screen 1: CA Home Dashboard</div>
+        <h3 class="gap-16">Command Centre View</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">CA Portal · Home</span>
+          </div>
+          <div style="padding:16px; background:#F8FAFC;">
+            <!-- Nav rail -->
+            <div style="display:flex; gap:12px; margin-bottom:16px;">
+              <div style="width:120px; background:#E2E8F0; border-radius:6px; padding:8px; font-size:9px; color:#475569; line-height:2;">
+                 Dashboard<br> Clients<br> Onboarding<br>Copilot<br> Meetings<br> Reports
+              </div>
+              <div style="flex:1;">
+                <!-- Greeting bar -->
+                <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <div style="font-size:10px; font-weight:700; color:#0F172A;">Good morning, [Advisor Name]</div>
+                    <div style="font-size:9px; color:#64748B;">3 items need your attention</div>
+                  </div>
+                  <div style="background:#EA580C; color:white; font-size:9px; font-weight:700; padding:4px 8px; border-radius:12px;">3 Alerts</div>
+                </div>
+                <!-- KPI row -->
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px; margin-bottom:8px;">
+                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#0F172A;">47</div>
+                    <div style="font-size:8px; color:#64748B;">Active Clients</div>
+                  </div>
+                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#059669;">€320M</div>
+                    <div style="font-size:8px; color:#64748B;">AUM</div>
+                  </div>
+                  <div style="background:#FEE2E2; border:1px solid #FCA5A5; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#DC2626;">3</div>
+                    <div style="font-size:8px; color:#DC2626;">KYC Pending</div>
+                  </div>
+                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#7C3AED;">2</div>
+                    <div style="font-size:8px; color:#64748B;">Meetings Today</div>
+                  </div>
+                </div>
+                <!-- Meeting strip -->
+                <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px;">
+                  <div style="font-size:9px; font-weight:700; color:#475569; margin-bottom:6px;">TODAY'S MEETINGS</div>
+                  <div style="background:#FFEDD5; border-radius:4px; padding:6px 8px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:9px; font-weight:600; color:#7C2D12;">10:00 · J. Wei · Quarterly Review</span>
+                    <span style="background:#EA580C; color:white; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">AI Brief Ready</span>
+                  </div>
+                  <div style="background:#F1F5F9; border-radius:4px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:9px; font-weight:600; color:#334155;">14:30 · New Prospect · Intro</span>
+                    <span style="background:#E2E8F0; color:#475569; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">Generate Brief</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Annotations: Screen 1</div>
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div class="annotation">
+            <div class="annotation-num">1</div>
+            <div><strong>Attention count badge:</strong> The "3 items need your attention" greeting is dynamically calculated from: overdue KYC files, unanswered client messages, and expiring document reminders. Zero-state: "No urgent items today." Edge case: Never show more than 5: if 5+, show "5+ items" and link to a triage view.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">2</div>
+            <div><strong>KYC Pending count:</strong> Red card only appears if count ≥ 1. Shows count of files where CA input or client follow-up is required: not total files in compliance review. Tapping navigates to /onboarding/queue filtered to "Needs CA Action."</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">3</div>
+            <div><strong>"AI Brief Ready" pill:</strong> Appears automatically 24h before a scheduled meeting. Meeting must be in the platform calendar. Brief generation is triggered by the system, not the CA. CA can regenerate or edit. Brief is never auto-sent to client.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">4</div>
+            <div><strong>AUM figure:</strong> Reflects assets custodied through the platform only. A tooltip clarifies: "Assets at this institution only." This avoids misleading the CA about total client wealth. Future: Allow CA to manually input external assets for a holistic view.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">5</div>
+            <div><strong>Left rail:</strong> Always visible on desktop (≥1024px). Collapsed to icons only at 768–1023px. Hidden on mobile: replaced with bottom tab bar. Active state: filled icon + label + subtle left-border highlight.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Client Onboarding Flow -->
+  <div class="grid-2 gap-24" style="margin-bottom:24px;">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Screen 2: Client Digital Onboarding Step 3/7</div>
+        <h3 class="gap-16">Identity Verification Step</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">CA Portal · Onboarding</span>
+          </div>
+          <div style="padding:20px; background:white;">
+            <!-- Progress bar -->
+            <div style="margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; font-size:9px; color:#64748B; margin-bottom:4px;">
+                <span>Step 3 of 7</span><span>About 8 minutes remaining</span>
+              </div>
+              <div style="background:#E2E8F0; border-radius:4px; height:4px;">
+                <div style="background:#0891B2; width:43%; height:4px; border-radius:4px;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top:6px;">
+                <div style="width:12%; text-align:center; font-size:8px; color:#059669;">✓ Intro</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#059669;">✓ Profile</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#0891B2; font-weight:700;">● ID</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Risk</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Wealth</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Consent</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Review</div>
+              </div>
+            </div>
+            <!-- Step content -->
+            <div style="font-size:11px; font-weight:700; color:#0F172A; margin-bottom:4px;">Verify your identity</div>
+            <div style="font-size:10px; color:#64748B; margin-bottom:14px;">You only need to do this once. We'll securely store your verified identity for all future interactions.</div>
+            <!-- Doc type selector -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:12px;">
+              <div style="border:2px solid #0891B2; background:#CFFAFE; border-radius:6px; padding:8px; text-align:center;">
+                <div style="font-size:14px;">🛂</div>
+                <div style="font-size:9px; font-weight:700; color:#0E7490;">Passport</div>
+                <div style="font-size:8px; color:#0E7490;">Selected</div>
+              </div>
+              <div style="border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+                <div style="font-size:14px;">🪪</div>
+                <div style="font-size:9px; color:#64748B;">Nat. ID Card</div>
+              </div>
+              <div style="border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+                <div style="font-size:14px;">🚗</div>
+                <div style="font-size:9px; color:#64748B;">Driving Licence</div>
+              </div>
+            </div>
+            <!-- Camera area -->
+            <div style="background:#F8FAFC; border:2px dashed #CBD5E1; border-radius:8px; padding:20px; text-align:center; margin-bottom:12px;">
+              <div style="font-size:20px; margin-bottom:4px;">📷</div>
+              <div style="font-size:10px; font-weight:600; color:#334155;">Position passport in frame</div>
+              <div style="font-size:9px; color:#94A3B8;">AI will verify automatically</div>
+            </div>
+            <div style="background:#0891B2; color:white; text-align:center; padding:8px; border-radius:6px; font-size:10px; font-weight:700;">Open Camera</div>
+            <div style="text-align:center; margin-top:8px; font-size:8px; color:#94A3B8;">🔒 End-to-end encrypted · Not stored without consent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Annotations: Screen 2</div>
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div class="annotation">
+            <div class="annotation-num">1</div>
+            <div><strong>Progress stepper:</strong> Shows 7 named steps with state: completed (✓ green), current (● accent), upcoming (grey). Estimated time remaining recalculates as steps are completed. Edge case: If client returns to a completed step, show a "Re-entering step X" confirmation before overwriting data.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">2</div>
+            <div><strong>"You only need to do this once" copy:</strong> Critical trust signal. This single line addresses the top HNW client pain point: repeated identity requests. It must appear on every document collection step and be literally true (document verified status persists for minimum 2 years per regulatory refresh schedule).</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">3</div>
+            <div><strong>Document type selector:</strong> Default pre-selects passport (highest acceptance rate globally). Selection persists if client navigates away and returns. Biometric face-match only required for passport: clarified inline. Driving licence is UK/EU only: selector hides this option for non-EU jurisdictions.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">4</div>
+            <div><strong>Camera area:</strong> On mobile: opens native camera via WebRTC. On desktop: shows upload alternative ("Upload a clear photo instead"). Liveness check required: client must blink or turn head. Failure state: "We couldn't verify your document. Please ensure good lighting" with specific retry guidance per failure type.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">5</div>
+            <div><strong>Privacy reassurance footer:</strong> Encryption and consent messaging is persistent on every data-collection step. Not dismissible. Copy reviewed by legal. Links to full privacy notice (opens overlay, not new tab: keeps client in flow).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Compliance Case Review -->
+  <div class="grid-2 gap-24" style="margin-bottom:24px;">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Screen 3: Compliance Officer: Case Review</div>
+        <h3 class="gap-16">AI-Assisted KYC File Review</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">Compliance · Case KYC-20291 · J. Wei</span>
+          </div>
+          <div style="padding:16px; background:#F8FAFC; font-size:9px;">
+            <!-- Case header -->
+            <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
+              <div>
+                <div style="font-weight:700; color:#0F172A; font-size:10px;">Jonathan Wei · KYC-20291</div>
+                <div style="color:#64748B;">Received: Today 09:14 · Standard HNW · Singapore</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="background:#D1FAE5; color:#059669; font-weight:700; padding:3px 8px; border-radius:10px; font-size:8px; display:inline-block; margin-bottom:2px;">AI Risk: LOW · 87/100</div>
+                <div style="color:#64748B; font-size:8px;">Straight-through eligible</div>
+              </div>
+            </div>
+            <!-- AI Summary -->
+            <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:6px; padding:10px; margin-bottom:8px;">
+              <div style="font-weight:700; color:#92400E; margin-bottom:4px;">AI Assessment Summary</div>
+              <div style="color:#78350F; line-height:1.7;">
+                Identity verified ✓ (biometric, D8)<br>
+                PEP: No match · Sanctions: Clear (OFAC, UN, EU)<br>
+                SOW: Tech exit (Series C), confirmed via ACRA (SG)<br>
+                UBO: Individual: no complex structure<br>
+                <span style="color:#DC2626;">⚠ Note: 1 adverse media result: 2019 minor dispute, resolved</span>
+              </div>
+            </div>
+            <!-- Evidence section -->
+            <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px; margin-bottom:8px;">
+              <div style="font-weight:700; color:#334155; margin-bottom:6px;">Evidence (AI-cited)</div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>🛂 Passport (SGP): Verified D8</span><span style="color:#059669; font-weight:700;">✓ VALID</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>📋 SOW Statement: Tech exit 2022</span><span style="color:#059669; font-weight:700;">✓ VALID</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>📰 Adverse media: 2019 commercial dispute</span><span style="color:#F59E0B; font-weight:700;">⚠ REVIEWED</span>
+                </div>
+              </div>
+            </div>
+            <!-- Actions -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+              <div style="background:#059669; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✓ Approve</div>
+              <div style="background:#F59E0B; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">🔁 Raise RFI</div>
+              <div style="background:#EF4444; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✗ Decline</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card card-proto">
+        <div class="label gap-8" style="color:var(--proto-accent);">Annotations: Screen 3</div>
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div class="annotation">
+            <div class="annotation-num">1</div>
+            <div><strong>AI Risk Score (87/100):</strong> Score displayed with colour band (green: 70–100, amber: 40–69, red: 0–39). Clicking the score expands a full breakdown of contributing factors. Score is never the only input: CO always has full access to underlying evidence. Explainability is a first-class feature, not a tooltip.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">2</div>
+            <div><strong>Adverse media flag:</strong> The ⚠ symbol indicates the AI has flagged something but assessed it as non-blocking. This is a deliberate design decision: surface all AI findings, not just negatives. Suppressing findings creates liability. The CO notes field allows the officer to record their reasoning for the record.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">3</div>
+            <div><strong>Approve action:</strong> "Approve" button triggers a confirmation modal listing: client name, risk score, key flags, CO's name, and timestamp. CO must tick a checkbox confirming review before the final submit. This step creates the legally defensible audit record. It cannot be undone without a supervisor escalation.</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">4</div>
+            <div><strong>RFI flow:</strong> "Raise RFI" opens an inline panel: not a new page: with pre-populated request templates (e.g., "Additional SOW evidence required for [field]"). CO selects and edits the specific item needed. Precision RFI avoids re-requesting documents already verified. Client receives a targeted, named request, not a generic "please resubmit."</div>
+          </div>
+          <div class="annotation">
+            <div class="annotation-num">5</div>
+            <div><strong>Audit trail:</strong> Every view, action, and note on this screen is timestamped and attributed. The audit log is immutable and exportable as a regulator-ready PDF. Edge case: If CO is logged out mid-review due to session timeout, all unsaved notes are preserved in a draft state and restored on next login.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="s11">
+  <div class="sec-header"><span class="sec-num">11</span><h2>Dependencies and Open Questions</h2></div>
+  <div class="box gap16" style="margin-bottom:20px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Each item is a dependency requiring resolution before an intervention can be built, or an open question requiring an institutional decision. Grouped by type with proposed owners.
+    </p>
+  </div>
+
+  <h3 class="gap16">Regulatory Dependencies</h3>
+  <div class="box gap24">
+    <div class="dep-item">
+      <span class="dep-tag reg">REG</span>
+      <div>
+        <strong style="font-size:12px;">EDD Gen AI: Phase 5</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Use of generative AI in EDD risk classification requires: (a) Compliance and Legal sign-off; (b) model governance documentation; (c) validation methodology demonstrating consistent, non-discriminatory outputs; (d) potential regulatory notification under applicable frameworks. Proposed owner: Chief Compliance Officer. This intervention is proposed as a design direction; implementation is conditional on regulatory approval.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag reg">REG</span>
+      <div>
+        <strong style="font-size:12px;">4-Eye Replacement: Phase 7</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Replacement of the 4-eye compliance control with AI-assisted document verification requires Compliance and Legal review and may require regulatory notification. The 4-eye principle has standing under multiple applicable frameworks. The proposed AI exception queue must be formally assessed against internal control requirements before implementation. Proposed owner: Compliance and Legal.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag reg">REG</span>
+      <div>
+        <strong style="font-size:12px;">Online Identification Alternative: Phase 8</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Legal review required to confirm the eligibility criteria and acceptable methods for an online identification alternative for clients currently identified by original documents. Proposed owner: Legal.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Technical Dependencies</h3>
+  <div class="box gap24">
+    <div class="dep-item">
+      <span class="dep-tag tech">TECH</span>
+      <div>
+        <strong style="font-size:12px;">Core Banking API: Phase 9</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Automated product opening and the resolution of the 3-day account blocking constraint require Core Banking development investment and a parallel programme outside the scope of this UX engagement. The UX design delivers the triggering interface; the Core Banking programme delivers the unblocking capability. Proposed owner: Technology Programme Management.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag tech">TECH</span>
+      <div>
+        <strong style="font-size:12px;">CA Portal Writeback API: Phase 3</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Bidirectional data writeback between the Onboarding Platform and CA Portal requires API development between currently disconnected platforms. API ownership and feasibility to be confirmed with platform owners. Proposed owner: Platform Engineering.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag tech">TECH</span>
+      <div>
+        <strong style="font-size:12px;">PEP Screening Tool API: Phase 4</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Integration of PEP and sanctions screening within the ONB Platform requires an API connection to the existing PEP Screening Tool. API availability and integration pattern to be confirmed with the PEP Screening Tool vendor or owner team.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag tech">TECH</span>
+      <div>
+        <strong style="font-size:12px;">PICH Trigger Conditions: Phase 9</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Automated PICH GF115 triggering from recorded risk flags requires verification of trigger conditions with the relevant programme manager. Conditions should be mapped and confirmed before automation logic is built.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Data and Measurement</h3>
+  <div class="box gap24">
+    <div class="dep-item">
+      <span class="dep-tag data">DATA</span>
+      <div>
+        <strong style="font-size:12px;">EDD Baseline Validation</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">The EDD first-time-right rate of approximately 20% is based on participant recall across DDO and CA interviews. This figure should be validated against institutional case management data (case volume, return rate, iteration count) before improvement targets are confirmed and presented to programme sponsors.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag data">DATA</span>
+      <div>
+        <strong style="font-size:12px;">Improvement Target Rationale</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">All improvement targets in this document (EDD 70% first-time-right, formalities 28 steps to single workflow, cycle time 35–55 days to 5–14 days) are directional targets based on the journey map analysis. They require baseline measurement confirmation and, for the EDD AI target, a comparable implementation reference or bottom-up model accuracy assessment before being presented as programme commitments.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Organisational Considerations</h3>
+  <div class="box gap24">
+    <div class="dep-item">
+      <span class="dep-tag org">ORG</span>
+      <div>
+        <strong style="font-size:12px;">Client Onboarding Specialist Role Impact: Phase 7</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Automation of the 28-step formalities preparation process materially changes the Client Onboarding Specialist role. Approximately 60% of current task time in this phase consists of low-value mechanical work. A change management plan is required to address role redefinition, retraining, and team communication before this intervention is deployed. Proposed owner: HR and Operations.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag org">ORG</span>
+      <div>
+        <strong style="font-size:12px;">Client Operations Team Impact: Phase 9</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">Automated product opening and CDOC tagging in Phase 9 reduces the manual processing workload of the Client Operations team. A workforce impact assessment should be conducted in parallel with technical scoping. Proposed owner: Operations Management.</p>
+      </div>
+    </div>
+    <div class="dep-item">
+      <span class="dep-tag org">ORG</span>
+      <div>
+        <strong style="font-size:12px;">AI Governance Framework</strong>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px;">An AI governance framework applicable to the EDD Gen AI agent and document verification interventions has not been identified in this engagement. Before Phase 5 and Phase 7 AI interventions proceed, a determination is required on which institutional AI governance policy applies, who owns model validation, and what the approval pathway is.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Open Questions for Programme Decision</h3>
+  <div class="box">
+    <table>
+      <thead><tr><th>Question</th><th>Owner</th><th>Required By</th></tr></thead>
+      <tbody>
+        <tr><td>Which AI governance framework applies to the EDD Gen AI agent? Who owns model validation?</td><td>Chief Compliance Officer / CTO</td><td>Before Phase 5 implementation scoping</td></tr>
+        <tr><td>Is there an existing API strategy and integration layer for Core Banking connections?</td><td>Technology Programme Management</td><td>Before Phase 9 scoping</td></tr>
+        <tr><td>Has the EDD ~20% first-time-right baseline been validated against case management data?</td><td>Analytics / Operations</td><td>Before programme targets are confirmed</td></tr>
+        <tr><td>Who owns the Phase 2 scope: usability testing, pilot, and validated design sign-off?</td><td>Programme Sponsor</td><td>Immediately following this deliverable</td></tr>
+        <tr><td>What is the delivery sequencing decision: which interventions form v1 scope?</td><td>Programme Sponsor / Delivery Lead</td><td>Next programme artefact</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<footer style="margin-top:80px;padding-top:32px;border-top:1.5px solid var(--t1);">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+    <div>
+      <p style="font-size:13px;font-weight:600;color:var(--t1);">Digital Assisted Onboarding: UX Research and Design Specification</p>
+      <p style="font-size:11px;color:var(--t3);margin-top:4px;">Private Banking Division &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</p>
+    </div>
+    <p style="font-size:11px;color:var(--t3);">Confidential &nbsp;·&nbsp; Internal Distribution Only</p>
+  </div>
+</footer>
+</main>
+</body>
+</html>

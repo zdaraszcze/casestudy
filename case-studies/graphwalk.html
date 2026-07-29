@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraphWalk: Workspace &amp; Virtual Path — UX Case Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F4F3EF;--surface:#FFFFFF;--border:#CDCAC2;--border-strong:#9A9690;
+  --t1:#0A0A0A;--t2:#3C3C3C;--t3:#787878;
+  --accent:#12358F;--accent-mid:#2B5FE3;--accent-light:#EBF0F8;
+  --red:#B5241C;--red-light:#FAEAEA;
+  --green:#1E5C3A;--green-light:#E7F4EC;
+  --amber:#7A4F00;--amber-light:#FDF4E3;
+  --purple:#5F3FB0;--purple-light:#ECE6FA;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.65;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);
+  border-bottom:1px solid var(--border);padding:0 40px;
+  display:flex;align-items:center;height:48px;overflow-x:auto;gap:0;}
+.nav-brand{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--t1);
+  white-space:nowrap;margin-right:24px;padding-right:24px;border-right:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.nav-brand .dot{width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 32% 30%, #6E9BFF, var(--accent-mid) 62%, var(--accent));box-shadow:0 0 0 2px rgba(43,95,227,.16);}
+nav a{font-size:11px;font-weight:500;color:var(--t3);text-decoration:none;
+  padding:5px 10px;white-space:nowrap;transition:color .15s;}
+nav a:hover{color:var(--accent);}
+main{max-width:1240px;margin:0 auto;padding:60px 48px 120px;}
+section{margin-bottom:80px;scroll-margin-top:60px;}
+.sec-header{display:flex;align-items:baseline;gap:20px;margin-bottom:28px;
+  padding-bottom:12px;border-bottom:1.5px solid var(--t1);}
+.sec-num{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);min-width:28px;}
+h1{font-size:40px;font-weight:800;letter-spacing:-.5px;line-height:1.15;}
+h2{font-size:22px;font-weight:700;letter-spacing:-.25px;color:var(--t1);}
+h3{font-size:15px;font-weight:600;letter-spacing:-.15px;}
+h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);}
+.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);}
+.hero{background:var(--accent);color:#fff;padding:52px 56px 44px;margin-bottom:60px;
+  background-image:radial-gradient(rgba(255,255,255,.06) 1.2px, transparent 1.2px);background-size:20px 20px;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px;}
+.hero h1{color:#fff;margin-bottom:6px;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.72);font-weight:400;margin-bottom:32px;max-width:70ch;}
+.hero-sub b{color:#fff;font-weight:600;}
+.hero-stats{display:flex;gap:44px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);flex-wrap:wrap;}
+.hs-val{font-size:24px;font-weight:800;display:block;}
+.hs-lab{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;}
+.box{background:var(--surface);border:1px solid var(--border);padding:22px;}
+.box-accent{border-left:3px solid var(--accent);}
+.box-red{border-left:3px solid var(--red);background:var(--red-light);}
+.box-green{border-left:3px solid var(--green);background:var(--green-light);}
+.box-amber{border-left:3px solid var(--amber);background:var(--amber-light);}
+.box-purple{border-left:3px solid var(--purple);background:var(--purple-light);}
+.box-dark{background:var(--t1);color:#fff;padding:24px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:9px 14px;background:#EEECEA;text-align:left;color:var(--t2);}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--t2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,0,0,.015);}
+.quote{border-left:2px solid var(--accent);padding:12px 16px;
+  font-style:italic;font-size:12px;color:var(--t2);background:var(--accent-light);margin:16px 0;}
+.p-attr{display:flex;justify-content:space-between;gap:14px;padding:6px 0;
+  border-bottom:1px solid var(--border);font-size:12px;}
+.p-attr:last-child{border-bottom:none;}
+.p-key{color:var(--t3);font-weight:500;flex-shrink:0;}
+.p-attr span:last-child{text-align:right;}
+.swimlane-wrap{overflow-x:auto;border:1px solid var(--border);background:#fff;}
+.caveat{background:var(--amber-light);border:1px solid #C8960A;
+  padding:10px 14px;font-size:11px;color:var(--amber);margin-top:8px;line-height:1.5;}
+.dep-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.dep-item:last-child{border-bottom:none;}
+.dep-tag{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;padding:3px 7px;height:fit-content;margin-top:2px;color:#fff;}
+.dep-tag.sys{background:var(--accent);}
+.dep-tag.model{background:var(--red);}
+.dep-tag.data{background:#5A4000;}
+.dep-tag.org{background:var(--green);}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.gap4{margin-bottom:4px;}.gap8{margin-bottom:8px;}.gap12{margin-bottom:12px;}.gap16{margin-bottom:16px;}
+.gap20{margin-bottom:20px;}.gap24{margin-bottom:24px;}.gap32{margin-bottom:32px;}.gap40{margin-bottom:40px;}
+.muted{color:var(--t3);}.accent-text{color:var(--accent);}
+.red-text{color:var(--red);}.green-text{color:var(--green);}
+.bold{font-weight:600;}.small{font-size:11px;}
+.footnote{font-size:11px;color:var(--t3);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+/* note-type tags carried over from the discovery board */
+.ntag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;padding:2px 6px;border-radius:5px;border:1px solid transparent;vertical-align:middle;}
+.nt-fact{color:#5B6B84;background:#EEF1F6;border-color:#C6CEDC;}
+.nt-assume{color:#9A6B12;background:#FBF1D6;border-color:#E5BE59;}
+.nt-decide{color:#1C7A48;background:#E1F2E8;border-color:#71C298;}
+.nt-ask{color:#5F3FB0;background:#ECE6FA;border-color:#A98CE6;}
+.nt-risk{color:#B23225;background:#FBE6E2;border-color:#E38F84;}
+/* prototype wireframe classes */
+.card{background:var(--surface);border:1px solid var(--border);padding:22px;}
+.card-proto{border-left:3px solid var(--accent);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.wireframe{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.wireframe-bar{background:#E2E8F0;padding:8px 12px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:6px;}
+.wireframe-dot{width:8px;height:8px;border-radius:50%;}
+.annotation{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--t2);line-height:1.6;}
+.annotation:last-child{border-bottom:none;}
+.annotation-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.legend-strip{display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:var(--t2);margin-top:10px;}
+.legend-strip span{display:flex;align-items:center;gap:6px;}
+.sw-key{width:22px;height:12px;border-radius:2px;display:inline-block;}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.g2,.g3,.g4,.grid-2{grid-template-columns:1fr;}main{padding:32px 20px;}.hero{padding:32px;}.hero h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand"><span class="dot"></span>GraphWalk · Case Study</div>
+  <a href="#s00">Summary</a>
+  <a href="#s01">Problem</a>
+  <a href="#s02">Approach</a>
+  <a href="#s03">Findings</a>
+  <a href="#s04">Personas</a>
+  <a href="#s05">AS-IS Journey</a>
+  <a href="#s06">Pain Points</a>
+  <a href="#s07">Interventions</a>
+  <a href="#s08">TO-BE Journey</a>
+  <a href="#s09">User Flow</a>
+  <a href="#s10">Principles</a>
+  <a href="#s11">Prototype</a>
+  <a href="#s12">Dependencies</a>
+</nav>
+<main>
+
+<div class="hero">
+  <div class="hero-eyebrow">Product Design Exercise &nbsp;·&nbsp; Investigative Graph Analytics &nbsp;·&nbsp; Workspace Redesign + Virtual Path Authoring UI</div>
+  <h1>GraphWalk: Workspace &amp; Virtual Path</h1>
+  <div class="hero-sub">Two tasks framed as one design problem: make a powerful, technically-shaped feature approachable without reducing its capability. The approach is <b>one dataset presented through role-driven views</b>, rather than a separate layout for each persona.</div>
+  <div class="hero-stats">
+    <div><span class="hs-val">2</span><span class="hs-lab">Tasks, one principle</span></div>
+    <div><span class="hs-val">7</span><span class="hs-lab">Workspace sections</span></div>
+    <div><span class="hs-val">80+</span><span class="hs-lab">Items per user (e.g. link charts)</span></div>
+    <div><span class="hs-val">4</span><span class="hs-lab">Investigator workflows</span></div>
+    <div><span class="hs-val">3-part</span><span class="hs-lab">Manual Virtual Path setup today</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 00 EXECUTIVE SUMMARY ═══════════════ -->
+<section id="s00">
+  <div class="sec-header"><span class="sec-num">00</span><h2>Executive Summary</h2></div>
+
+  <div class="box box-accent gap24">
+    <p style="font-size:14px;line-height:1.7;color:var(--t2);">
+      This exercise covers two GraphWalk redesign tasks — the <strong>Workspace</strong> (Task 1) and the <strong>Virtual Path authoring UI</strong> (Task 2). Both briefs share one objective and the same constraints, so they are treated as a single design problem addressed through a shared principle rather than a functional dependency. The primary user is the <strong>Investigator / Operational Analyst</strong>, whose work spans four workflows of very different durations. Every figure below is drawn from the brief, product documentation, and the provided screenshots; interpretations that still need validation are flagged as assumptions.
+    </p>
+  </div>
+
+  <div class="g2 gap32">
+    <div>
+      <h3 class="gap16">Critical Findings</h3>
+      <table>
+        <thead><tr><th>Finding</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">The Workspace does not scale</td><td>Its tile layout was designed for a small number of items. Users now retain dozens to hundreds (e.g. 80+ link charts), making browsing impractical and forcing reliance on search. There is no visual hierarchy — time-sensitive alerts sit beside routine analyses.</td></tr>
+          <tr><td class="bold">Virtual Paths are backend-only</td><td>Creating a path today requires a hand-written JSON payload with raw set and link-type IDs, plus a separate, easily-forgotten permission update. Validation happens only after submission (a 400 error with no in-form feedback and no path preview).</td></tr>
+          <tr><td class="bold">Raw IDs leak into the UI</td><td>Tiles show technical labels such as <span class="mono">helpdesk::individuals</span> in <span class="mono">namespace::set</span> form. These are not meaningful to the Investigator and point to a database/SQL origin.</td></tr>
+          <tr><td class="bold">Governance is a real constraint, not a detail</td><td>A Virtual Path is a model-level object: anything created through the UI affects the entire tenant's model, so authoring cannot be unrestricted.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 class="gap16">Proposed Direction</h3>
+      <div class="box gap16" style="margin-bottom:16px;">
+        <p style="color:var(--t2);font-size:13px;line-height:1.7;">
+          One dataset, presented through <strong>role-driven views</strong> controlled by permissions — not four separate screens. Each role gets a default view plus a set of available filters and columns. Raw IDs are replaced by name-based selection throughout. Virtual Path creation moves into a <strong>guided builder</strong> with live validation, a path preview, and performance warnings, gated behind a review model appropriate to the role. AI is applied only where it removes a specific friction, not as decoration.
+        </p>
+        <p class="footnote">This document extends the discovery framing into AS-IS / TO-BE journeys, a user flow, and a prototype specification. Screen details are directional pending confirmation of the open questions in Section 12.</p>
+      </div>
+      <h3 class="gap12">What Changes</h3>
+      <table>
+        <thead><tr><th>Dimension</th><th>Today</th><th>Proposed</th></tr></thead>
+        <tbody>
+          <tr><td>Workspace layout</td><td class="red-text">Flat tiles, no hierarchy</td><td class="green-text">Role-driven view + user folders</td></tr>
+          <tr><td>Finding saved work</td><td class="red-text">Search-dependent, dozens–hundreds of tiles</td><td class="green-text">Folders, sort, filter, hierarchy</td></tr>
+          <tr><td>Item naming</td><td class="red-text mono">namespace::set</td><td class="green-text">Human-readable name (tech label in tooltip)</td></tr>
+          <tr><td>Virtual Path authoring</td><td class="red-text">Hand-written JSON + raw IDs</td><td class="green-text">Guided, name-based, validated builder</td></tr>
+          <tr><td>Validation feedback</td><td class="red-text">Post-submit 400, no preview</td><td class="green-text">Live, in-form + graph preview</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gap32"></div>
+  <h3 class="gap16">Decisions for Review</h3>
+  <div class="g3">
+    <div class="box box-red">
+      <div class="label gap8">Hard Constraint</div>
+      <h4 class="gap8">No Separate Screen Per Role</h4>
+      <p style="font-size:12px;color:var(--t2);">The brief rules out four separate screens. Role-awareness is delivered through conditional rendering over one layout, gated by permissions — not by building a distinct Workspace per persona.</p>
+    </div>
+    <div class="box box-amber">
+      <div class="label gap8">Governance Decision</div>
+      <h4 class="gap8">Authoring Is Gated Behind Review</h4>
+      <p style="font-size:12px;color:var(--t2);">Because a Virtual Path is tenant-wide, unrestricted authoring is excluded intentionally. The open design question is the review model (direct / proposal-and-approval / role-based gating), not whether authoring is possible.</p>
+    </div>
+    <div class="box box-green">
+      <div class="label gap8">Recommended Next Step</div>
+      <h4 class="gap8">Wireframe the Two Primary Journeys</h4>
+      <p style="font-size:12px;color:var(--t2);">Design the Investigator Workspace stress-tested against Long Investigation, and the guided create-Virtual-Path flow with live validation, path preview, and performance warnings.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 01 PROBLEM STATEMENT ═══════════════ -->
+<section id="s01">
+  <div class="sec-header"><span class="sec-num">01</span><h2>Problem Statement</h2></div>
+
+  <div class="g2 gap24">
+    <div class="box">
+      <h4 class="gap8">Task 1 · Workspace</h4>
+      <p style="color:var(--t2);margin-bottom:10px;">The Workspace is the investigator's home for saved work. Its tile layout was designed for a small number of items per user. Users now retain dozens to hundreds of items, which makes browsing impractical and forces reliance on search. The layout provides no visual hierarchy: time-sensitive alerts appear alongside routine analyses and link charts, and sections grow without limit — for example 80 or more link charts per user. Teams compensate with external spreadsheets and shared accounts.</p>
+      <p class="small muted">Sections observed: Folders, Frequently used, Connecting set model, Searches, Alerts, Analyses, Link charts.</p>
+    </div>
+    <div class="box">
+      <h4 class="gap8">Task 2 · Virtual Paths</h4>
+      <p style="color:var(--t2);margin-bottom:10px;">A Virtual Path is a computed relationship that appears as a new link type on the Universe Viewer and Link Chart. The feature exists only on the backend. Creating a path currently requires a hand-written JSON payload with raw set and link-type IDs, followed by a separate, easily-forgotten permission update. Validation occurs only after submission — the API returns a 400 error with no in-form feedback and no path preview. Because a path is a model-level object, anything created through the UI affects the entire tenant's model.</p>
+      <p class="small muted">Creation today is possible only through the REST API or the Model Cloner.</p>
+    </div>
+  </div>
+
+  <div class="box box-dark gap24" style="margin-top:24px;">
+    <div class="label gap8" style="color:rgba(255,255,255,.5);">The Shared Design Question</div>
+    <p style="font-size:15px;line-height:1.7;">
+      How can a powerful, technically-shaped feature be made approachable to the Investigator without reducing its capability — presenting <strong>one dataset through role-driven views</strong> rather than a separate layout per persona, while keeping a tenant-wide model object safe to author?
+    </p>
+  </div>
+
+  <div class="g2 gap24" style="margin-top:24px;">
+    <div class="box box-accent">
+      <h4 class="gap8">Shared Objective</h4>
+      <p class="small muted">Both briefs share one objective: make a powerful, technically-shaped feature approachable without reducing its capability. <span class="ntag nt-fact">Fact</span></p>
+    </div>
+    <div class="box box-accent">
+      <h4 class="gap8">Shared Constraints</h4>
+      <p class="small muted">Role-aware behaviour without a separate screen per role; backend and data model unchanged; the API contract is fixed; desktop only. <span class="ntag nt-fact">Fact</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 02 APPROACH ═══════════════ -->
+<section id="s02">
+  <div class="sec-header"><span class="sec-num">02</span><h2>Discovery Approach</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Framing was built from three sources — the design brief, the product documentation, and the provided current-app screenshots — read directly before drawing conclusions. Every statement in discovery was typed so its status is explicit: what is established, what is interpreted, what is decided, what remains open, and what is deliberately excluded. Those types are carried through this document as inline tags.
+    </p>
+  </div>
+  <div class="g3">
+    <div class="box"><h4 class="gap8">1 · Read the source</h4><p class="small muted">The brief and documentation established scope and constraints; screenshots showed the current Workspace and its tile behaviour before any redesign thinking began.</p></div>
+    <div class="box"><h4 class="gap8">2 · Type every claim</h4><p class="small muted">Facts vs. assumptions vs. decisions vs. open questions vs. risks — so nothing unvalidated is silently treated as settled.</p></div>
+    <div class="box"><h4 class="gap8">3 · Frame two tasks as one</h4><p class="small muted">A single principle — one dataset, role-driven views — applied to both tasks, then stress-tested against the hardest workflow (Long Investigation).</p></div>
+  </div>
+  <div class="box gap16" style="margin-top:20px;">
+    <div class="label gap12">Note key — colour indicates the status of a claim</div>
+    <div class="legend-strip">
+      <span><span class="ntag nt-fact">Fact</span> Established from brief / docs / screens.</span>
+      <span><span class="ntag nt-assume">Assumption</span> An interpretation requiring validation.</span>
+      <span><span class="ntag nt-decide">Decision</span> Resolved without further input.</span>
+      <span><span class="ntag nt-ask">Question</span> Open item for written Q&amp;A.</span>
+      <span><span class="ntag nt-risk">Risk</span> Could undermine the outcome.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 03 KEY FINDINGS ═══════════════ -->
+<section id="s03">
+  <div class="sec-header"><span class="sec-num">03</span><h2>Key Findings</h2></div>
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mono" style="font-size:26px;font-weight:600;color:var(--border-strong);flex-shrink:0;">01</div>
+        <div>
+          <h3 class="gap8">The core workflow is common; role needs are narrow</h3>
+          <p style="color:var(--t2);margin-bottom:8px;">Locating, opening, and organising saved work accounts for roughly 80% of the value and is common to all roles. Role-specific needs are narrow: the Supervisor needs an oversight view; Presales needs author and last-modified metadata plus demo-safe presentation; the Administrator needs folder and permission governance. <span class="ntag nt-decide">Decision</span></p>
+          <p class="small muted">Implication: each role receives a default view and a set of available filters and columns, controlled by permissions — not a separate layout. This satisfies the constraint that four separate screens are not acceptable.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mono" style="font-size:26px;font-weight:600;color:var(--border-strong);flex-shrink:0;">02</div>
+        <div>
+          <h3 class="gap8">The tile layout collapses under real item counts</h3>
+          <p style="color:var(--t2);margin-bottom:8px;">Sections grow without limit and carry no hierarchy, so the interface can't distinguish a time-sensitive alert from a routine link chart. Users fall back on search, external spreadsheets, and shared accounts to cope. <span class="ntag nt-fact">Fact</span></p>
+          <p class="small muted">A high-impact, low-cost change is letting end users create their own folders, removing the administrator bottleneck.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mono" style="font-size:26px;font-weight:600;color:var(--border-strong);flex-shrink:0;">03</div>
+        <div>
+          <h3 class="gap8">A name-to-ID mapping already exists</h3>
+          <p style="color:var(--t2);margin-bottom:8px;">The Model Cloner already references sets and link types by name, for example <span class="mono">${'People'-'part of'-'Criminal Organization'}</span>, rather than raw IDs. A name-to-ID mapping therefore exists, so the UI can let the user select by name and keep IDs as metadata. <span class="ntag nt-decide">Decision (per docs)</span></p>
+          <p class="small muted">This is the foundation for removing raw IDs from both the Workspace tiles and the Virtual Path builder.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-accent">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div class="mono" style="font-size:26px;font-weight:600;color:var(--border-strong);flex-shrink:0;">04</div>
+        <div>
+          <h3 class="gap8">The tile badge is undefined — it stays an assumption</h3>
+          <p style="color:var(--t2);margin-bottom:8px;">Each tile carries a numeric badge, and the same number appears under different sections (e.g. under Alerts and under Analyses). The documentation does not define the badge, so its meaning — and whether one item can appear in several sections — stays an open assumption rather than a resolved decision. <span class="ntag nt-assume">Assumption</span></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ 04 PERSONAS ═══════════════ -->
+<section id="s04">
+  <div class="sec-header"><span class="sec-num">04</span><h2>Personas</h2></div>
+  <div class="box gap16" style="margin-bottom:20px;">
+    <p style="font-size:12px;color:var(--t2);">
+      There is one primary persona — the Investigator / Operational Analyst — whose work spans four workflows of very different durations, not four separate people. The remaining roles are secondary and narrow. The Workspace is designed for the Investigator and stress-tested against the most demanding workflow (Long Investigation).
+    </p>
+  </div>
+
+  <div class="g2 gap20">
+
+    <!-- Primary: Investigator -->
+    <div class="box" style="border-left:3px solid var(--accent);">
+      <div class="label gap4" style="color:var(--accent);">Primary Persona · Investigator / Operational Analyst</div>
+      <h3 class="gap4">The Investigator</h3>
+      <p class="muted small gap16">Works across four workflows of different tempo &nbsp;·&nbsp; highest item count &nbsp;·&nbsp; greatest demand on hierarchy and narrative</p>
+      <div style="margin-bottom:16px;">
+        <div class="p-attr"><span class="p-key">Workflow A · Thematic</span><span>30 min – 1 hour</span></div>
+        <div class="p-attr"><span class="p-key">Workflow B · Quick Response</span><span>Hours — speed &amp; alert prominence</span></div>
+        <div class="p-attr"><span class="p-key">Workflow C · Data Analyst</span><span>Days to weeks</span></div>
+        <div class="p-attr"><span class="p-key">Workflow D · Long Investigation</span><span>Weeks to months — most items</span></div>
+        <div class="p-attr"><span class="p-key">Most-used view</span><span>Universe Viewer (reportedly)</span></div>
+      </div>
+      <h4 class="gap8">Goals</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Locate, open, and resume saved work without hunting through hundreds of tiles</li>
+        <li>Tell the difference between an urgent alert and routine saved output at a glance</li>
+        <li>Build a needed relationship between sets without hand-writing JSON</li>
+        <li>Confirm a created path is useful for the task before committing it</li>
+      </ul>
+      <h4 class="gap8">Core Friction Points</h4>
+      <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
+        <li>Browsing is impractical at real item counts; search is the only reliable path</li>
+        <li>No hierarchy — everything competes for attention equally</li>
+        <li>Technical labels like <span class="mono">helpdesk::individuals</span> are meaningless to the task</li>
+        <li>Virtual Path creation is trial-and-error with no first-attempt feedback</li>
+      </ul>
+      <div class="quote">"I keep a spreadsheet outside the tool just to remember which of my 80 link charts is which."</div>
+      <p class="footnote">Illustrative quote synthesised from documented behaviour (external spreadsheets, shared accounts). To be confirmed in research.</p>
+    </div>
+
+    <!-- Secondary roles -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="box">
+        <div class="label gap4" style="color:var(--t3);">Secondary · Supervisor</div>
+        <h3 class="gap8">Management Overview</h3>
+        <p class="small muted gap8">Needs an oversight view across the team's work. No authoring or folder governance responsibility.</p>
+        <p class="small"><strong>View need:</strong> oversight / roll-up. <span class="ntag nt-fact">Fact</span></p>
+      </div>
+      <div class="box">
+        <div class="label gap4" style="color:var(--t3);">Secondary · Presales / Solution Engineer</div>
+        <h3 class="gap8">Demo-Facing</h3>
+        <p class="small muted gap8">Needs author and last-modified metadata and a demo-safe presentation of the Workspace (nothing sensitive or half-finished on screen).</p>
+        <p class="small"><strong>View need:</strong> metadata + demo-safe. <span class="ntag nt-fact">Fact</span></p>
+      </div>
+      <div class="box">
+        <div class="label gap4" style="color:var(--t3);">Secondary · System Administrator</div>
+        <h3 class="gap8">Governance</h3>
+        <p class="small muted gap8">Needs folder and permission governance. Today, users depend on the Administrator to create folder structure — a bottleneck the redesign removes for end users.</p>
+        <p class="small"><strong>View need:</strong> folder + permission control. <span class="ntag nt-fact">Fact</span></p>
+      </div>
+      <div class="box">
+        <div class="label gap4" style="color:var(--t3);">Constraint Role · End User</div>
+        <h3 class="gap8">No Folder / Category Permissions</h3>
+        <p class="small muted gap8">Some users have no folder or category permissions today. Enabling end-user folder creation is proposed to remove the administrator dependency at low cost.</p>
+        <p class="small"><strong>Assumption:</strong> no role requires another role's functionality within its own view — minimal overlap per docs, edge cases to validate. <span class="ntag nt-assume">Assumption</span></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ 05 AS-IS JOURNEY ═══════════════ -->
+<section id="s05">
+  <div class="sec-header"><span class="sec-num">05</span><h2>AS-IS Journey Map</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The current-state journey of an Investigator across four actor lanes — <strong>Investigator, Workspace (UI), API / Backend, and Administrator</strong> — covering both tasks in one continuous flow: land in the Workspace, find and resume saved work, then hit the need for a new relationship and try to author a Virtual Path. Red cells mark documented pain. The two moments of trust erosion are (a) losing work in a flat sea of tiles and (b) the post-submit 400 error with no feedback.
+    </p>
+  </div>
+  <div class="swimlane-wrap">
+    <svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;min-width:1100px;">
+      <rect x="0" y="0" width="1280" height="720" fill="#F8FAFC"/>
+
+      <!-- Lane header column -->
+      <rect x="0" y="0" width="118" height="720" fill="#E2E8F0"/>
+      <text x="59" y="118" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,59,118)" letter-spacing=".8">INVESTIGATOR</text>
+      <text x="59" y="290" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,59,290)" letter-spacing=".8">WORKSPACE (UI)</text>
+      <text x="59" y="460" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,59,460)" letter-spacing=".8">API / BACKEND</text>
+      <text x="59" y="628" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,59,628)" letter-spacing=".8">ADMIN</text>
+
+      <!-- Lane dividers -->
+      <line x1="118" y1="0" x2="1280" y2="0" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="118" y1="204" x2="1280" y2="204" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="376" x2="1280" y2="376" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="544" x2="1280" y2="544" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="712" x2="1280" y2="712" stroke="#CBD5E1" stroke-width="1"/>
+
+      <!-- Phase header bands: 6 phases, width ~193.6 each from x=118 -->
+      <rect x="118" y="0" width="194" height="22" fill="#D1FAE5"/>
+      <text x="215" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">1 · LAND IN WORKSPACE</text>
+      <rect x="312" y="0" width="194" height="22" fill="#FEF3C7" opacity=".9"/>
+      <text x="409" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">2 · LOCATE SAVED WORK</text>
+      <rect x="506" y="0" width="194" height="22" fill="#FEF3C7" opacity=".75"/>
+      <text x="603" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">3 · OPEN &amp; ORGANISE</text>
+      <rect x="700" y="0" width="194" height="22" fill="#D1FAE5" opacity=".6"/>
+      <text x="797" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">4 · NEED A NEW PATH</text>
+      <rect x="894" y="0" width="194" height="22" fill="#FEE2E2"/>
+      <text x="991" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">5 · HAND-CODE JSON ⚠</text>
+      <rect x="1088" y="0" width="192" height="22" fill="#FEE2E2" opacity=".85"/>
+      <text x="1184" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">6 · SUBMIT → 400 → PERM ⚠</text>
+
+      <!-- Phase vertical dividers -->
+      <line x1="312" y1="22" x2="312" y2="712" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="506" y1="22" x2="506" y2="712" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="700" y1="22" x2="700" y2="712" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="894" y1="22" x2="894" y2="712" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1088" y1="22" x2="1088" y2="712" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- ═══ INVESTIGATOR LANE (y 22–204) ═══ -->
+      <rect x="130" y="34" width="170" height="58" rx="5" fill="#A7F3D0" stroke="#059669"/>
+      <text x="215" y="54" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Opens Workspace to</text>
+      <text x="215" y="67" font-size="9" fill="#064E3B" text-anchor="middle">resume an investigation</text>
+      <text x="215" y="83" font-size="9" fill="#059669" text-anchor="middle">🙂 Ready to work</text>
+
+      <rect x="324" y="34" width="170" height="58" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="409" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ Scans dozens–hundreds</text>
+      <text x="409" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">of tiles, no hierarchy</text>
+      <text x="409" y="83" font-size="9" fill="#DC2626" text-anchor="middle">😕 "Where is it?"</text>
+
+      <rect x="518" y="34" width="170" height="58" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="603" y="50" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Opens tile, checks it's</text>
+      <text x="603" y="63" font-size="9" fill="#78350F" text-anchor="middle">the right one via details</text>
+      <text x="603" y="83" font-size="9" fill="#B45309" text-anchor="middle">😐 Cross-checks spreadsheet</text>
+
+      <rect x="712" y="34" width="170" height="58" rx="5" fill="#A7F3D0" stroke="#059669"/>
+      <text x="797" y="50" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">In Universe Viewer, needs a</text>
+      <text x="797" y="63" font-size="9" fill="#064E3B" text-anchor="middle">relationship that isn't modelled</text>
+      <text x="797" y="83" font-size="9" fill="#059669" text-anchor="middle">🙂 Clear intent</text>
+
+      <rect x="906" y="34" width="170" height="58" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="991" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ Must hand-write JSON</text>
+      <text x="991" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">with raw set / link IDs</text>
+      <text x="991" y="83" font-size="9" fill="#DC2626" text-anchor="middle">😣 Out of depth</text>
+
+      <rect x="1100" y="34" width="168" height="58" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
+      <text x="1184" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ 400 error, no feedback,</text>
+      <text x="1184" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">no preview — guesses again</text>
+      <text x="1184" y="83" font-size="9" fill="#DC2626" text-anchor="middle">😡 Trial &amp; error</text>
+
+      <!-- Emotion arc -->
+      <path d="M215 108 Q324 118 409 132 Q506 138 603 128 Q700 118 797 110 Q894 120 991 140 Q1088 150 1184 152" stroke="#DC2626" stroke-width="1.5" fill="none" stroke-dasharray="5,3" opacity=".5"/>
+      <!-- Moments of truth -->
+      <circle cx="409" cy="150" r="8" fill="#DC2626"/>
+      <text x="409" y="154" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">MoT</text>
+      <text x="409" y="167" font-size="8" fill="#DC2626" text-anchor="middle">Lost in the tiles</text>
+      <circle cx="1184" cy="172" r="8" fill="#DC2626"/>
+      <text x="1184" y="176" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">MoT</text>
+      <text x="1184" y="189" font-size="8" fill="#DC2626" text-anchor="middle">Silent failure</text>
+
+      <!-- ═══ WORKSPACE (UI) LANE (y 204–376) ═══ -->
+      <rect x="130" y="220" width="170" height="58" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="215" y="240" font-size="9" fill="#475569" text-anchor="middle">Renders 7 sections as flat</text>
+      <text x="215" y="253" font-size="9" fill="#475569" text-anchor="middle">tile lists, no ranking</text>
+      <text x="215" y="269" font-size="8.5" fill="#94A3B8" text-anchor="middle">Folders · Alerts · Analyses…</text>
+
+      <rect x="324" y="220" width="170" height="58" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="409" y="240" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Tiles show raw labels</text>
+      <text x="409" y="253" font-size="8.5" fill="#7F1D1D" text-anchor="middle" font-family="IBM Plex Mono,monospace">helpdesk::individuals</text>
+      <text x="409" y="269" font-size="8.5" fill="#DC2626" text-anchor="middle">Numeric badge undefined</text>
+
+      <rect x="518" y="220" width="170" height="58" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="603" y="243" font-size="9" fill="#78350F" text-anchor="middle">Tile expands to a details</text>
+      <text x="603" y="256" font-size="9" fill="#78350F" text-anchor="middle">panel (drawer-like)</text>
+
+      <rect x="712" y="220" width="170" height="58" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="797" y="243" font-size="9" fill="#475569" text-anchor="middle">No entry point to author a</text>
+      <text x="797" y="256" font-size="9" fill="#475569" text-anchor="middle">path — UI has none</text>
+
+      <rect x="906" y="220" width="170" height="58" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="991" y="243" font-size="9" fill="#475569" text-anchor="middle">User drops to REST API</text>
+      <text x="991" y="256" font-size="9" fill="#475569" text-anchor="middle">or Model Cloner</text>
+
+      <rect x="1100" y="220" width="168" height="58" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1184" y="243" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">No in-form validation,</text>
+      <text x="1184" y="256" font-size="9" fill="#7F1D1D" text-anchor="middle">no path preview surface</text>
+
+      <!-- ═══ API / BACKEND LANE (y 376–544) ═══ -->
+      <rect x="130" y="392" width="170" height="56" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="215" y="414" font-size="9" fill="#1E40AF" text-anchor="middle" font-family="IBM Plex Mono,monospace">GET /user/current</text>
+      <text x="215" y="429" font-size="8.5" fill="#1E40AF" text-anchor="middle">identity + permissions</text>
+
+      <rect x="324" y="392" width="170" height="56" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="409" y="414" font-size="9" fill="#1E40AF" text-anchor="middle">Serves items by ID; name</text>
+      <text x="409" y="429" font-size="8.5" fill="#1E40AF" text-anchor="middle">mapping exists (Model Cloner)</text>
+
+      <rect x="518" y="392" width="170" height="56" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="603" y="420" font-size="9" fill="#1E40AF" text-anchor="middle">Returns item detail on select</text>
+
+      <rect x="712" y="392" width="170" height="56" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="797" y="414" font-size="9" fill="#1E40AF" text-anchor="middle">Virtual Path = model-level</text>
+      <text x="797" y="429" font-size="8.5" fill="#1E40AF" text-anchor="middle">object · affects whole tenant</text>
+
+      <rect x="906" y="392" width="170" height="56" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="991" y="414" font-size="9" fill="#1E40AF" text-anchor="middle">Accepts JSON payload with</text>
+      <text x="991" y="429" font-size="8.5" fill="#1E40AF" text-anchor="middle">raw set + link-type IDs</text>
+
+      <rect x="1100" y="392" width="168" height="56" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1184" y="414" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Validates only on submit</text>
+      <text x="1184" y="429" font-size="8.5" fill="#DC2626" text-anchor="middle" font-family="IBM Plex Mono,monospace">→ 400 Bad Request</text>
+
+      <!-- ═══ ADMIN LANE (y 544–712) ═══ -->
+      <rect x="130" y="560" width="170" height="56" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="215" y="582" font-size="9" fill="#78350F" text-anchor="middle">Owns folder structure;</text>
+      <text x="215" y="597" font-size="8.5" fill="#78350F" text-anchor="middle">end users can't self-serve</text>
+
+      <rect x="324" y="560" width="364" height="56" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="506" y="588" font-size="9" fill="#94A3B8" text-anchor="middle">: not involved in day-to-day locate / open :</text>
+
+      <rect x="712" y="560" width="364" height="56" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <text x="894" y="588" font-size="9" fill="#94A3B8" text-anchor="middle">: no oversight of ad-hoc path authoring :</text>
+
+      <rect x="1100" y="560" width="168" height="56" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
+      <text x="1184" y="582" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ Separate permission</text>
+      <text x="1184" y="597" font-size="8.5" fill="#DC2626" text-anchor="middle">update, easily forgotten</text>
+    </svg>
+  </div>
+  <div class="legend-strip" style="margin-top:12px;">
+    <span><span class="sw-key" style="background:#A7F3D0;border:1px solid #059669;"></span> Positive step</span>
+    <span><span class="sw-key" style="background:#FEF3C7;border:1px solid #F59E0B;"></span> Friction / workaround</span>
+    <span><span class="sw-key" style="background:#FEE2E2;border:1px solid #EF4444;"></span> Documented pain</span>
+    <span><span class="sw-key" style="background:#DBEAFE;border:1px solid #3B82F6;"></span> System behaviour</span>
+    <span><span class="sw-key" style="background:#F1F5F9;border:1px solid #CBD5E1;"></span> Passive / not involved</span>
+  </div>
+</section>
+
+<!-- ═══════════════ 06 PAIN POINTS ═══════════════ -->
+<section id="s06">
+  <div class="sec-header"><span class="sec-num">06</span><h2>Pain Point Analysis</h2></div>
+  <div class="box gap24">
+    <div class="label gap12">Priority Assessment</div>
+    <table>
+      <thead><tr><th>Pain Point</th><th>Task / Phase</th><th>Actors</th><th>Severity</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="bold">Post-submit validation only</span>: creating a Virtual Path returns a 400 with no in-form feedback and no path preview — pure trial and error.</td>
+          <td>Task 2 · Author</td><td>Investigator</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Brief + docs: creation via REST API / Model Cloner only; 400 on failure.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Hand-written JSON with raw IDs</span>: authoring requires composing a payload of set and link-type IDs the user cannot easily identify.</td>
+          <td>Task 2 · Author</td><td>Investigator</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Brief. Name-to-ID mapping exists in Model Cloner but is not exposed for authoring.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Workspace does not scale</span>: flat tile lists at dozens–hundreds of items make browsing impractical; users rely on search.</td>
+          <td>Task 1 · Locate</td><td>Investigator, all roles</td>
+          <td><span style="color:var(--red);font-weight:700;">Critical</span></td>
+          <td>Brief: 80+ link charts per user; external spreadsheets and shared accounts as workarounds.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">No visual hierarchy</span>: time-sensitive alerts render alongside routine analyses and link charts.</td>
+          <td>Task 1 · Land</td><td>Investigator</td>
+          <td><span style="color:var(--amber);font-weight:700;">High</span></td>
+          <td>Brief. Confirmed in screenshots — every section is a peer list.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Tenant-wide authoring risk</span>: a path is a model-level object, so unrestricted UI authoring would let any user edit the tenant model without oversight.</td>
+          <td>Task 2 · Govern</td><td>Investigator, Admin</td>
+          <td><span style="color:var(--amber);font-weight:700;">High</span></td>
+          <td>Brief explicitly cautions against unrestricted authoring.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Expensive paths created unknowingly</span>: paths are calculated on demand, so a user can build a slow path without realising the cost.</td>
+          <td>Task 2 · Author</td><td>Investigator</td>
+          <td><span style="color:var(--amber);font-weight:700;">High</span></td>
+          <td>Brief. No cost signal in current workflow.</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Raw technical labels</span>: tiles show <span class="mono">namespace::set</span> strings meaningless to the Investigator.</td>
+          <td>Task 1 · Locate</td><td>Investigator</td>
+          <td><span style="color:var(--amber);font-weight:700;">Medium</span></td>
+          <td>Screenshots (e.g. <span class="mono">helpdesk::individuals</span>).</td>
+        </tr>
+        <tr>
+          <td><span class="bold">Admin bottleneck on folders</span>: end users depend on the Administrator to create folder structure.</td>
+          <td>Task 1 · Organise</td><td>Investigator, Admin</td>
+          <td><span style="color:var(--amber);font-weight:700;">Medium</span></td>
+          <td>Brief. Low-cost fix identified: end-user folder creation.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 07 INTERVENTIONS ═══════════════ -->
+<section id="s07">
+  <div class="sec-header"><span class="sec-num">07</span><h2>Intervention Catalogue</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Each row maps a pain point to a design response, staying within the fixed constraints (backend and data model unchanged, API contract fixed, desktop only, no separate screen per role). Interventions that touch the tenant-wide model require a governance decision before build and are flagged accordingly.
+    </p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:9%;">Task</th>
+          <th style="width:15%;">Intervention</th>
+          <th style="width:24%;">Source Pain</th>
+          <th style="width:28%;">Design Response</th>
+          <th style="width:24%;">Target Outcome / Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Task 1</strong><br><span class="muted small">Land</span></td>
+          <td><strong>Role-Driven Views</strong><br><span class="small muted">Conditional rendering</span></td>
+          <td>Four roles, but a separate screen per role is disallowed and the core workflow is ~80% shared.</td>
+          <td>One layout; each role gets a default view plus available filters and columns, gated by permissions read from the API (<span class="mono">GET /user/current</span>). No separate builds.</td>
+          <td>Satisfies the no-separate-screen constraint.<br><span style="color:var(--green);font-weight:600;">Conditional Rendering</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Task 1</strong><br><span class="muted small">Land</span></td>
+          <td><strong>Hierarchy &amp; Prioritisation</strong><br><span class="small muted">Ranking + grouping</span></td>
+          <td>No visual hierarchy — alerts sit beside routine output.</td>
+          <td>Surface time-sensitive items (alerts) above routine saved work; support grouping (by category / author) and sorting so the important rises.</td>
+          <td>Urgent work is visible without search.<br><span style="color:var(--accent);font-weight:600;">Information Design</span></td>
+        </tr>
+        <tr>
+          <td><strong>Task 1</strong><br><span class="muted small">Organise</span></td>
+          <td><strong>End-User Folders</strong><br><span class="small muted">Self-service</span></td>
+          <td>Admin bottleneck; users can't structure their own work.</td>
+          <td>Let end users create their own folders, removing the administrator dependency. High impact, low implementation cost.</td>
+          <td>Removes the admin bottleneck.<br><span style="color:var(--green);font-weight:600;">Permissions</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Task 1</strong><br><span class="muted small">Locate</span></td>
+          <td><strong>Human-Readable Names</strong><br><span class="small muted">Label mapping</span></td>
+          <td>Raw <span class="mono">namespace::set</span> labels are meaningless to the Investigator.</td>
+          <td>Display the human-readable name; keep the technical label available in a tooltip. Uses the existing name-to-ID mapping.</td>
+          <td>Names carry meaning; IDs stay as metadata.<br><span style="color:var(--green);font-weight:600;">Presentation</span></td>
+        </tr>
+        <tr>
+          <td><strong>Task 2</strong><br><span class="muted small">Author</span></td>
+          <td><strong>Guided Path Builder</strong><br><span class="small muted">Name-based selection</span></td>
+          <td>Hand-written JSON with raw IDs; trial-and-error submission.</td>
+          <td>Select sets and link types <em>by name</em> with autocomplete; IDs retained as metadata. Removes JSON authoring entirely while keeping the API contract fixed.</td>
+          <td>No raw IDs, no JSON.<br><span style="color:var(--accent);font-weight:600;">Guided UI</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Task 2</strong><br><span class="muted small">Author</span></td>
+          <td><strong>Live Validation + Path Preview</strong><br><span class="small muted">In-form feedback</span></td>
+          <td>Validation only after submit (400); no preview.</td>
+          <td>Validate as the user builds; render the path on the graph before commit so the user confirms it is useful for the task.</td>
+          <td>Failure caught before submit.<br><span style="color:var(--accent);font-weight:600;">Interaction Design</span></td>
+        </tr>
+        <tr>
+          <td><strong>Task 2</strong><br><span class="muted small">Author</span></td>
+          <td><strong>Performance Warnings</strong><br><span class="small muted">Cost signalling</span></td>
+          <td>On-demand paths can be slow; users create expensive paths unknowingly.</td>
+          <td>Estimate and surface the cost of long or expensive paths, letting the user adjust before committing.</td>
+          <td>Cost is visible at author time.<br><span style="color:var(--accent);font-weight:600;">Interaction Design</span></td>
+        </tr>
+        <tr style="background:#FAFAF8;">
+          <td><strong>Task 2</strong><br><span class="muted small">Govern</span></td>
+          <td><strong>Review-Gated Authoring</strong><br><span class="small muted">Approval model</span></td>
+          <td>A path is tenant-wide; unrestricted authoring is unsafe.</td>
+          <td>Gate authoring behind review. Three candidate models: direct (fast, higher risk); proposal + supervisor approval (safer, slower); role-based gating via API permissions.</td>
+          <td>Model object stays under oversight.<br><span style="color:var(--red);font-weight:600;">Governance — decision required</span>
+            <div class="caveat">The review model is an open decision, not settled scope. Unrestricted authoring is excluded intentionally.</div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Task 2</strong><br><span class="muted small">Author</span></td>
+          <td><strong>AI Path Proposal</strong><br><span class="small muted">NL → path</span></td>
+          <td>Even with a builder, expressing intent across sets is non-trivial.</td>
+          <td>AI translates a natural-language request (e.g. "connect Transactions to Window data") into a proposed path the user reviews and edits on the graph, resolving names to IDs.</td>
+          <td>Directly removes raw-ID trial and error.<br><span style="color:var(--purple);font-weight:600;">AI — supporting, not primary</span>
+            <div class="caveat">AI is a supporting feature. Over-reliance could mask weaknesses in the core experience; the builder must stand on its own. Conversational graph search depends on unconfirmed system limits.</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 08 TO-BE JOURNEY ═══════════════ -->
+<section id="s08">
+  <div class="sec-header"><span class="sec-num">08</span><h2>TO-BE Journey Map</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The redesigned journey keeps the same four lanes but resolves each pain in place. The Investigator lands in a role-driven view with hierarchy, finds work through folders and sort rather than search alone, and — when a relationship is missing — authors it in a guided builder with live validation, a graph preview, and a performance estimate, before it is saved (directly or via review) and appears as a new link type on the Universe Viewer and Link Chart.
+    </p>
+  </div>
+  <div class="swimlane-wrap">
+    <svg width="1280" height="700" viewBox="0 0 1280 700" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;min-width:1100px;">
+      <rect x="0" y="0" width="1280" height="700" fill="#F0F7FF"/>
+
+      <rect x="0" y="0" width="118" height="700" fill="#DBEAFE"/>
+      <text x="59" y="115" font-size="10" font-weight="700" fill="#1E40AF" text-anchor="middle" transform="rotate(-90,59,115)" letter-spacing=".8">INVESTIGATOR</text>
+      <text x="59" y="282" font-size="10" font-weight="700" fill="#1E40AF" text-anchor="middle" transform="rotate(-90,59,282)" letter-spacing=".8">WORKSPACE (UI)</text>
+      <text x="59" y="448" font-size="10" font-weight="700" fill="#1E40AF" text-anchor="middle" transform="rotate(-90,59,448)" letter-spacing=".8">API / BACKEND</text>
+      <text x="59" y="614" font-size="10" font-weight="700" fill="#1E40AF" text-anchor="middle" transform="rotate(-90,59,614)" letter-spacing=".8">REVIEW / ADMIN</text>
+
+      <line x1="118" y1="0" x2="1280" y2="0" stroke="#93C5FD" stroke-width="1"/>
+      <line x1="118" y1="198" x2="1280" y2="198" stroke="#93C5FD" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="364" x2="1280" y2="364" stroke="#93C5FD" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="530" x2="1280" y2="530" stroke="#93C5FD" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="118" y1="696" x2="1280" y2="696" stroke="#93C5FD" stroke-width="1"/>
+
+      <!-- Phase bands -->
+      <rect x="118" y="0" width="194" height="22" fill="#2B5FE3" opacity=".85"/>
+      <text x="215" y="15" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing=".4">1 · LAND (ROLE VIEW)</text>
+      <rect x="312" y="0" width="194" height="22" fill="#2B5FE3" opacity=".72"/>
+      <text x="409" y="15" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing=".4">2 · LOCATE (FOLDERS)</text>
+      <rect x="506" y="0" width="194" height="22" fill="#2B5FE3" opacity=".6"/>
+      <text x="603" y="15" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing=".4">3 · OPEN &amp; ORGANISE</text>
+      <rect x="700" y="0" width="194" height="22" fill="#2B5FE3" opacity=".48"/>
+      <text x="797" y="15" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing=".4">4 · GUIDED BUILD</text>
+      <rect x="894" y="0" width="194" height="22" fill="#2B5FE3" opacity=".36"/>
+      <text x="991" y="15" font-size="8.5" font-weight="700" fill="#12358F" text-anchor="middle" letter-spacing=".4">5 · VALIDATE &amp; PREVIEW</text>
+      <rect x="1088" y="0" width="192" height="22" fill="#2B5FE3" opacity=".24"/>
+      <text x="1184" y="15" font-size="8.5" font-weight="700" fill="#12358F" text-anchor="middle" letter-spacing=".4">6 · REVIEW &amp; PUBLISH</text>
+
+      <line x1="312" y1="22" x2="312" y2="696" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="506" y1="22" x2="506" y2="696" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="700" y1="22" x2="700" y2="696" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="894" y1="22" x2="894" y2="696" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1088" y1="22" x2="1088" y2="696" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- Investigator lane -->
+      <rect x="130" y="34" width="170" height="56" rx="6" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
+      <text x="215" y="56" font-size="9" font-weight="600" fill="#1E3A8A" text-anchor="middle">Sees a view tuned to role,</text>
+      <text x="215" y="69" font-size="9" fill="#1E3A8A" text-anchor="middle">alerts surfaced first</text>
+      <text x="215" y="83" font-size="9" fill="#2563EB" text-anchor="middle">🙂 Oriented instantly</text>
+
+      <rect x="324" y="34" width="170" height="56" rx="6" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
+      <text x="409" y="56" font-size="9" font-weight="600" fill="#1E3A8A" text-anchor="middle">Opens own folder or sorts;</text>
+      <text x="409" y="69" font-size="9" fill="#1E3A8A" text-anchor="middle">no spreadsheet needed</text>
+      <text x="409" y="83" font-size="9" fill="#2563EB" text-anchor="middle">🙂 Finds it fast</text>
+
+      <rect x="518" y="34" width="170" height="56" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="603" y="56" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Reads human-readable names,</text>
+      <text x="603" y="69" font-size="9" fill="#064E3B" text-anchor="middle">resumes work</text>
+      <text x="603" y="83" font-size="9" fill="#059669" text-anchor="middle">😌 Confident</text>
+
+      <rect x="712" y="34" width="170" height="56" rx="6" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
+      <text x="797" y="52" font-size="9" font-weight="600" fill="#1E3A8A" text-anchor="middle">From Universe Viewer, starts</text>
+      <text x="797" y="65" font-size="9" fill="#1E3A8A" text-anchor="middle">"Create Virtual Path", picks</text>
+      <text x="797" y="78" font-size="9" fill="#1E3A8A" text-anchor="middle">sets &amp; links by name</text>
+
+      <rect x="906" y="34" width="170" height="56" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="991" y="52" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Sees the path on the graph +</text>
+      <text x="991" y="65" font-size="9" fill="#064E3B" text-anchor="middle">a performance estimate</text>
+      <text x="991" y="80" font-size="9" fill="#059669" text-anchor="middle">😊 "That's the one"</text>
+
+      <rect x="1100" y="34" width="168" height="56" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+      <text x="1184" y="52" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Saves (or proposes for</text>
+      <text x="1184" y="65" font-size="9" fill="#064E3B" text-anchor="middle">review); path now usable</text>
+      <text x="1184" y="80" font-size="9" fill="#059669" text-anchor="middle">🎉 Unblocked</text>
+
+      <!-- Emotion arc rising -->
+      <path d="M215 104 Q324 100 409 100 Q506 96 603 98 Q700 100 797 96 Q894 94 991 96 Q1088 96 1184 98" stroke="#059669" stroke-width="1.5" fill="none" stroke-dasharray="5,3" opacity=".5"/>
+      <circle cx="603" cy="118" r="8" fill="#059669"/>
+      <text x="603" y="122" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">MoT</text>
+      <text x="603" y="135" font-size="8" fill="#059669" text-anchor="middle">Meaning restored</text>
+      <circle cx="1184" cy="116" r="8" fill="#059669"/>
+      <text x="1184" y="120" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">MoT</text>
+      <text x="1184" y="133" font-size="8" fill="#059669" text-anchor="middle">Authored with confidence</text>
+
+      <!-- Workspace UI lane -->
+      <rect x="130" y="214" width="170" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="215" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">Renders one layout, filtered</text>
+      <text x="215" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">by permissions; alerts ranked</text>
+
+      <rect x="324" y="214" width="170" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="409" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">User folders + group / sort</text>
+      <text x="409" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">(by category / author)</text>
+
+      <rect x="518" y="214" width="170" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="603" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">Names shown; raw label in</text>
+      <text x="603" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">tooltip on demand</text>
+
+      <rect x="712" y="214" width="170" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="797" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">Builder with autocomplete;</text>
+      <text x="797" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">optional AI "describe it" entry</text>
+
+      <rect x="906" y="214" width="170" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="991" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">Inline validation + live</text>
+      <text x="991" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">graph preview surface</text>
+
+      <rect x="1100" y="214" width="168" height="56" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="1184" y="236" font-size="9" fill="#1E40AF" text-anchor="middle">Routes to save or to the</text>
+      <text x="1184" y="249" font-size="8.5" fill="#1E40AF" text-anchor="middle">review queue by role</text>
+
+      <!-- API lane -->
+      <rect x="130" y="380" width="364" height="54" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="312" y="402" font-size="9" fill="#1E40AF" text-anchor="middle" font-family="IBM Plex Mono,monospace">GET /user/current → role + permissions drive the view</text>
+      <text x="312" y="416" font-size="8.5" fill="#1E40AF" text-anchor="middle">Same fixed API contract, no backend change</text>
+
+      <rect x="518" y="380" width="170" height="54" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="603" y="410" font-size="9" fill="#1E40AF" text-anchor="middle">Name↔ID mapping resolves</text>
+
+      <rect x="712" y="380" width="170" height="54" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="797" y="402" font-size="9" fill="#1E40AF" text-anchor="middle">UI composes the same JSON</text>
+      <text x="797" y="416" font-size="8.5" fill="#1E40AF" text-anchor="middle">payload — hidden from user</text>
+
+      <rect x="906" y="380" width="170" height="54" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="991" y="402" font-size="9" fill="#1E40AF" text-anchor="middle">Dry-run / estimate before</text>
+      <text x="991" y="416" font-size="8.5" fill="#1E40AF" text-anchor="middle">commit (feasibility dependent)</text>
+
+      <rect x="1100" y="380" width="168" height="54" rx="5" fill="#DBEAFE" stroke="#3B82F6"/>
+      <text x="1184" y="402" font-size="9" fill="#1E40AF" text-anchor="middle">Path saved as new link type</text>
+      <text x="1184" y="416" font-size="8.5" fill="#1E40AF" text-anchor="middle">+ permission set in one action</text>
+
+      <!-- Review/Admin lane -->
+      <rect x="130" y="546" width="558" height="54" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="409" y="576" font-size="9" fill="#94A3B8" text-anchor="middle">: no admin action needed for locate / open — end users self-serve folders :</text>
+
+      <rect x="712" y="546" width="364" height="54" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
+      <text x="894" y="568" font-size="9" fill="#78350F" text-anchor="middle">Supervisor reviews proposed paths (if role requires it)</text>
+      <text x="894" y="582" font-size="8.5" fill="#78350F" text-anchor="middle">approve → publish · return → notes to author</text>
+
+      <rect x="1100" y="546" width="168" height="54" rx="5" fill="#D1FAE5" stroke="#059669"/>
+      <text x="1184" y="568" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Permission handled in the</text>
+      <text x="1184" y="582" font-size="8.5" fill="#064E3B" text-anchor="middle">same flow — nothing forgotten</text>
+    </svg>
+  </div>
+  <div class="legend-strip" style="margin-top:12px;">
+    <span><span class="sw-key" style="background:#BFDBFE;border:1px solid #2563EB;"></span> Improved step</span>
+    <span><span class="sw-key" style="background:#D1FAE5;border:1px solid #059669;"></span> Resolved / positive</span>
+    <span><span class="sw-key" style="background:#DBEAFE;border:1px solid #3B82F6;"></span> System behaviour</span>
+    <span><span class="sw-key" style="background:#FEF3C7;border:1px solid #F59E0B;"></span> Governance gate</span>
+  </div>
+  <p class="footnote" style="max-width:none;">Note: dry-run / cost-estimate before commit is shown as feasibility-dependent — it must be validated against system limits (see open questions). Everything else stays within the fixed API contract.</p>
+</section>
+
+<!-- ═══════════════ 09 USER FLOW ═══════════════ -->
+<section id="s09">
+  <div class="sec-header"><span class="sec-num">09</span><h2>User Flow — Guided Create-a-Virtual-Path</h2></div>
+  <div class="box gap16" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--t2);">
+      The task-level flow for authoring a Virtual Path, from intent in the Universe Viewer to a saved, usable path. It shows the two decision forks that make this feature safe and approachable: <strong>validation before commit</strong> (nothing reaches the backend blind), and <strong>review-gating by role</strong> (a tenant-wide object is never published without the appropriate oversight). Rectangles are screens/actions; diamonds are decisions; the green terminus is a usable path.
+    </p>
+  </div>
+  <div class="swimlane-wrap" style="padding:8px 0;">
+    <svg width="1240" height="760" viewBox="0 0 1240 760" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;min-width:1000px;">
+      <defs>
+        <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748B"/></marker>
+        <marker id="arG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#059669"/></marker>
+        <marker id="arR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#DC2626"/></marker>
+      </defs>
+      <rect x="0" y="0" width="1240" height="760" fill="#FFFFFF"/>
+
+      <!-- START -->
+      <rect x="60" y="40" width="220" height="52" rx="26" fill="#12358F"/>
+      <text x="170" y="63" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Investigator in Universe Viewer</text>
+      <text x="170" y="79" font-size="10" fill="#BFDBFE" text-anchor="middle">needs a relationship that isn't modelled</text>
+
+      <!-- 1 Create -->
+      <rect x="60" y="132" width="220" height="52" rx="8" fill="#EBF0F8" stroke="#2B5FE3"/>
+      <text x="170" y="155" font-size="10.5" font-weight="600" fill="#12358F" text-anchor="middle">Clicks "Create Virtual Path"</text>
+      <text x="170" y="170" font-size="9" fill="#3C3C3C" text-anchor="middle">entry point lives where the need arises</text>
+
+      <!-- 2 Entry mode decision -->
+      <path d="M170 208 L250 250 L170 292 L90 250 Z" fill="#FBF1D6" stroke="#E5BE59"/>
+      <text x="170" y="246" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">Describe it</text>
+      <text x="170" y="259" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">or build it?</text>
+
+      <!-- 2a AI path (left) -->
+      <rect x="330" y="224" width="210" height="52" rx="8" fill="#ECE6FA" stroke="#A98CE6"/>
+      <text x="435" y="245" font-size="10" font-weight="600" fill="#5F3FB0" text-anchor="middle">AI: type intent in words</text>
+      <text x="435" y="259" font-size="8.5" fill="#5F3FB0" text-anchor="middle">"connect Transactions to Window data"</text>
+      <text x="435" y="270" font-size="8.5" fill="#5F3FB0" text-anchor="middle">→ proposed path to review &amp; edit</text>
+
+      <!-- 3 Build by name -->
+      <rect x="60" y="332" width="220" height="60" rx="8" fill="#EBF0F8" stroke="#2B5FE3"/>
+      <text x="170" y="352" font-size="10.5" font-weight="600" fill="#12358F" text-anchor="middle">Select by name (autocomplete)</text>
+      <text x="170" y="367" font-size="9" fill="#3C3C3C" text-anchor="middle">source set · link type(s) · target set</text>
+      <text x="170" y="381" font-size="8.5" fill="#787878" text-anchor="middle">raw IDs kept as hidden metadata</text>
+
+      <!-- 4 Live validation decision -->
+      <path d="M170 420 L260 470 L170 520 L80 470 Z" fill="#FBF1D6" stroke="#E5BE59"/>
+      <text x="170" y="466" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">Valid so far?</text>
+      <text x="170" y="479" font-size="8.5" fill="#9A6B12" text-anchor="middle">(live, in-form)</text>
+
+      <!-- 4-no error -->
+      <rect x="330" y="444" width="200" height="52" rx="8" fill="#FBE6E2" stroke="#E38F84"/>
+      <text x="430" y="465" font-size="10" font-weight="600" fill="#B23225" text-anchor="middle">Inline error + suggestion</text>
+      <text x="430" y="479" font-size="8.5" fill="#B23225" text-anchor="middle">no 400, no dead end — fix in place</text>
+
+      <!-- 5 Preview + perf -->
+      <rect x="60" y="548" width="220" height="60" rx="8" fill="#E1F2E8" stroke="#71C298"/>
+      <text x="170" y="568" font-size="10.5" font-weight="600" fill="#1C7A48" text-anchor="middle">Path preview on the graph</text>
+      <text x="170" y="583" font-size="9" fill="#3C3C3C" text-anchor="middle">+ performance / cost estimate</text>
+      <text x="170" y="597" font-size="8.5" fill="#787878" text-anchor="middle">confirm it's useful before committing</text>
+
+      <!-- 6 expensive decision -->
+      <path d="M170 636 L260 686 L170 736 L80 686 Z" fill="#FBF1D6" stroke="#E5BE59"/>
+      <text x="170" y="682" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">Expensive</text>
+      <text x="170" y="695" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">path?</text>
+
+      <!-- expensive -> warning -->
+      <rect x="330" y="660" width="200" height="52" rx="8" fill="#FDF4E3" stroke="#C8960A"/>
+      <text x="430" y="681" font-size="10" font-weight="600" fill="#7A4F00" text-anchor="middle">Performance warning</text>
+      <text x="430" y="695" font-size="8.5" fill="#7A4F00" text-anchor="middle">adjust scope, or proceed knowingly</text>
+
+      <!-- 7 role gate decision -->
+      <path d="M690 636 L790 686 L690 736 L590 686 Z" fill="#FBF1D6" stroke="#E5BE59"/>
+      <text x="690" y="678" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">Role may</text>
+      <text x="690" y="691" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">author</text>
+      <text x="690" y="704" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">directly?</text>
+
+      <!-- 7-yes save -->
+      <rect x="590" y="548" width="220" height="56" rx="8" fill="#E1F2E8" stroke="#71C298"/>
+      <text x="700" y="570" font-size="10.5" font-weight="600" fill="#1C7A48" text-anchor="middle">Save — path + permission</text>
+      <text x="700" y="585" font-size="9" fill="#3C3C3C" text-anchor="middle">set in one action</text>
+      <text x="700" y="598" font-size="8.5" fill="#787878" text-anchor="middle">no forgotten permission step</text>
+
+      <!-- 7-no propose -->
+      <rect x="860" y="660" width="230" height="56" rx="8" fill="#FDF4E3" stroke="#C8960A"/>
+      <text x="975" y="682" font-size="10.5" font-weight="600" fill="#7A4F00" text-anchor="middle">Submit as proposal</text>
+      <text x="975" y="697" font-size="8.5" fill="#7A4F00" text-anchor="middle">→ Supervisor review queue</text>
+
+      <!-- 8 approve decision -->
+      <path d="M985 522 L1075 562 L985 602 L895 562 Z" fill="#FBF1D6" stroke="#E5BE59"/>
+      <text x="985" y="566" font-size="9.5" font-weight="600" fill="#9A6B12" text-anchor="middle">Approved?</text>
+
+      <!-- approve-no return -->
+      <rect x="870" y="428" width="230" height="50" rx="8" fill="#FBE6E2" stroke="#E38F84"/>
+      <text x="985" y="449" font-size="10" font-weight="600" fill="#B23225" text-anchor="middle">Returned with notes</text>
+      <text x="985" y="463" font-size="8.5" fill="#B23225" text-anchor="middle">author edits &amp; resubmits</text>
+
+      <!-- END usable -->
+      <rect x="590" y="440" width="220" height="60" rx="30" fill="#1E5C3A"/>
+      <text x="700" y="466" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Path is usable</text>
+      <text x="700" y="483" font-size="9" fill="#A7F3D0" text-anchor="middle">appears as a new link type on</text>
+      <text x="700" y="495" font-size="9" fill="#A7F3D0" text-anchor="middle">Universe Viewer &amp; Link Chart</text>
+
+      <!-- ============ CONNECTORS ============ -->
+      <!-- start -> create -->
+      <line x1="170" y1="92" x2="170" y2="130" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- create -> entry decision -->
+      <line x1="170" y1="184" x2="170" y2="206" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- decision -> AI (right) -->
+      <line x1="250" y1="250" x2="328" y2="250" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="290" y="242" font-size="8.5" fill="#5F3FB0" text-anchor="middle">describe</text>
+      <!-- decision -> build (down) -->
+      <line x1="170" y1="292" x2="170" y2="330" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="196" y="314" font-size="8.5" fill="#12358F" text-anchor="middle">build</text>
+      <!-- AI -> build (loops back into build/validation): AI proposal is edited on graph = same downstream -->
+      <path d="M435 276 L435 361 L282 361" fill="none" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ar)"/>
+      <text x="360" y="353" font-size="8" fill="#787878" text-anchor="middle">review &amp; edit on graph</text>
+      <!-- build -> validation -->
+      <line x1="170" y1="392" x2="170" y2="418" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- validation no -> error -->
+      <line x1="260" y1="470" x2="328" y2="470" stroke="#DC2626" stroke-width="1.5" marker-end="url(#arR)"/>
+      <text x="296" y="462" font-size="8.5" fill="#B23225" text-anchor="middle">no</text>
+      <!-- error -> back to build -->
+      <path d="M430 444 L430 362 L282 362" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arR)"/>
+      <!-- validation yes -> preview -->
+      <line x1="170" y1="520" x2="170" y2="546" stroke="#059669" stroke-width="1.5" marker-end="url(#arG)"/>
+      <text x="186" y="536" font-size="8.5" fill="#059669" text-anchor="middle">yes</text>
+      <!-- preview -> expensive decision -->
+      <line x1="170" y1="608" x2="170" y2="634" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- expensive yes -> warning -->
+      <line x1="260" y1="686" x2="328" y2="686" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="296" y="678" font-size="8.5" fill="#7A4F00" text-anchor="middle">yes</text>
+      <!-- warning -> role gate -->
+      <path d="M530 686 L588 686" fill="none" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- expensive no -> role gate (curve under) -->
+      <path d="M170 736 L170 752 L690 752 L690 738" fill="none" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="420" y="748" font-size="8.5" fill="#787878" text-anchor="middle">no — proceed</text>
+      <!-- role gate yes -> save -->
+      <line x1="700" y1="636" x2="700" y2="606" stroke="#059669" stroke-width="1.5" marker-end="url(#arG)"/>
+      <text x="716" y="624" font-size="8.5" fill="#059669" text-anchor="middle">yes (permitted role)</text>
+      <!-- role gate no -> propose -->
+      <line x1="790" y1="686" x2="858" y2="686" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="826" y="678" font-size="8.5" fill="#7A4F00" text-anchor="middle">no</text>
+      <!-- propose -> approve decision -->
+      <line x1="985" y1="660" x2="985" y2="604" stroke="#64748B" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- approve yes -> usable end -->
+      <path d="M895 562 L812 490" fill="none" stroke="#059669" stroke-width="1.5" marker-end="url(#arG)"/>
+      <text x="866" y="518" font-size="8.5" fill="#059669" text-anchor="middle">approved</text>
+      <!-- approve no -> returned -->
+      <line x1="985" y1="522" x2="985" y2="480" stroke="#DC2626" stroke-width="1.5" marker-end="url(#arR)"/>
+      <text x="1001" y="504" font-size="8.5" fill="#B23225" text-anchor="middle">no</text>
+      <!-- returned -> back to build (long dashed) -->
+      <path d="M870 453 L300 453 L282 392" fill="none" stroke="#DC2626" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arR)"/>
+      <!-- save -> usable -->
+      <line x1="700" y1="548" x2="700" y2="502" stroke="#059669" stroke-width="1.5" marker-end="url(#arG)"/>
+    </svg>
+  </div>
+  <div class="g3" style="margin-top:16px;">
+    <div class="box box-amber"><h4 class="gap8">Fork 1 — Validate before commit</h4><p class="small muted">Live, in-form validation replaces the post-submit 400. The user never reaches a dead end; errors are fixed in place with a suggestion.</p></div>
+    <div class="box box-amber"><h4 class="gap8">Fork 2 — Gate by role</h4><p class="small muted">A permitted role saves directly (path + permission in one action). Others submit a proposal to supervisor review — a tenant-wide object is never published without oversight.</p></div>
+    <div class="box box-purple"><h4 class="gap8">AI is an on-ramp, not the road</h4><p class="small muted">The "describe it" entry produces a proposed path the user reviews and edits on the graph, then rejoins the same validated flow. The builder works fully without it.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════ 10 DESIGN PRINCIPLES ═══════════════ -->
+<section id="s10">
+  <div class="sec-header"><span class="sec-num">10</span><h2>Design Principles</h2></div>
+  <div style="display:flex;flex-direction:column;gap:20px;">
+
+    <div class="box box-accent"><div style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">01</div>
+      <div><h3 class="gap8">One dataset, role-driven views</h3>
+        <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">The same Workspace serves every role. Difference is expressed as a default view plus available filters and columns, gated by permissions — never as a separate screen per persona. Complexity is the platform's job, not the user's.</p>
+        <p style="font-size:11px;color:var(--t3);">Derived from: the shared constraint (no separate screen per role) and the finding that ~80% of the workflow is common.</p></div>
+    </div></div>
+
+    <div class="box box-accent"><div style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">02</div>
+      <div><h3 class="gap8">Select by name, never by raw ID</h3>
+        <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Users choose sets and link types by human-readable name with autocomplete; IDs are retained silently as metadata. Technical <span class="mono">namespace::set</span> labels move to a tooltip. This holds in the Workspace and the Virtual Path builder alike.</p>
+        <p style="font-size:11px;color:var(--t3);">Derived from: the existing Model Cloner name-to-ID mapping and the brief's explicit requirement to select sets by name.</p></div>
+    </div></div>
+
+    <div class="box box-accent"><div style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">03</div>
+      <div><h3 class="gap8">Validate before submit, preview before commit</h3>
+        <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Feedback happens as the user builds, not after a failed submission. Before a path is committed, it is rendered on the graph and its cost estimated, so the user confirms it is both correct and useful. The silent 400 disappears.</p>
+        <p style="font-size:11px;color:var(--t3);">Derived from: post-submit-only validation and on-demand path cost as documented pains.</p></div>
+    </div></div>
+
+    <div class="box box-accent"><div style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">04</div>
+      <div><h3 class="gap8">Author with guardrails, not by removing them</h3>
+        <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Because a Virtual Path is tenant-wide, the goal is to enable authoring safely — through a review model matched to the role — not to open unrestricted editing of the model. Guardrails are part of the feature, not a barrier bolted on afterwards.</p>
+        <p style="font-size:11px;color:var(--t3);">Derived from: the model-level-object constraint and the explicit exclusion of unrestricted authoring.</p></div>
+    </div></div>
+
+    <div class="box box-accent"><div style="display:flex;gap:24px;align-items:flex-start;">
+      <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">05</div>
+      <div><h3 class="gap8">AI proposes; the investigator decides</h3>
+        <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">AI is applied only where it removes a specific friction — turning a natural-language request into a proposed path to review on the graph. It is a supporting on-ramp, never the primary solution, so it cannot mask weaknesses in the core experience.</p>
+        <p style="font-size:11px;color:var(--t3);">Derived from: the risk that over-reliance on AI could mask core-experience weaknesses.</p></div>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ 11 PROTOTYPE SPEC ═══════════════ -->
+<section id="s11">
+  <div class="sec-header"><span class="sec-num">11</span><h2>Prototype Specification</h2></div>
+  <div class="box gap16" style="margin-bottom:20px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Low-fidelity structural wireframes for the two primary journeys. Final visual design follows GraphWalk's design system; the left rail and top tabs remain (navigation redesign is out of scope). Annotations reference the findings and principles above.
+    </p>
+  </div>
+
+  <!-- Screen 1: Workspace -->
+  <div class="grid-2 gap-24" style="margin-bottom:24px;">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Screen 1 · Workspace (Investigator view)</div>
+        <h3 class="gap16">Role-driven, with hierarchy &amp; folders</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px;color:#94A3B8;margin-left:8px;">GraphWalk · Workspace · Investigator</span>
+          </div>
+          <div style="padding:14px;background:#F8FAFC;">
+            <div style="display:flex;gap:10px;">
+              <!-- left rail (unchanged) -->
+              <div style="width:96px;background:#E2E8F0;border-radius:6px;padding:8px;font-size:8.5px;color:#475569;line-height:2.1;">Workspace<br>Universe<br>Link Chart<br>Table<br>Search<br>Dashboard</div>
+              <div style="flex:1;">
+                <!-- toolbar -->
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                  <div style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px;font-size:9px;color:#94A3B8;">🔎 Search my work…</div>
+                  <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px;font-size:8.5px;color:#475569;">Group ▾</div>
+                  <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px;font-size:8.5px;color:#475569;">Sort ▾</div>
+                  <div style="background:#12358F;color:#fff;border-radius:6px;padding:6px 8px;font-size:8.5px;font-weight:700;">+ Folder</div>
+                </div>
+                <!-- pinned alerts (hierarchy) -->
+                <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:6px;padding:8px;margin-bottom:8px;">
+                  <div style="font-size:8.5px;font-weight:700;color:#B91C1C;margin-bottom:4px;">⚠ NEEDS ATTENTION · 2 ALERTS</div>
+                  <div style="background:#fff;border-radius:4px;padding:5px 7px;font-size:9px;color:#7F1D1D;display:flex;justify-content:space-between;"><span>Alert · Suspicious txn cluster</span><span style="color:#94A3B8;">2h ago</span></div>
+                </div>
+                <!-- folders -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+                  <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px;font-size:9px;color:#334155;">📁 Operation Meridian <span style="color:#94A3B8;">· 34</span></div>
+                  <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px;font-size:9px;color:#334155;">📁 Q2 Thematic <span style="color:#94A3B8;">· 12</span></div>
+                </div>
+                <!-- section: link charts, human-readable -->
+                <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px;">
+                  <div style="font-size:8.5px;font-weight:700;color:#475569;margin-bottom:6px;">LINK CHARTS · 80+</div>
+                  <div style="font-size:9px;color:#334155;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span>Helpdesk — Individuals <span class="mono" style="color:#CBD5E1;font-size:8px;">ⓘ</span></span><span style="color:#94A3B8;">M. Costa · 3d</span></div>
+                  <div style="font-size:9px;color:#334155;display:flex;justify-content:space-between;"><span>Transactions — Windows</span><span style="color:#94A3B8;">You · 1w</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Annotations · Screen 1</div>
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div class="annotation"><div class="annotation-num">1</div><div><strong>Role-driven, one layout:</strong> the view is composed from permissions on <span class="mono">GET /user/current</span>. A Supervisor sees an oversight roll-up; Presales sees author/last-modified metadata and demo-safe framing — same screen, different default view and columns. No separate build.</div></div>
+          <div class="annotation"><div class="annotation-num">2</div><div><strong>Hierarchy first:</strong> time-sensitive alerts are pinned above routine work, resolving the "everything is a peer" problem. Zero-state: the alert band collapses when there is nothing urgent.</div></div>
+          <div class="annotation"><div class="annotation-num">3</div><div><strong>End-user folders:</strong> "+ Folder" is available to the end user, removing the administrator bottleneck. Folder permissions still respect the tenant model.</div></div>
+          <div class="annotation"><div class="annotation-num">4</div><div><strong>Human-readable names:</strong> tiles show the readable name; the ⓘ reveals the <span class="mono">namespace::set</span> label on hover. Group / Sort make dozens–hundreds of items navigable without relying on search.</div></div>
+          <div class="annotation"><div class="annotation-num">5</div><div><strong>Open question flagged:</strong> whether "Group by category / author" reshapes tiles or queries the DB into a grid is unresolved (Section 12) — the control is shown, its backend behaviour is a dependency.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Virtual Path builder -->
+  <div class="grid-2 gap-24" style="margin-bottom:24px;">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Screen 2 · Guided Virtual Path Builder</div>
+        <h3 class="gap16">Name-based, validated, previewed</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px;color:#94A3B8;margin-left:8px;">GraphWalk · Create Virtual Path</span>
+          </div>
+          <div style="padding:16px;background:#fff;">
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1.1;">
+                <div style="font-size:10px;font-weight:700;color:#0F172A;margin-bottom:8px;">Build your path</div>
+                <div style="font-size:8.5px;color:#64748B;margin-bottom:3px;">SOURCE SET</div>
+                <div style="border:1px solid #2B5FE3;border-radius:6px;padding:6px 8px;font-size:9px;color:#12358F;margin-bottom:8px;">Transactions ▾ <span style="color:#94A3B8;font-size:8px;">selected by name</span></div>
+                <div style="font-size:8.5px;color:#64748B;margin-bottom:3px;">LINK TYPE</div>
+                <div style="border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px;font-size:9px;color:#334155;margin-bottom:8px;">occurs at ▾</div>
+                <div style="font-size:8.5px;color:#64748B;margin-bottom:3px;">TARGET SET</div>
+                <div style="border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px;font-size:9px;color:#334155;margin-bottom:10px;">Window data ▾</div>
+                <div style="background:#E7F4EC;border:1px solid #71C298;border-radius:6px;padding:6px 8px;font-size:8.5px;color:#1C7A48;margin-bottom:6px;">✓ Valid · 3 hops resolve</div>
+                <div style="background:#FDF4E3;border:1px solid #C8960A;border-radius:6px;padding:6px 8px;font-size:8.5px;color:#7A4F00;">⚠ Large path · ~ high compute on demand</div>
+              </div>
+              <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:8px;">
+                <div style="font-size:8.5px;font-weight:700;color:#475569;margin-bottom:6px;">PATH PREVIEW</div>
+                <svg viewBox="0 0 180 120" style="width:100%;height:96px;">
+                  <line x1="30" y1="60" x2="90" y2="30" stroke="#94A3B8" stroke-width="1.5"/>
+                  <line x1="90" y1="30" x2="150" y2="60" stroke="#94A3B8" stroke-width="1.5"/>
+                  <line x1="30" y1="60" x2="150" y2="60" stroke="#2B5FE3" stroke-width="1.5" stroke-dasharray="4,3"/>
+                  <circle cx="30" cy="60" r="12" fill="#DBEAFE" stroke="#2563EB"/>
+                  <circle cx="90" cy="30" r="12" fill="#E2E8F0" stroke="#94A3B8"/>
+                  <circle cx="150" cy="60" r="12" fill="#DBEAFE" stroke="#2563EB"/>
+                  <text x="30" y="63" font-size="7" fill="#1E40AF" text-anchor="middle">Txn</text>
+                  <text x="90" y="33" font-size="7" fill="#475569" text-anchor="middle">Node</text>
+                  <text x="150" y="63" font-size="7" fill="#1E40AF" text-anchor="middle">Win</text>
+                  <text x="90" y="80" font-size="6.5" fill="#2B5FE3" text-anchor="middle">virtual link</text>
+                </svg>
+                <div style="display:flex;gap:5px;margin-top:6px;">
+                  <div style="flex:1;background:#12358F;color:#fff;text-align:center;padding:5px;border-radius:5px;font-size:8.5px;font-weight:700;">Save</div>
+                  <div style="flex:1;background:#fff;border:1px solid #C8960A;color:#7A4F00;text-align:center;padding:5px;border-radius:5px;font-size:8.5px;font-weight:700;">Propose</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Annotations · Screen 2</div>
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div class="annotation"><div class="annotation-num">1</div><div><strong>No JSON, no raw IDs:</strong> every field is a name-based autocomplete. The UI composes the same JSON payload the API already expects; IDs are held as hidden metadata. The fixed API contract is untouched.</div></div>
+          <div class="annotation"><div class="annotation-num">2</div><div><strong>Live validation:</strong> the green "Valid" state updates as the user builds. Errors appear inline with a suggestion — the post-submit 400 is designed out entirely.</div></div>
+          <div class="annotation"><div class="annotation-num">3</div><div><strong>Path preview + cost:</strong> the graph preview confirms the path is <em>useful for the task</em> before commit; the amber warning surfaces the on-demand compute cost so no one creates a slow path unknowingly.</div></div>
+          <div class="annotation"><div class="annotation-num">4</div><div><strong>Save vs Propose is role-driven:</strong> a permitted role sees "Save" (path + permission in one action); others see "Propose" into the supervisor review queue. The tenant-wide object is never published without oversight.</div></div>
+          <div class="annotation"><div class="annotation-num">5</div><div><strong>Dependency:</strong> a true pre-commit cost estimate depends on backend support (dry-run / feasibility). If unavailable, the warning degrades to a heuristic based on set sizes and hop count.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: AI proposal -->
+  <div class="grid-2 gap-24">
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Screen 3 · AI Path Proposal (optional on-ramp)</div>
+        <h3 class="gap16">Describe it, then review on the graph</h3>
+        <div class="wireframe">
+          <div class="wireframe-bar">
+            <div class="wireframe-dot" style="background:#EF4444;"></div>
+            <div class="wireframe-dot" style="background:#F59E0B;"></div>
+            <div class="wireframe-dot" style="background:#22C55E;"></div>
+            <span style="font-size:10px;color:#94A3B8;margin-left:8px;">GraphWalk · Create Virtual Path · Describe</span>
+          </div>
+          <div style="padding:16px;background:#fff;font-size:9px;">
+            <div style="border:1px solid #A98CE6;background:#ECE6FA;border-radius:6px;padding:8px;margin-bottom:8px;">
+              <div style="font-size:8.5px;font-weight:700;color:#5F3FB0;margin-bottom:4px;">DESCRIBE THE RELATIONSHIP</div>
+              <div style="background:#fff;border-radius:4px;padding:6px 8px;color:#334155;">"connect Transactions to Window data"</div>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:8px;margin-bottom:8px;">
+              <div style="font-size:8.5px;font-weight:700;color:#475569;margin-bottom:4px;">PROPOSED PATH · review &amp; edit</div>
+              <div style="color:#334155;line-height:1.8;">Transactions <span style="color:#2B5FE3;">— occurs at →</span> Node <span style="color:#2B5FE3;">— logged in →</span> Window data</div>
+              <div style="color:#94A3B8;margin-top:4px;">names resolved to IDs automatically</div>
+            </div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;background:#5F3FB0;color:#fff;text-align:center;padding:6px;border-radius:5px;font-size:8.5px;font-weight:700;">Edit on graph →</div>
+              <div style="flex:1;background:#fff;border:1px solid #E2E8F0;color:#475569;text-align:center;padding:6px;border-radius:5px;font-size:8.5px;font-weight:700;">Start over</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-proto">
+        <div class="label gap8" style="color:var(--accent);">Annotations · Screen 3</div>
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div class="annotation"><div class="annotation-num">1</div><div><strong>Optional, not required:</strong> this screen is one entry point into the same builder. Skipping it and building by name reaches an identical, fully-validated result. AI never becomes the only road.</div></div>
+          <div class="annotation"><div class="annotation-num">2</div><div><strong>Proposal, not action:</strong> AI produces a <em>proposed</em> path the user reviews and edits on the graph. It resolves names to IDs, directly removing the raw-ID trial-and-error. Nothing is committed from this screen.</div></div>
+          <div class="annotation"><div class="annotation-num">3</div><div><strong>Rejoins the validated flow:</strong> "Edit on graph" drops the proposal into the Screen 2 builder, where live validation, preview, cost warning, and the save/propose gate all apply.</div></div>
+          <div class="annotation"><div class="annotation-num">4</div><div><strong>Feasibility caveat:</strong> conversational graph search and richer correlation surfacing depend on system limits that are not yet confirmed (Section 12). This screen scopes only NL-to-path proposal, which maps cleanly onto the existing name-to-ID capability.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 12 DEPENDENCIES ═══════════════ -->
+<section id="s12">
+  <div class="sec-header"><span class="sec-num">12</span><h2>Dependencies, Scope &amp; Open Questions</h2></div>
+  <div class="box gap16" style="margin-bottom:20px;">
+    <p style="font-size:12px;color:var(--t2);">
+      Each item is a dependency to resolve before build, or a question requiring a product decision. Grouped by type. Below them, the explicit scope boundaries and deliberate exclusions carried from discovery.
+    </p>
+  </div>
+
+  <h3 class="gap16">System / API Dependencies</h3>
+  <div class="box gap24">
+    <div class="dep-item"><span class="dep-tag sys">SYS</span><div>
+      <strong style="font-size:12px;">Pre-commit path cost / dry-run</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Paths are calculated on demand. A true performance estimate before commit depends on backend support for a dry-run or feasibility check. If unavailable within the fixed API contract, the warning degrades to a heuristic (set sizes × hop count). Owner: Platform / Backend.</p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag sys">SYS</span><div>
+      <strong style="font-size:12px;">Role-based rendering via existing endpoints</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Conditional views rely on identity and permissions already exposed by <span class="mono">GET /api/v1/user/current</span> and <span class="mono">/api/v1/permission/update/user/&#123;userId&#125;</span>. Confirm these cover every view/column gating case needed. Owner: Platform.</p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag sys">SYS</span><div>
+      <strong style="font-size:12px;">AI assist feasibility</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Are there system limitations that would prevent an AI assist for search or Virtual Path creation, or conversational graph search surfacing correlations between related entity sets? To confirm before scoping the AI on-ramp. Owner: Platform / Data Science.</p>
+    </div></div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Model / Governance Dependencies</h3>
+  <div class="box gap24">
+    <div class="dep-item"><span class="dep-tag model">MODEL</span><div>
+      <strong style="font-size:12px;">Virtual Path review model</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">A path is tenant-wide, so the authoring/review model must be chosen: direct (fast, higher risk), proposal + supervisor approval (safer, slower), or role-based gating. This is the central open product decision for Task 2. Owner: Product + Compliance/Governance.</p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag model">MODEL</span><div>
+      <strong style="font-size:12px;">Permission coupling on save</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Today authoring requires a separate, easily-forgotten permission update. The design couples permission into the save action; confirm the permission-update endpoint can be invoked transactionally with path creation. Owner: Platform.</p>
+    </div></div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Data / Definition Questions</h3>
+  <div class="box gap24">
+    <div class="dep-item"><span class="dep-tag data">DATA</span><div>
+      <strong style="font-size:12px;">Numeric tile badge — undefined</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">The badge is not defined in documentation, and the same number recurs across sections. Determine what it represents and whether one item can appear under more than one section, before the tile is finalised. Owner: Product. <span class="ntag nt-assume">Assumption</span></p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag data">DATA</span><div>
+      <strong style="font-size:12px;">"Group by category / author" behaviour</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Does this reshape the existing tiles, or query the database and render a data grid? The answer changes the Workspace interaction model. Owner: Product + Backend.</p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag data">DATA</span><div>
+      <strong style="font-size:12px;">Empty-section &amp; add-item behaviour</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">How does an empty section behave, and how does a user add items to a section? Not shown in the screenshots. Owner: Product.</p>
+    </div></div>
+    <div class="dep-item"><span class="dep-tag data">DATA</span><div>
+      <strong style="font-size:12px;">Workspace as first screen &amp; Universe Viewer effects</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Confirm the Workspace is the first screen after login (consistent across roles), and whether Universe Viewer actions generate new data, sections, or items in the Workspace. Owner: Product.</p>
+    </div></div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Organisational / Role Questions</h3>
+  <div class="box gap24">
+    <div class="dep-item"><span class="dep-tag org">ORG</span><div>
+      <strong style="font-size:12px;">Cross-role functionality overlap</strong>
+      <p style="font-size:12px;color:var(--t2);margin-top:4px;">Is there any case where one role requires another role's functionality within its own view? Documentation indicates minimal overlap, but edge cases must be validated before the single-layout approach is locked. Owner: Product + Research. <span class="ntag nt-assume">Assumption</span></p>
+    </div></div>
+  </div>
+
+  <div class="gap32"></div>
+  <h3 class="gap16">Scope Boundaries</h3>
+  <div class="g2">
+    <div class="box box-green">
+      <div class="label gap8">In Scope</div>
+      <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:1.9;">
+        <li><strong>Task 1:</strong> the Workspace screen and selected flows — filter, sort, open, organise, share, alerts. Web, desktop, role-aware behaviour.</li>
+        <li><strong>Task 2:</strong> the create-Virtual-Path flow from intent to a saved, usable path; edit and manage; path visualisation; validation feedback; power-user vs guided creation.</li>
+      </ul>
+    </div>
+    <div class="box box-red">
+      <div class="label gap8">Out of Scope</div>
+      <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:1.9;">
+        <li>Universe Viewer, Link Chart, Table View, Search, Dashboard — unchanged. Backend and data-model changes excluded; the API contract is fixed.</li>
+        <li>Mobile and responsive design. Full navigation redesign — the left rail and top tabs remain unless a change is essential.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Deliberate Exclusions</h3>
+  <div class="box">
+    <table>
+      <thead><tr><th>Excluded item</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Slow table-view loading (5–10s)</td><td>Backend performance issue. Flagged, not resolved here.</td></tr>
+        <tr><td>View / header breakage on small screens</td><td>Falls under mobile &amp; responsive design — out of scope.</td></tr>
+        <tr><td>"All Items" view exposing titles</td><td>A permissions/backend issue; a UI change does not resolve a data-access problem. Awareness noted.</td></tr>
+        <tr><td>Rebuilding application navigation</td><td>Excluded by constraint.</td></tr>
+        <tr><td><strong>Unrestricted Virtual Path authoring</strong></td><td>Excluded intentionally. Authoring is gated behind review. <span class="ntag nt-risk">Risk if ignored</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gap24"></div>
+  <h3 class="gap16">Next Steps</h3>
+  <div class="box box-accent">
+    <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2;">
+      <li>Select the primary journey for each task and produce wireframes.</li>
+      <li><strong>Task 1:</strong> design the Investigator Workspace, stress-tested against the Long Investigation workflow and validated against Quick Response.</li>
+      <li><strong>Task 2:</strong> design the guided create-Virtual-Path flow with live validation, path preview, and performance warnings — and resolve the review model.</li>
+    </ul>
+  </div>
+</section>
+
+<footer style="margin-top:80px;padding-top:32px;border-top:1.5px solid var(--t1);">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+    <div>
+      <p style="font-size:13px;font-weight:600;color:var(--t1);">GraphWalk: Workspace &amp; Virtual Path — UX Case Study</p>
+      <p style="font-size:11px;color:var(--t3);margin-top:4px;">Product Design Exercise &nbsp;·&nbsp; Discovery → AS-IS / TO-BE → User Flow → Prototype Spec</p>
+    </div>
+    <p style="font-size:11px;color:var(--t3);">Figures grounded in the brief, documentation &amp; screenshots · assumptions flagged inline</p>
+  </div>
+</footer>
+
+</main>
+</body>
+</html>
