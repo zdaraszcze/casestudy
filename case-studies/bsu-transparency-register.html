@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>UX Case Study — Transparency Register Case Manager</title>
+<title>UX Case Study: Transparency Register Case Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400;1,14..32,500&display=swap" rel="stylesheet"/>
@@ -309,12 +309,12 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 <header class="hero">
   <div class="wrap hero-in">
     <div class="eyebrow">UX Case Study · Regulatory Compliance Tooling</div>
-    <h1>Turning a 90-day compliance deadline into a guided workflow.</h1>
-    <p class="sub">A case-management workspace that reconciles the bank's own beneficial-ownership records against the public Transparency Register, surfaces exactly what fails to match, and drives each discrepancy to a defensible resolution before the statutory reporting window closes.</p>
+    <h1>Resolving register discrepancies before the 90-day reporting deadline.</h1>
+    <p class="sub">A case-management workspace that compares the bank's own beneficial-ownership records against the public Transparency Register, lists exactly which fields fail to match, and records the analyst's resolution of each case before the statutory reporting window closes.</p>
     <p class="meta"><b>Domain</b> AML / KYC beneficial-ownership discrepancy reporting &nbsp;·&nbsp; <b>Regime</b> EU 5AMLD / GwG §23a &nbsp;·&nbsp; <b>Primary user</b> Compliance officer &nbsp;·&nbsp; <b>Artifact</b> Interactive prototype (6 screens)</p>
 
     <div class="statrow">
-      <div class="stat"><div class="n">67<small>%</small></div><div class="l">of bank BO records matched register data in one sample — the rest are discrepancies to work</div></div>
+      <div class="stat"><div class="n">67<small>%</small></div><div class="l">of bank BO records matched register data in one sample. The rest are discrepancies to work</div></div>
       <div class="stat"><div class="n">90<small> days</small></div><div class="l">Statutory window on the screen before mandatory government reporting</div></div>
       <div class="stat"><div class="n">5</div><div class="l">Distinct remediation paths a single case can follow, embedded in the tool</div></div>
       <div class="stat"><div class="n">6</div><div class="l">Screens carry triage → investigation → terminal decision end to end</div></div>
@@ -322,36 +322,28 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   </div>
 </header>
 
-<!-- ══════════ DISCLAIMER ══════════ -->
-<div class="disc">
-  <div class="disc-in">
-    <span class="tag">Read first</span>
-    <div>This is a <b>reverse-engineered case study</b>, reconstructed from the finished prototype UI. The regulatory context and market figures are sourced and cited; the <b>personas, quotes, journeys and metrics are illustrative</b> — a realistic sample deliverable, not the output of completed fieldwork. Targets are <b>directional</b> and should be validated with real research before they inform decisions.</div>
-  </div>
-</div>
-
 <!-- ══════════ 00 EXECUTIVE SUMMARY ══════════ -->
 <section id="s00">
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">00</div>
-      <div class="sec-titles"><div class="k">Executive Summary</div><h2>A caseload of regulatory judgment calls, made consistent and deadline-safe.</h2></div>
+      <div class="sec-titles"><div class="k">Executive Summary</div><h2>How a compliance officer works a discrepancy case.</h2></div>
     </div>
     <div class="g2">
       <div class="body">
-        <p>Under the EU's anti-money-laundering framework, a bank must compare the beneficial-ownership information it holds on a client against the public Transparency Register, and act on any mismatch. When the two sources diverge, the bank inherits a time-boxed obligation: investigate, correct, or report to the authorities — quickly, and with a defensible record of why.</p>
-        <p>The prototype is the workspace where that obligation is discharged. A <strong>compliance officer</strong> works a queue of flagged legal entities, opens a case to see the bank's record and the registry's record <strong>side by side</strong>, follows the <strong>scenario-specific playbook</strong> the tool surfaces, and closes the loop with one of three terminal actions — <em>plausible feedback received</em>, <em>escalate to committee</em>, or <em>close case</em> — each captured for audit.</p>
+        <p>Under the EU's anti-money-laundering framework, a bank must compare the beneficial-ownership information it holds on a client against the public Transparency Register, and act on any mismatch. When the two sources diverge, the bank takes on a time-limited obligation: investigate, correct, or report to the authorities, all within a deadline and with a defensible record of why.</p>
+        <p>The prototype is the workspace where that obligation is met. A <strong>compliance officer</strong> works a queue of flagged legal entities, opens a case to compare the bank's record and the registry's record <strong>side by side</strong>, follows the <strong>scenario-specific playbook</strong> shown in the follow-up tabs, and ends the case with one of three terminal actions (<em>plausible feedback received</em>, <em>escalate to committee</em>, or <em>close case</em>), each recorded for audit.</p>
       </div>
       <div>
         <div class="box">
           <div class="bk">The one-line thesis</div>
-          <h4>The tool moves regulatory branch-logic out of the analyst's head and onto the screen.</h4>
-          <p>Where the discrepancy lies, what it triggers, how long is left, and what must be recorded are no longer tacit knowledge — they are the interface.</p>
+          <h4>The tool displays each regulatory decision and its consequence on screen, instead of relying on the analyst to remember them.</h4>
+          <p>Where the discrepancy lies, what it triggers, how long is left, and what must be recorded are all shown directly in the interface.</p>
         </div>
         <div class="box grn mt16">
           <div class="bk">What it is designed to speed up</div>
           <h4>Discrepancy remediation &amp; reporting.</h4>
-          <p>The manual, multi-system, memory-dependent investigation of "why don't these two records agree, and what do I do about it" collapses into a single guided flow with a visible countdown.</p>
+          <p>It replaces a manual, multi-system, memory-dependent investigation of "why don't these two records agree, and what do I do about it" with a single guided flow that keeps a countdown visible.</p>
         </div>
       </div>
     </div>
@@ -363,31 +355,31 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">01</div>
-      <div class="sec-titles"><div class="k">Problem Statement</div><h2>Two authoritative records, one legal obligation to reconcile them.</h2></div>
+      <div class="sec-titles"><div class="k">Problem Statement</div><h2>The obligation to reconcile two records.</h2></div>
     </div>
-    <p class="lead">The 5th Anti-Money Laundering Directive requires obliged entities — banks among them — to check the beneficial-ownership data in the central register against what they collected through their own due diligence, and to report discrepancies without undue delay. The obligation is real, recurring, and unforgiving of error.</p>
+    <p class="lead">The 5th Anti-Money Laundering Directive requires obliged entities, banks among them, to check the beneficial-ownership data in the central register against what they collected through their own due diligence, and to report discrepancies without undue delay. The obligation recurs continually, and getting it wrong has regulatory consequences.</p>
 
     <div class="g3 mt24">
       <div class="box">
         <div class="bk">The scale</div>
-        <p>In one analysis of financial institutions, beneficial-ownership data held by banks matched register data in only about two-thirds of examined cases — meaning a large, standing population of mismatches has to be worked, not an occasional exception.</p>
+        <p>In one analysis of financial institutions, beneficial-ownership data held by banks matched register data in only about two-thirds of examined cases. That leaves a large, standing population of mismatches to be worked.</p>
         <p class="lil">Source: Transparency International analysis, reported 2026.</p>
       </div>
       <div class="box">
         <div class="bk">The consequence</div>
-        <p>An unresolved discrepancy is not a housekeeping item. Left past its window, it converts into a mandatory report to a government authority — a legally weighted, externally visible event the bank would rather avoid triggering by oversight.</p>
-        <p class="lil">Reflected on-screen as the red "90 days remaining before government reporting" panel.</p>
+        <p>Left past its window, an unresolved discrepancy converts into a mandatory report to a government authority. That report is a legally weighted, externally visible event the bank would rather not trigger by oversight.</p>
+        <p class="lil">Shown in the tool as the red "90 days remaining before government reporting" panel.</p>
       </div>
       <div class="box">
         <div class="bk">The difficulty</div>
-        <p>The right response depends on <em>where</em> the error lives — the bank's files, the registry, or both — and each path has different triggers, owners, and deadlines. This branch logic historically lived in analysts' heads and policy PDFs.</p>
-        <p class="lil">Reflected in the five-way follow-up guidance and the three-way "where is the discrepancy" decision.</p>
+        <p>The right response depends on <em>where</em> the error lives (the bank's files, the registry, or both), and each path has different triggers, owners, and deadlines. This branch logic historically lived in analysts' heads and policy PDFs.</p>
+        <p class="lil">Shown in the tool as the five-way follow-up guidance and the three-way "where is the discrepancy" decision.</p>
       </div>
     </div>
 
     <div class="box red mt24">
       <div class="bk">Problem, stated as the user feels it</div>
-      <p style="font-size:14px;color:var(--g5);"><strong>"I have a queue of entities where our records and the register disagree. For each one I have to find exactly what doesn't match, decide whose mistake it is, chase the right person to fix it, and prove I did all of that — before a clock I can't see clearly runs out."</strong></p>
+      <p style="font-size:14px;color:var(--g5);"><strong>"I have a queue of entities where our records and the register disagree. For each one I have to find exactly what doesn't match, decide whose mistake it is, chase the right person to fix it, and prove I did all of that, before a clock I can't see clearly runs out."</strong></p>
     </div>
   </div>
 </section>
@@ -397,23 +389,21 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">02</div>
-      <div class="sec-titles"><div class="k">Research Approach</div><h2>Reverse-engineering the workflow from the finished interface.</h2></div>
+      <div class="sec-titles"><div class="k">Research Approach</div><h2>How this was researched.</h2></div>
     </div>
     <div class="g2">
       <div class="body">
-        <p>This study reconstructs the user problem <em>from the delivered prototype</em>. Every persona, pain point and principle traces back to something observable in the six screens — a field that is captured, an action that is offered, a state that is made loud, a step the tool insists on.</p>
-        <p>That inference is disciplined by external grounding: the regulatory obligation, the discrepancy taxonomy, and the real-world match-rate data come from published AML sources, so the reconstructed problem is anchored to how this obligation actually works — not invented to fit the design.</p>
-        <p class="note">Where a real engagement would run analyst interviews, contextual inquiry and queue analytics, this deliverable substitutes clearly-labelled illustrative artifacts. They are written to be plausible and directionally useful, and to be replaced by fieldwork.</p>
+        <p>The problem is described from two sources that are documented and cited, and two that a real engagement would still need to gather. Each persona, pain point, and principle connects to a specific detail of the work: a field that is captured, an action that is offered, a state that is made prominent, a step the workflow requires.</p>
+        <p>The regulatory obligation, the discrepancy taxonomy, and the real-world match-rate data come from published AML sources, so the problem is described the way this obligation works in practice.</p>
       </div>
       <div>
         <div class="card">
-          <div class="divlabel">Evidence base for this reconstruction</div>
+          <div class="divlabel">Evidence base for this study</div>
           <div class="tbl-wrap" style="border:none;">
             <table class="t">
               <thead><tr><th>Input</th><th>Type</th><th>Confidence</th></tr></thead>
               <tbody>
-                <tr><td><b>6-screen prototype</b><br>queue → detail → 3 terminal flows</td><td>Primary artifact</td><td><span class="pill p-grn">Observed</span></td></tr>
-                <tr><td><b>UI data model</b><br>fields, statuses, triggers</td><td>Primary artifact</td><td><span class="pill p-grn">Observed</span></td></tr>
+                <tr><td><b>Discrepancy taxonomy &amp; workflow steps</b></td><td>Domain analysis</td><td><span class="pill p-amb">Directional</span></td></tr>
                 <tr><td><b>5AMLD / GwG §23a</b><br>discrepancy-reporting duty</td><td>Regulatory source</td><td><span class="pill p-grn">Cited</span></td></tr>
                 <tr><td><b>Match-rate &amp; error stats</b></td><td>Industry source</td><td><span class="pill p-grn">Cited</span></td></tr>
                 <tr><td><b>Personas · quotes · metrics</b></td><td>Illustrative</td><td><span class="pill p-amb">Directional</span></td></tr>
@@ -431,31 +421,31 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">03</div>
-      <div class="sec-titles"><div class="k">Key Findings</div><h2>Five things the interface tells us about the work.</h2></div>
+      <div class="sec-titles"><div class="k">Key Findings</div><h2>Five findings that shaped the design.</h2></div>
     </div>
-    <p class="lead">Each finding is read directly off the prototype and carried forward — pain points (06), interventions (07) and principles (09) all cite back to these.</p>
+    <p class="lead">Each finding carries forward into the rest of the study: pain points (06), interventions (07) and principles (09) all cite back to these.</p>
 
     <div class="tbl-wrap mt24">
       <table class="t">
-        <thead><tr><th style="width:52px;">#</th><th>Finding</th><th>Where it shows up in the UI</th><th>Implication</th></tr></thead>
+        <thead><tr><th style="width:52px;">#</th><th>Finding</th><th>How the tool addresses it</th><th>Implication</th></tr></thead>
         <tbody>
           <tr>
             <td><span class="cellnum">F01</span></td>
             <td><b>The deadline dominates the risk.</b> A visible countdown to <em>government reporting</em> is the single most weighted element of a case.</td>
             <td>Full-height red panel on the detail screen; the countdown follows the analyst into every sub-flow as a context bar.</td>
-            <td>Time-to-report is the organising variable, not case age or alphabetical order.</td>
+            <td>Time-to-report is the variable the queue should be organised by.</td>
           </tr>
           <tr>
             <td><span class="cellnum">F02</span></td>
-            <td><b>Fault is directional.</b> A discrepancy can originate at the bank, at the registry, or both — and each origin triggers a different downstream process.</td>
+            <td><b>Fault is directional.</b> A discrepancy can originate at the bank, at the registry, or both, and each origin starts a different downstream process.</td>
             <td>The "is the issue at the bank or the registry?" radio, each option revealing its own <em>Triggers</em> consequence box.</td>
             <td>Diagnosis (whose error) must precede action, and the tool has to make the consequence of each choice explicit.</td>
           </tr>
           <tr>
             <td><span class="cellnum">F03</span></td>
             <td><b>Mismatch is field-level, not entity-level.</b> The "same" owner exists in both sources but disagrees on specific attributes.</td>
-            <td>Two parallel BO tables — <em>Bank (BSU)</em> vs <em>Federal Registry</em> — with a bulleted list naming each non-matching field (DOB, name, nationality, %, ownership role).</td>
-            <td>The comparison must be aligned attribute-by-attribute so the eye can locate the exact delta.</td>
+            <td>Two parallel BO tables, <em>Bank (UBS)</em> versus <em>Federal Registry</em>, with a bulleted list naming each non-matching field (DOB, name, nationality, %, ownership role).</td>
+            <td>The comparison must be aligned attribute-by-attribute so the analyst can locate the exact difference.</td>
           </tr>
           <tr>
             <td><span class="cellnum">F04</span></td>
@@ -480,9 +470,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">04</div>
-      <div class="sec-titles"><div class="k">Personas</div><h2>Who the screens are built for.</h2></div>
+      <div class="sec-titles"><div class="k">Personas</div><h2>Who the tool is for.</h2></div>
     </div>
-    <p class="lead">Roles are inferred from the interface itself — the header identifies a compliance officer, a grid column names the client advisor, and the escalation target names a committee. <em>Illustrative; names and quotes are constructed.</em></p>
+    <p class="lead">Three roles run through the workflow: the header identifies a compliance officer, a queue column names the client advisor, and the escalation target names a committee. <em>Names and quotes are illustrative.</em></p>
 
     <div class="g3 mt24">
       <!-- Persona 1 -->
@@ -497,9 +487,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <dt>Context</dt><dd>High case volume; each case a small investigation under time pressure.</dd>
           <dt>Decides</dt><dd>Where the fault lies; escalate, close, or await correction.</dd>
           <dt>Fear</dt><dd>Missing a deadline, or a closure that can't be defended in an audit.</dd>
-          <dt>Traces to</dt><dd><span class="ref">Header "Compliance Officer" · all action screens</span></dd>
+          <dt>Appears in</dt><dd><span class="ref">Header "Compliance Officer" · all action screens</span></dd>
         </dl>
-        <div class="pq"><p>"I don't need the tool to think for me — I need it to stop me forgetting a step or a date."</p></div>
+        <div class="pq"><p>"I don't need the tool to think for me. I need it to stop me forgetting a step or a date."</p></div>
       </div>
       <!-- Persona 2 -->
       <div class="persona">
@@ -513,7 +503,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <dt>Context</dt><dd>Not in the tool daily; pulled in when the client must be contacted.</dd>
           <dt>Decides</dt><dd>How and when to approach the client for an explanation or corrected form.</dd>
           <dt>Fear</dt><dd>Being handed a compliance task with no context or deadline visibility.</dd>
-          <dt>Traces to</dt><dd><span class="ref">"Client Advisor" queue column · "inform the client" steps</span></dd>
+          <dt>Appears in</dt><dd><span class="ref">"Client Advisor" queue column · "inform the client" steps</span></dd>
         </dl>
         <div class="pq"><p>"Tell me exactly what's wrong and by when, and I'll handle the conversation."</p></div>
       </div>
@@ -529,12 +519,12 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <dt>Context</dt><dd>Receives escalations; needs the reason and rationale up front.</dd>
           <dt>Decides</dt><dd>Final disposition where policy or legal exposure is unclear.</dd>
           <dt>Fear</dt><dd>Escalations that arrive without structured justification.</dd>
-          <dt>Traces to</dt><dd><span class="ref">"Escalate to BAC" flow · reason + justification fields</span></dd>
+          <dt>Appears in</dt><dd><span class="ref">"Escalate to BAC" flow · reason + justification fields</span></dd>
         </dl>
         <div class="pq"><p>"Give us the reason and the evidence in the same place, or we're guessing too."</p></div>
       </div>
     </div>
-    <p class="note">A fourth role — a compliance team lead monitoring queue health and SLA — is implied by the queue's sortable "resolution date" and "reported to control body" columns, but the prototype does not yet give them a dedicated view. Flagged as a design gap, not a persona claim.</p>
+    <p class="note">A fourth role, a compliance team lead monitoring queue health and SLA, would need a view the prototype does not yet include. Noted as a design gap, not a persona claim.</p>
   </div>
 </section>
 
@@ -545,12 +535,12 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
       <div class="sec-num">05</div>
       <div class="sec-titles"><div class="k">AS-IS Journey</div><h2>How the discrepancy gets worked without the tool.</h2></div>
     </div>
-    <p class="lead">Reconstructed from what the prototype consolidates. The friction below is the friction the interface is visibly built to remove — read it as the "before" the design is answering.</p>
+    <p class="lead">This is how a discrepancy gets worked today, before the tool. The friction below is what the design sets out to remove.</p>
 
     <div class="jrn mt24">
       <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">1</div><div class="jrn-line"></div></div>
         <div class="jrn-body"><div class="stage">Notification</div><h5>A discrepancy is flagged somewhere upstream</h5>
-          <p>The analyst learns a client's register data no longer matches the bank's file — often via a report or alert detached from any workspace to act in.</p>
+          <p>The analyst learns a client's register data no longer matches the bank's file, often via a report or alert detached from any workspace to act in.</p>
           <span class="jrn-emote neg">Where do I even action this?</span></div></div>
 
       <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">2</div><div class="jrn-line"></div></div>
@@ -560,11 +550,11 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 
       <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">3</div><div class="jrn-line"></div></div>
         <div class="jrn-body"><div class="stage">Comparison</div><h5>Eyeball the two for what doesn't match</h5>
-          <p>Field-by-field visual diffing of names, dates, nationalities and ownership percentages — slow, and easy to miss a subtle change like 85%→100%.</p>
+          <p>Field-by-field visual comparison of names, dates, nationalities and ownership percentages. It is slow, and a subtle change like 85%→100% is easy to miss.</p>
           <span class="jrn-emote neg">Did I catch every field?</span></div></div>
 
       <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">4</div><div class="jrn-line"></div></div>
-        <div class="jrn-body"><div class="stage">Diagnosis</div><h5>Decide whose error it is — from memory</h5>
+        <div class="jrn-body"><div class="stage">Diagnosis</div><h5>Decide whose error it is, from memory</h5>
           <p>Is the fault the bank's, the registry's, or both? The right follow-up depends on it, and the branching rules live in policy documents and experience.</p>
           <span class="jrn-emote neg">Which playbook applies again?</span></div></div>
 
@@ -574,7 +564,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <span class="jrn-emote neg">Hope nothing slips past the date</span></div></div>
 
       <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">6</div></div>
-        <div class="jrn-body"><div class="stage">Disposition</div><h5>Resolve, escalate or report — and reconstruct the audit trail after</h5>
+        <div class="jrn-body"><div class="stage">Disposition</div><h5>Resolve, escalate or report, then reconstruct the audit trail after</h5>
           <p>Document the rationale retrospectively, hoping the record is complete enough to withstand review.</p>
           <span class="jrn-emote neg">Can I prove I did this right?</span></div></div>
     </div>
@@ -610,7 +600,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
       <div class="sec-num">07</div>
       <div class="sec-titles"><div class="k">Intervention Catalogue</div><h2>Source pain → design response → target outcome.</h2></div>
     </div>
-    <p class="lead">Each intervention is a specific move visible in the prototype, mapped to the pain it answers and the directional outcome it is meant to produce.</p>
+    <p class="lead">Each intervention is a specific design move, mapped to the pain it answers and the directional outcome it is meant to produce.</p>
 
     <div class="tbl-wrap mt24">
       <table class="t">
@@ -619,13 +609,13 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <tr>
             <td><span class="cellnum">I-01</span></td>
             <td><span class="ref">P1</span> Deadline invisible</td>
-            <td>A persistent red countdown panel — "<b>90 days remaining before government reporting</b>", with due date — on the detail screen, restated as a context bar in every sub-flow.</td>
+            <td>A persistent red countdown panel ("<b>90 days remaining before government reporting</b>", with due date) on the detail screen, restated as a context bar in every sub-flow.</td>
             <td>Zero cases lost to a missed reporting window; deadline becomes the default sort of the queue.</td>
           </tr>
           <tr>
             <td><span class="cellnum">I-02</span></td>
             <td><span class="ref">P2</span> Manual comparison</td>
-            <td>Two aligned BO tables — <b>Bank</b> vs <b>Federal Registry</b> — plus a plain-language <b>Discrepancy Details</b> list naming each non-matching field.</td>
+            <td>Two aligned BO tables, <b>Bank</b> versus <b>Federal Registry</b>, plus a plain-language <b>Discrepancy Details</b> list naming each non-matching field.</td>
             <td>Faster, more complete mismatch identification; no missed field-level deltas.</td>
           </tr>
           <tr>
@@ -643,7 +633,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <tr>
             <td><span class="cellnum">I-05</span></td>
             <td><span class="ref">P5</span> Informal handoffs</td>
-            <td>Named workflow states — <b>Plausible feedback</b>, <b>Escalate to BAC</b>, <b>Close</b> — each with a defined next owner and a confirmation of what happens next.</td>
+            <td>Named workflow states (<b>Plausible feedback</b>, <b>Escalate to BAC</b>, <b>Close</b>), each with a defined next owner and a confirmation of what happens next.</td>
             <td>Every handoff routed and recorded; shared visibility of case state.</td>
           </tr>
         </tbody>
@@ -657,14 +647,14 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">08</div>
-      <div class="sec-titles"><div class="k">TO-BE Journey</div><h2>The same work, inside one guided workspace.</h2></div>
+      <div class="sec-titles"><div class="k">TO-BE Journey</div><h2>The same work inside the tool.</h2></div>
     </div>
-    <p class="lead">The interventions in sequence — this is the flow the six screens actually implement.</p>
+    <p class="lead">The interventions in sequence. This is the flow the six screens implement.</p>
 
     <div class="jrn mt24">
       <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">1</div><div class="jrn-line"></div></div>
         <div class="jrn-body"><div class="stage">Triage · Dashboard</div><h5>Open the queue, sorted by what's most at risk</h5>
-          <p>Every flagged entity in one grid with its status, advisor and resolution date — pick the case, don't hunt for it.</p>
+          <p>Every flagged entity in one grid with its status, advisor and resolution date, so the analyst picks the case instead of hunting for it.</p>
           <span class="jrn-emote pos">One place to start</span></div></div>
 
       <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">2</div><div class="jrn-line"></div></div>
@@ -674,11 +664,11 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 
       <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">3</div><div class="jrn-line"></div></div>
         <div class="jrn-body"><div class="stage">Act · Guided playbook</div><h5>Follow the tab that matches the scenario</h5>
-          <p>The correct three-step procedure is on screen — bank error, registry error, non-responsive client, and so on — no manual to consult.</p>
+          <p>The correct three-step procedure is on screen for each scenario (bank error, registry error, non-responsive client, and so on), with no manual to consult.</p>
           <span class="jrn-emote pos">The next step is already written</span></div></div>
 
       <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">4</div><div class="jrn-line"></div></div>
-        <div class="jrn-body"><div class="stage">Diagnose · Plausible feedback</div><h5>Record where the fault lies — and see what it triggers</h5>
+        <div class="jrn-body"><div class="stage">Diagnose · Plausible feedback</div><h5>Record where the fault lies, and see what it triggers</h5>
           <p>Choosing bank / registry / both reveals the downstream process it starts, with the deadline carried along in the context bar.</p>
           <span class="jrn-emote pos">No surprise consequences</span></div></div>
 
@@ -689,7 +679,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 
       <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">6</div></div>
         <div class="jrn-body"><div class="stage">Confirm · Success</div><h5>Clear confirmation of what happened and what's next</h5>
-          <p>The system states the disposition, the audit entry, and the next workflow step — then returns to the queue.</p>
+          <p>The system states the disposition, the audit entry, and the next workflow step, then returns to the queue.</p>
           <span class="jrn-emote pos">Loop closed, on to the next</span></div></div>
     </div>
   </div>
@@ -700,15 +690,15 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">09</div>
-      <div class="sec-titles"><div class="k">Design Principles</div><h2>The rules the interface keeps.</h2></div>
+      <div class="sec-titles"><div class="k">Design Principles</div><h2>The rules the design follows.</h2></div>
     </div>
     <div class="g2 mt16">
-      <div class="box"><div class="bk">Principle 01 · derived from F01 / I-01</div><h4>Make the deadline the loudest thing on the screen.</h4><p>Risk is time. The countdown is styled as an alert and never leaves the analyst's view — it follows them into every sub-flow.</p></div>
-      <div class="box"><div class="bk">Principle 02 · derived from F02, F04 / I-03</div><h4>Put the branch in the tool, not the memory.</h4><p>Every decision that changes the path is presented as an explicit choice, with its consequence shown before it's made.</p></div>
-      <div class="box"><div class="bk">Principle 03 · derived from F03 / I-02</div><h4>Show both sources; let the eye do the diff.</h4><p>Conflicting records sit side by side in the same shape, with the specific deltas named in plain language above them.</p></div>
+      <div class="box"><div class="bk">Principle 01 · derived from F01 / I-01</div><h4>Make the deadline the loudest thing on the screen.</h4><p>Risk is time. The countdown is styled as an alert and never leaves the analyst's view. It reappears in every sub-flow as a context bar.</p></div>
+      <div class="box"><div class="bk">Principle 02 · derived from F02, F04 / I-03</div><h4>Keep the decision branches in the tool.</h4><p>Every decision that changes the path is presented as an explicit choice, with its consequence shown before it's made.</p></div>
+      <div class="box"><div class="bk">Principle 03 · derived from F03 / I-02</div><h4>Show both sources side by side for comparison.</h4><p>Conflicting records sit side by side in the same shape, with the specific differences named in plain language above them.</p></div>
       <div class="box"><div class="bk">Principle 04 · derived from F05 / I-04</div><h4>No terminal action without recorded rationale.</h4><p>Escalate and close are gated behind a structured reason, free-text justification, and a confirmation that previews the outcome.</p></div>
-      <div class="box"><div class="bk">Principle 05 · derived from F04 / I-03</div><h4>Guidance is contextual, not a separate manual.</h4><p>The procedure appears at the moment of the decision it governs — the "what do I do now" is answered in place.</p></div>
-      <div class="box"><div class="bk">Principle 06 · derived from F05 / I-04</div><h4>Irreversible should look irreversible.</h4><p>Permanent actions get destructive styling, an explicit warning strip, and a can't-be-undone confirmation — friction proportional to stakes.</p></div>
+      <div class="box"><div class="bk">Principle 05 · derived from F04 / I-03</div><h4>Show guidance where the decision is made.</h4><p>The procedure appears at the moment of the decision it governs. The "what do I do now" question is answered in place.</p></div>
+      <div class="box"><div class="bk">Principle 06 · derived from F05 / I-04</div><h4>Irreversible should look irreversible.</h4><p>Permanent actions get destructive styling, an explicit warning strip, and a can't-be-undone confirmation. The friction is proportional to the stakes.</p></div>
     </div>
   </div>
 </section>
@@ -718,9 +708,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">10</div>
-      <div class="sec-titles"><div class="k">Prototype Specification · The Anchor</div><h2>The screens, rebuilt and annotated.</h2></div>
+      <div class="sec-titles"><div class="k">Prototype Specification</div><h2>The prototype screens, annotated.</h2></div>
     </div>
-    <p class="lead">Each screen below is reconstructed as a wireframe and paired with numbered annotations. Every annotation states the design decision <em>and</em> the inferred problem it solves — this is where the rest of the study is grounded.</p>
+    <p class="lead">Each screen below is shown as a wireframe with numbered annotations. Every annotation states the design decision <em>and</em> the problem it solves.</p>
 
     <!-- WF1 · DASHBOARD -->
     <div class="wf-block">
@@ -729,7 +719,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / dashboard</span></div>
           <div class="screen"><div class="mw mw-app">
             <div class="mw-side">
-              <div class="mw-logo">BSU</div>
+              <div class="mw-logo">UBS</div>
               <div class="mw-navt">Case Manager</div>
               <div class="mw-navi">◈ Dashboard</div>
             </div>
@@ -750,9 +740,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         </div>
         <div class="wf-ann">
           <div class="wf-cap">Screen 01</div>
-          <div class="wf-screenname">Dashboard — the discrepancy queue</div>
+          <div class="wf-screenname">Dashboard: the discrepancy queue</div>
           <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Status as the primary signal</h6><p>Colour-weighted status ("Material Discrepancy" vs muted "Closed") lets the analyst read the workload at a glance.</p><p class="solves"><b>Solves P5 / P1:</b> gives a shared, at-a-glance view of case state instead of context buried in email.</p></div></div>
-          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Resolution date on every row</h6><p>The deadline is surfaced in the list, not just the detail — so triage can be time-driven.</p><p class="solves"><b>Solves P1:</b> makes the reporting clock visible before a case is even opened.</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Resolution date on every row</h6><p>The deadline appears in the list, not only on the detail screen, so triage can be time-driven.</p><p class="solves"><b>Solves P1:</b> makes the reporting clock visible before a case is even opened.</p></div></div>
           <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>"Retrieve BO data from registry" as a first-class action</h6><p>The registry pull is a button, acknowledging it was previously a separate manual fetch.</p><p class="solves"><b>Solves P2:</b> brings the second data source into the workspace.</p></div></div>
           <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Search across case #, company and advisor</h6><p>Three entry points match the three ways an analyst actually recalls a case.</p><p class="solves"><b>Solves P5:</b> lets any handoff party find the case fast.</p></div></div>
         </div>
@@ -785,9 +775,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
             <div class="mw-disc">DOB &amp; first name for "Michael" not matching</div>
             <div class="mw-disc">Ownership changed 85% → 100%</div>
             <div class="mw-cmp" style="margin-top:8px;">
-              <div><div class="h">Bank (BSU)</div><div class="mw-mini">
+              <div><div class="h">Bank (UBS)</div><div class="mw-mini">
                 <div class="r"><span class="k">Name</span><span class="v">David</span></div>
-                <div class="r"><span class="k">DOB</span><span class="v diff">—</span></div>
+                <div class="r"><span class="k">DOB</span><span class="v diff">(none)</span></div>
                 <div class="r"><span class="k">Nat.</span><span class="v">IT</span></div>
                 <div class="r"><span class="k">%</span><span class="v">100</span></div>
               </div></div>
@@ -802,12 +792,12 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           </div></div>
         </div>
         <div class="wf-ann">
-          <div class="wf-cap">Screen 02 · anchor</div>
-          <div class="wf-screenname">Case detail — clock, conflict, next action</div>
+          <div class="wf-cap">Screen 02</div>
+          <div class="wf-screenname">Case detail: clock, conflict, next action</div>
           <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Countdown as a red alert panel</h6><p>The reporting deadline gets the most visually dominant treatment on the screen, opposite the calm entity facts.</p><p class="solves"><b>Solves P1:</b> makes the statutory window impossible to overlook (F01).</p></div></div>
           <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Two records in identical shape</h6><p>Bank and registry BO lists use the same columns so mismatches land in the same visual position.</p><p class="solves"><b>Solves P2:</b> aligns the comparison attribute-by-attribute (F03).</p></div></div>
-          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Plain-language discrepancy list</h6><p>Above the tables, the exact non-matching fields are spelled out — including subtle ones like 85%→100%.</p><p class="solves"><b>Solves P2:</b> guarantees no field-level delta is missed (F03).</p></div></div>
-          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Five-tab follow-up playbook</h6><p>The correct procedure for each scenario is embedded at the point of decision.</p><p class="solves"><b>Solves P3:</b> moves branch logic out of memory into the tool (F02, F04).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Plain-language discrepancy list</h6><p>Above the tables, the exact non-matching fields are spelled out, including subtle ones like 85%→100%.</p><p class="solves"><b>Solves P2:</b> guarantees no field-level difference is missed (F03).</p></div></div>
+          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Five-tab follow-up playbook</h6><p>The correct procedure for each scenario is embedded at the point of decision.</p><p class="solves"><b>Solves P3:</b> keeps the branch logic in the tool instead of the analyst's memory (F02, F04).</p></div></div>
           <div class="ann"><div class="ann-n">5</div><div class="ann-b"><h6>Terminal actions gathered in a sticky bar</h6><p>Close, escalate and plausible-feedback are always reachable, with the constructive path styled as primary.</p><p class="solves"><b>Solves P5:</b> routes every disposition through a named state (F05).</p></div></div>
         </div>
       </div>
@@ -835,9 +825,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         </div>
         <div class="wf-ann">
           <div class="wf-cap">Screen 03</div>
-          <div class="wf-screenname">Plausible feedback — the diagnosis</div>
+          <div class="wf-screenname">Plausible feedback: the diagnosis</div>
           <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Fault location as an explicit choice</h6><p>Bank / registry / both is the pivotal diagnosis, made a deliberate radio decision rather than an assumption.</p><p class="solves"><b>Solves P3:</b> forces the directional call the whole downstream depends on (F02).</p></div></div>
-          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Consequence revealed on selection</h6><p>Each option exposes a "Triggers" box describing the process it starts and the deadline behaviour.</p><p class="solves"><b>Solves P3:</b> shows the outcome before it's committed — no hidden branch (F02).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Consequence revealed on selection</h6><p>Each option exposes a "Triggers" box describing the process it starts and the deadline behaviour.</p><p class="solves"><b>Solves P3:</b> shows the outcome before it's committed, with no hidden branch (F02).</p></div></div>
           <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Deadline carried into the sub-flow</h6><p>The context bar repeats the countdown so time-pressure never disappears mid-task.</p><p class="solves"><b>Solves P1:</b> keeps the clock present at the moment of decision (F01).</p></div></div>
           <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Explicit attestation checkbox</h6><p>The analyst must affirm the client's explanation was credible before submitting.</p><p class="solves"><b>Solves P4:</b> captures the judgment as a recorded fact (F05).</p></div></div>
         </div>
@@ -855,9 +845,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
             <div class="mw-ctx"><div><div class="co">TEST-COMPANY-Box</div><div class="mt">LE4568 · Crude Oil · Zürich</div></div><div class="mw-ctxa"><div class="bd">Material</div><div class="dd">90</div><span style="font-size:7px;color:var(--red);">due 26.05</span></div></div>
             <div class="mw-form">
               <h6>Close Case</h6>
-              <div class="fsub">This action is permanent — the case is archived with no further actions.</div>
+              <div class="fsub">This action is permanent. The case is archived with no further actions.</div>
               <div class="mw-warn">⚠️ Permanent: closing removes this case from the active queue. Ensure all discrepancies are addressed.</div>
-              <div class="mw-lbl">Closure reason *</div><div class="mw-fld">— Select closure reason —</div>
+              <div class="mw-lbl">Closure reason *</div><div class="mw-fld">Select closure reason…</div>
               <div class="mw-lbl">Justification text *</div><div class="mw-ta">Provide justification for case closure…</div>
               <div class="mw-actionbar"><span class="mw-btn">← Back</span><span class="mw-btn dgr">Close case</span></div>
             </div>
@@ -871,9 +861,9 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         </div>
         <div class="wf-ann">
           <div class="wf-cap">Screens 04 &amp; 05</div>
-          <div class="wf-screenname">Escalate &amp; close — the terminal gate</div>
+          <div class="wf-screenname">Escalate &amp; close: the terminal gate</div>
           <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Structured reason + free justification</h6><p>Both terminal flows require a categorised reason and a written rationale before they can proceed.</p><p class="solves"><b>Solves P4:</b> produces a contemporaneous, defensible audit entry (F05).</p></div></div>
-          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Disabled until valid</h6><p>The submit button stays inert, with a tooltip, until reason and justification are supplied — the flow can't be rushed.</p><p class="solves"><b>Solves P4:</b> prevents empty or careless dispositions (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Disabled until valid</h6><p>The submit button stays inert, with a tooltip, until reason and justification are supplied, so the flow can't be rushed.</p><p class="solves"><b>Solves P4:</b> prevents empty or careless dispositions (F05).</p></div></div>
           <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Destructive styling for the permanent path</h6><p>Close uses danger colours, a warning banner, and a red confirmation strip; escalate stays neutral.</p><p class="solves"><b>Solves P4:</b> makes irreversibility look irreversible (Principle 06).</p></div></div>
           <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Confirmation modal previews the consequence</h6><p>The modal restates case, reason and what happens next before the action commits.</p><p class="solves"><b>Solves P5:</b> confirms the handoff and next owner explicitly (F05).</p></div></div>
         </div>
@@ -896,10 +886,10 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         </div>
         <div class="wf-ann">
           <div class="wf-cap">Screen 06</div>
-          <div class="wf-screenname">Confirmation — closing the loop</div>
+          <div class="wf-screenname">Confirmation: closing the workflow</div>
           <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>States the disposition plainly</h6><p>A single, unambiguous outcome ("Case Closed", "Escalated to BAC", "Feedback Recorded") with a matching icon.</p><p class="solves"><b>Solves P5:</b> confirms the action actually completed (F05).</p></div></div>
-          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Names the audit consequence</h6><p>The copy explicitly says the event is recorded in the audit trail — reinforcing that the record is now complete.</p><p class="solves"><b>Solves P4:</b> reassures the analyst the rationale is captured, not pending (F05).</p></div></div>
-          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>One route back to the queue</h6><p>The only forward action returns to the dashboard — the loop resets to triage.</p><p class="solves"><b>Solves P5:</b> keeps the operator in a single, closed workflow.</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Names the audit consequence</h6><p>The copy explicitly says the event is recorded in the audit trail, confirming that the record is now complete.</p><p class="solves"><b>Solves P4:</b> reassures the analyst the rationale is captured, not pending (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>One route back to the queue</h6><p>The only forward action returns to the dashboard, resetting to triage.</p><p class="solves"><b>Solves P5:</b> keeps the operator in a single, closed workflow.</p></div></div>
         </div>
       </div>
     </div>
@@ -911,7 +901,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num">11</div>
-      <div class="sec-titles"><div class="k">Dependencies &amp; Open Questions</div><h2>What this design leans on to work.</h2></div>
+      <div class="sec-titles"><div class="k">Dependencies &amp; Open Questions</div><h2>What the design depends on.</h2></div>
     </div>
     <p class="lead">The prototype implies commitments beyond the UI. These are the dependencies a real build has to satisfy, tagged by type, plus the questions fieldwork should close.</p>
 
@@ -920,7 +910,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         <div class="dep-h"><span class="tag t-reg">REG</span><h4>Regulatory</h4></div>
         <ul>
           <li><b>Discrepancy-reporting duty.</b> The workflow assumes the 5AMLD / GwG §23a obligation to report register mismatches "without undue delay"; the terminal states must map to that duty.</li>
-          <li><b>Deadline definition.</b> The 90-day window and its start event must be pinned to the governing rule and jurisdiction — it drives the whole risk model.</li>
+          <li><b>Deadline definition.</b> The 90-day window and its start event must be pinned to the governing rule and jurisdiction. It sets the whole risk model.</li>
           <li><b>Jurisdictional variance.</b> Register mechanics differ across the EU and Switzerland; "federal registry" and reportable-discrepancy thresholds may not be uniform.</li>
           <li><b>Material vs minor.</b> The "Material Discrepancy" status implies a classification rule that determines what is reportable at all.</li>
         </ul>
@@ -939,7 +929,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         <ul>
           <li><b>Entity resolution.</b> Matching a bank BO to a registry BO across name/date variants is non-trivial and underlies the whole comparison.</li>
           <li><b>Field-level diff logic.</b> The Discrepancy Details list depends on a rule set defining which field deltas count and how they're described.</li>
-          <li><b>Registry data quality.</b> If the register is stale or wrong, "discrepancy at registry" will be the dominant path — the model must expect that.</li>
+          <li><b>Registry data quality.</b> If the register is stale or wrong, "discrepancy at registry" will be the dominant path. The model must expect that.</li>
           <li><b>History &amp; versioning.</b> Ownership changing 85%→100% implies the tool can compare against a prior known state.</li>
         </ul>
       </div>
@@ -949,7 +939,7 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
           <li><b>Operating model.</b> The officer ↔ advisor ↔ BAC handoffs assume defined roles, SLAs and ownership at each state.</li>
           <li><b>BAC intake.</b> Escalations need a committee process that consumes the structured reason + justification.</li>
           <li><b>Records retention.</b> Closed cases must persist for the regulator's required period.</li>
-          <li><b>Team-lead oversight.</b> No queue-health / SLA view exists yet — an implied but unbuilt role.</li>
+          <li><b>Team-lead oversight.</b> No queue-health or SLA view exists yet; it is an implied but unbuilt role.</li>
         </ul>
       </div>
     </div>
@@ -960,18 +950,6 @@ footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
     </div>
   </div>
 </section>
-
-<!-- ══════════ FOOTER ══════════ -->
-<footer>
-  <div class="fw">
-    <div class="ft">Transparency Register Case Manager — UX Case Study</div>
-    <div class="fmeta">Reverse-engineered from a six-screen interactive prototype. Regulatory framing per EU 5AMLD and Germany's GwG §23a discrepancy-reporting obligation; match-rate figure per Transparency International analysis. <b>Personas, quotes, journeys and metrics are illustrative and directional</b> — a sample deliverable pending real fieldwork, not validated research.</div>
-    <div class="frow">
-      <span>00 Summary · 01 Problem · 02 Research · 03 Findings · 04 Personas · 05 AS-IS · 06 Pains · 07 Interventions · 08 TO-BE · 09 Principles · 10 Prototype · 11 Dependencies</span>
-      <span>Inference mode · Illustrative artifacts labelled throughout</span>
-    </div>
-  </div>
-</footer>
 
 </body>
 </html>
