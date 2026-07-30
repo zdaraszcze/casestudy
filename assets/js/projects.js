@@ -11,17 +11,53 @@
    ============================================================= */
 
 const SITE = {
-  // Browser tab title (nothing personal is shown on the page).
+  // Browser tab title.
   pageTitle: "Selected work",
 
-  // The only intro copy on the page.
+  /* ▼▼▼  REPLACE THESE TWO WITH YOUR REAL DETAILS  ▼▼▼
+     They are the only placeholders in the whole site. */
+  name: "Michal Dilaj",                                 // shown top-left + as the intro headline
+  linkedin: "https://www.linkedin.com/in/mdaiux/",      // your LinkedIn profile URL
+  /* ▲▲▲  REPLACE THESE TWO  ▲▲▲ */
+
+  // Sub-label under your name.
+  role: "Senior Product Designer",
+
+  // Intro copy (reused from your LinkedIn / existing bio). <b> bolds; <span class='accent'> colours.
   bio: "Engineer and senior product designer, <b>15+ years</b> in complex enterprise software: telecom, fintech, and regulated industries. I design <span class='accent'>AI-driven workflows</span> that close the gap between what systems can do and what people can actually use.",
+
+  // Small spec-sheet under the intro. Every value here is already stated in your bio — edit freely.
+  facts: [
+    { k: "Experience", v: "15+ years in enterprise software" },
+    { k: "Domains",    v: "Telecom · Fintech · Regulated industries" },
+    { k: "Focus",      v: "AI-driven workflows for complex systems" },
+  ],
+
+  // Small line in the footer.
+  footnote: "Selected work — enterprise UX across telecom, fintech & regulated industries.",
 };
 
 const PROJECTS = [
   {
-    id: "dm-for-singleran",
+    id: "onboarding",
     index: "01",
+    title: "Digital Assisted Onboarding",
+    subtitle: "Private-banking client onboarding",
+    client: "BSU · Private Banking",
+    year: "Prototype",
+    role: "UX Design · Prototype",
+    statusLabel: "Case study + live prototype",
+    oneLiner: "A guided client-onboarding journey that collapses paper-based KYC into one verified flow, cutting setup from weeks to under 5 days.",
+    summary: "A redesigned private-banking onboarding journey that captures client data once and guides it through source-of-wealth, signing, and go-live. It brings four roles into one system (client advisor, prospect, compliance, and formalities), collapses 28 manual formality steps into a single verified action, and adds AI-assisted risk review on the compliance side.",
+    discipline: ["UX Design", "Prototype", "FinTech", "KYC/AML"],
+    thumb: "images/thumbs/onboarding.jpg",
+    caseStudy: "case-studies/onboarding.html",
+    prototype: "prototypes/onboarding.html",
+    gallery: null,
+  },
+  {
+    id: "dm-for-singleran",
+    index: "02",
     title: "D&M for SingleRAN",
     subtitle: "Diagnostics & Maintenance",
     client: "Nokia · SingleRAN",
@@ -45,7 +81,7 @@ const PROJECTS = [
   },
   {
     id: "bsu-transparency-register",
-    index: "02",
+    index: "03",
     title: "Transparency Register",
     subtitle: "Case Manager",
     client: "BSU · Compliance",
@@ -58,23 +94,6 @@ const PROJECTS = [
     thumb: "images/thumbs/bsu.jpg",
     caseStudy: "case-studies/bsu-transparency-register.html",
     prototype: "prototypes/bsu-transparency-register.html",
-    gallery: null,
-  },
-  {
-    id: "onboarding",
-    index: "03",
-    title: "Digital Assisted Onboarding",
-    subtitle: "Private-banking client onboarding",
-    client: "BSU · Private Banking",
-    year: "Prototype",
-    role: "UX Design · Prototype",
-    statusLabel: "Case study + live prototype",
-    oneLiner: "A guided client-onboarding journey that collapses paper-based KYC into one verified flow, cutting setup from weeks to under 5 days.",
-    summary: "A redesigned private-banking onboarding journey that captures client data once and guides it through source-of-wealth, signing, and go-live. It brings four roles into one system (client advisor, prospect, compliance, and formalities), collapses 28 manual formality steps into a single verified action, and adds AI-assisted risk review on the compliance side.",
-    discipline: ["UX Design", "Prototype", "FinTech", "KYC/AML"],
-    thumb: "images/thumbs/onboarding.jpg",
-    caseStudy: "case-studies/onboarding.html",
-    prototype: "prototypes/onboarding.html",
     gallery: null,
   },
   {

@@ -379,3 +379,77 @@ body.fv-lock { overflow: hidden; }
   .exp-row { grid-template-columns: 1fr; gap: .25rem; }
   .exp-when { text-align: left; order: 3; }
 }
+
+/* =============================================================
+   LANDING CONSOLE v5 — single page: intro + inline case studies
+   + floating side-nav. (Appended; reuses tokens above.)
+   ============================================================= */
+
+/* intro spacing on the long page */
+.hero#intro { padding-bottom: clamp(2.5rem, 7vw, 5rem); }
+.hero#intro .hero-lead { max-width: 52ch; }
+.inline-link { color: var(--signal); border-bottom: 1px solid color-mix(in srgb, var(--signal) 35%, transparent); transition: color .2s, border-color .2s; }
+.inline-link:hover { color: var(--signal-2); border-color: var(--signal-2); }
+
+/* each case study = one section, clearly separated, same template */
+.case { position: relative; z-index: 1; padding-block: clamp(3rem, 8vw, 6rem); border-top: 1px solid var(--line); }
+.case:first-of-type { border-top: 0; }
+.case-head { padding-bottom: clamp(1.4rem, 4vw, 2.4rem); }
+.case-head .idx-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.case-idx { font-family: var(--mono); font-weight: 600; font-size: .8rem; letter-spacing: .12em; color: var(--signal); }
+.case-head .status { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.case .detail-title { font-size: clamp(1.9rem, 5vw, 3.4rem); }
+.case .metastrip { gap: 1.2rem 2.6rem; }
+
+/* =============================================================
+   FLOATING SIDE-NAV
+   ============================================================= */
+.sidenav {
+  position: fixed; z-index: 90; top: 50%; right: clamp(.6rem, 2vw, 1.6rem);
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: .12rem;
+  padding: .45rem; border-radius: 22px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px) saturate(1.3);
+  box-shadow: var(--shadow);
+  transition: border-radius .25s var(--ease);
+}
+.sidenav:hover { border-radius: 16px; }
+.sn-item {
+  display: flex; align-items: center; gap: 0;
+  padding: .4rem .42rem; border-radius: 100px;
+  font-family: var(--mono); color: var(--muted); white-space: nowrap;
+  transition: color .2s var(--ease), background .2s var(--ease), gap .25s var(--ease), padding .25s var(--ease);
+}
+.sn-tick {
+  width: 9px; height: 9px; flex: none; border-radius: 50%;
+  background: transparent; box-shadow: inset 0 0 0 1.7px var(--line-strong);
+  transition: background .2s, box-shadow .2s;
+}
+/* collapsed = dots only; index + label are fully hidden (no clipping) */
+.sn-idx, .sn-label {
+  display: inline-block; max-width: 0; opacity: 0; overflow: hidden;
+  transition: max-width .28s var(--ease), opacity .18s var(--ease);
+}
+.sn-idx   { font-size: .66rem; letter-spacing: .06em; color: var(--faint); }
+.sn-label { font-size: .76rem; letter-spacing: .02em; }
+/* on hover of the whole rail, every item opens together */
+.sidenav:hover .sn-item  { gap: .5rem; padding: .4rem .75rem .4rem .55rem; }
+.sidenav:hover .sn-idx   { max-width: 2.4rem; opacity: 1; }
+.sidenav:hover .sn-label { max-width: 14rem; opacity: 1; }
+.sn-item:hover { color: var(--text); background: var(--panel-2); }
+.sn-item.active { color: var(--text); }
+.sn-item.active .sn-tick { background: var(--signal); box-shadow: 0 0 0 3px var(--signal-dim); }
+.sn-top .sn-idx { display: none; }
+
+/* smaller screens: dock to a slim dots-only pill at the bottom (no labels) */
+@media (max-width: 860px) {
+  .sidenav { top: auto; bottom: 1rem; right: 50%; transform: translateX(50%); flex-direction: row; border-radius: 100px; }
+  .sidenav:hover .sn-item  { gap: 0; padding: .4rem .42rem; }
+  .sidenav:hover .sn-idx, .sidenav:hover .sn-label { max-width: 0; opacity: 0; }
+}
+@media (max-width: 420px) { .sidenav { display: none; } }
+
+/* full-view iframe: let case-study pages scroll inside the overlay */
+.fv-body iframe { height: 100%; }
