@@ -1,73 +1,52 @@
-# Portfolio — static, single-page
+# Portfolio
 
-A fast static site: a short **bio**, a grid of **three project cards**, and a
-**detail page** per project (the written case study and the prototype/screens
-side by side, with an in-site full-screen viewer). No framework, no build step,
-no backend. Ready for GitHub Pages.
-
-## Run locally
-```bash
-python3 -m http.server 8000   # then open http://localhost:8000
-```
-A local server is recommended so the `?id=` detail pages and the embedded
-case-study/prototype iframes behave exactly like production.
-
-## Edit content — one file
-Everything lives in **`assets/js/projects.js`**.
-
-**Intro bio** — top of the file:
-```js
-const SITE = {
-  pageTitle: "Selected work",           // browser tab title
-  bio: "Engineer and senior product designer … ", // the only intro copy (HTML ok)
-};
-```
-`<b>…</b>` bolds; `<span class='accent'>…</span>` colours a phrase in the accent blue.
-
-**Projects** — the `PROJECTS` array. Order here = order on the page (all cards
-are equal). Each entry:
-```js
-{
-  id: "graphwalk",                       // URL: project.html?id=graphwalk
-  title: "GraphWalk",                    // card + detail headline (the name)
-  subtitle: "Workspace & Virtual Path",  // descriptor (thumbnail label + detail kicker)
-  oneLiner: "Redesign of the workspace and the path-authoring flow…", // one factual line
-  client: "…", role: "…", year: "…",     // shown on the detail page meta strip
-  statusLabel: "Case study + live prototype",
-  discipline: ["UX Design","Prototype"], // tag pills
-  thumb: "images/thumbs/graphwalk.jpg",  // 16:10 image (~1280×800)
-  caseStudy: "case-studies/graphwalk.html",      // required
-  prototype: "prototypes/graphwalk.html",        // → adds a live-prototype panel
-  gallery: null,                          // …or an array of {src, cap, half} for a screens panel
-}
-```
-A project can have a `caseStudy` and/or a `prototype`/`gallery`. If it has two,
-the detail page shows them side by side; with one, it shows a single panel
-(e.g. a prototype-only project sets `caseStudy: null`). Every project needs a
-`thumb`. To add one: drop files into `/case-studies`, `/prototypes`, `/images`,
-then add an object here (order = order on the page).
+A single-page portfolio with four case studies. Each case study opens its full story and prototype in an in-page viewer (never a new tab), with shareable links like `#/tr/story` or `#/ran/screens`.
 
 ## Structure
+
 ```
-index.html            bio + three project cards
-project.html          detail page — reads ?id= from the URL
-assets/css/style.css  all styling (colour + type tokens at the top)
-assets/js/projects.js ← content: bio + projects
-assets/js/main.js     renders the landing page
-assets/js/project.js  renders detail pages (side-by-side + full-view overlay)
-case-studies/  prototypes/  images/  images/thumbs/
-.nojekyll             serve files as-is on GitHub Pages
+index.html              the landing page
+css/style.css           all styles and design tokens
+js/main.js              page behaviour, viewer, router, screens gallery
+js/hero.js              the 3D network in the hero (three.js, loaded from a CDN)
+case-studies/           full case study pages
+prototypes/             clickable prototypes
+assets/previews/        preview images for the landing page
+assets/singleran/       SingleRAN screens (full size + thumbnails)
+.nojekyll               tells GitHub Pages to serve files as-is
 ```
 
-## Deploy to GitHub Pages
-1. Push these files to the repo **root** on `main`.
-2. Settings → Pages → *Deploy from a branch* → `main` / `/ (root)`.
-3. Live at `https://<you>.github.io/<repo>/` (all paths are relative).
-Custom domain: add a `CNAME` file with your domain and set it under Settings → Pages.
+## Publish on GitHub Pages
 
-## Notes
-- **Fonts** (Archivo, Inter, IBM Plex Mono) load from Google Fonts via the `<link>`
-  in the HTML — the only external request; system-font fallbacks are in the CSS.
-- Single **cool light** palette; all colours are CSS variables at the top of `style.css`.
-- Responsive to mobile, keyboard focus states, `prefers-reduced-motion` respected,
-  images lazy-loaded. The full-view overlay supports Esc / ← → and stays in-site.
+1. Create a repository (for a personal site, name it `your-username.github.io`).
+2. Upload everything in this folder to the repository root, including `.nojekyll`.
+3. In the repository, go to Settings → Pages, set Source to "Deploy from a branch", choose `main` and `/ (root)`, and save.
+4. The site will be live at `https://your-username.github.io/` within a minute or two.
+
+## Test locally
+
+Opening `index.html` directly from disk won't load the 3D hero, because browsers block JavaScript modules on `file://`. Run a local server instead:
+
+```
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000.
+
+## What to edit
+
+Search `index.html` for `EDIT:` to find your name, the about text, and contact links. Add your CV as `assets/cv.pdf` or remove that link.
+
+To add or change a project, add an `<article class="case">` block in `index.html` and a matching entry in the `PROJECTS` object at the top of `js/main.js`.
+
+## Changes made to the supplied files
+
+- Removed the "Confidential · Internal Distribution Only" footer from both JPB case studies.
+- Replaced "BSU" with "JPB" in the Transparency Register prototype so it matches the case study.
+
+## Motion and accessibility
+
+- The 3D hero renders one still frame for people who have reduced motion turned on, and pauses when it's off-screen or the tab is hidden.
+- If WebGL isn't available, the hero falls back to a static background and the rest of the page works normally.
+- Scroll-linked effects use native CSS scroll-driven animations, with a small JavaScript fallback for browsers that don't support them yet.
+- The viewer is a native `<dialog>`: Esc and the browser back button both close it, and focus returns to the button that opened it.

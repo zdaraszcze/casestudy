@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D&amp;M for SingleRAN: UX Case Study · Multi-RAT BTS Operations Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F3EF;
+    --surface:#FFFFFF;
+    --ink:#191A17;
+    --muted:#6C6E67;
+    --faint:#9A9C93;
+    --accent:#005AFF;
+    --accent-soft:#E8F0FF;
+    --accent-line:#B8D2FF;
+    --line:#E3E1D8;
+    --line-2:#D6D4C9;
+    --red:#BF2E22;      --red-soft:#F8E9E7;
+    --green:#2C7A3E;    --green-soft:#E8F1E9;
+    --amber:#C88A00;    --amber-soft:#F8F0DD;
+    --slate:#7E8CA0;    --slate-soft:#EDEFF3;
+    --radius:3px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-size:13px;line-height:1.62;font-feature-settings:"cv05","ss01";
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  p{margin:0 0 .9em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .mono{font-variant-numeric:tabular-nums}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;background:rgba(244,243,239,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-2)}
+  .nav-in{max-width:var(--maxw);margin:0 auto;padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .nav-brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.02em;font-size:13px;white-space:nowrap}
+  .nav-brand .tag{font-weight:600;color:var(--accent);border:1px solid var(--accent-line);border-radius:2px;padding:1px 6px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase}
+  .nav-mark{width:7px;height:7px;background:var(--accent);flex-shrink:0}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-size:11px;color:var(--muted);padding:5px 8px;border-radius:2px;white-space:nowrap;font-weight:500}
+  .nav-links a:hover{color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:880px){.nav-links{display:none}}
+
+  /* HERO */
+  header.hero{background:linear-gradient(155deg,#00133D 0%,#001E5C 55%,#005AFF 130%);color:#EAF2FF;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:46px 46px;mask-image:radial-gradient(120% 100% at 80% 0%,#000 30%,transparent 75%);pointer-events:none}
+  .hero-in{max-width:var(--maxw);margin:0 auto;padding:70px 32px 54px;position:relative;z-index:1}
+  .hero .eyebrow{color:#7FB0FF}
+  .hero h1{font-size:clamp(34px,5vw,54px);font-weight:800;letter-spacing:-.03em;margin:16px 0 0;max-width:15ch}
+  .hero .sub{font-size:15px;line-height:1.6;color:#B9CFEF;max-width:62ch;margin-top:18px;font-weight:400}
+  .hero .meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .hero .meta span{font-size:10.5px;letter-spacing:.05em;color:#9DBBEE;border:1px solid rgba(143,180,230,.28);border-radius:2px;padding:3px 9px}
+  .stat-row{margin-top:38px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(143,180,230,.22);border:1px solid rgba(143,180,230,.22);border-radius:var(--radius);overflow:hidden}
+  .stat{background:#001C4D;padding:18px 18px 16px}
+  .stat .n{font-size:30px;font-weight:800;letter-spacing:-.03em;color:#EAF2FF;line-height:1}
+  .stat .l{font-size:10.5px;color:#9DBBEE;margin-top:8px;line-height:1.4}
+  .disclaimer{margin-top:26px;font-size:11px;color:#8FA7C6;border-left:2px solid #1F4E99;padding:6px 0 6px 14px;max-width:70ch}
+  @media(max-width:720px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  .rolebar{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+  @media(max-width:780px){.rolebar{grid-template-columns:repeat(2,1fr)}.rolebar>div{border-left:none !important;border-top:1px solid var(--line);padding:14px 0 !important}}
+
+  /* SECTION SHELL */
+  section{padding:56px 0;border-top:1px solid var(--line-2)}
+  .sec-head{display:flex;gap:20px;align-items:baseline;margin-bottom:28px}
+  .sec-num{font-size:clamp(30px,4vw,46px);font-weight:800;color:var(--accent-line);letter-spacing:-.04em;line-height:.85;flex:none;font-variant-numeric:tabular-nums}
+  .sec-titles .eyebrow{display:block;margin-bottom:5px}
+  .sec-titles h2{font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.02em}
+  .lead{font-size:14.5px;line-height:1.6;color:var(--ink);max-width:74ch}
+  .lead.muted{color:var(--muted)}
+
+  /* GRIDS */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  /* CARDS / ACCENT BOXES */
+  .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .accent-box{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);padding:20px 22px}
+  .accent-box.red{border-left-color:var(--red)}
+  .accent-box.green{border-left-color:var(--green)}
+  .accent-box.amber{border-left-color:var(--amber)}
+  .accent-box.slate{border-left-color:var(--slate)}
+  .card-k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .card-t{font-size:14px;font-weight:700;letter-spacing:-.01em;margin-bottom:7px}
+  .card-b{font-size:12.5px;color:var(--muted);line-height:1.55}
+  .trace{display:inline-block;margin-top:12px;font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--accent);background:var(--accent-soft);border-radius:2px;padding:2px 8px}
+  .trace.red{color:var(--red);background:var(--red-soft)}
+  .trace.slate{color:var(--slate);background:var(--slate-soft)}
+
+  /* TABLES */
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-size:12px}
+  thead th{background:#F0EFE9;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line-2)}
+  tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;color:var(--ink)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody td b{font-weight:600}
+  td .idc{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sev{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
+  .sev.hi{color:var(--red);background:var(--red-soft)}
+  .sev.med{color:var(--amber);background:var(--amber-soft)}
+  .sev.lo{color:var(--slate);background:var(--slate-soft)}
+
+  /* QUOTE */
+  blockquote{margin:0;font-style:italic;font-size:13px;line-height:1.55;color:var(--ink);border-left:2px solid var(--accent-line);padding-left:14px}
+  blockquote cite{display:block;font-style:normal;font-size:10.5px;letter-spacing:.04em;color:var(--faint);margin-top:8px;text-transform:uppercase;font-weight:600}
+
+  /* PERSONA */
+  .persona{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+  .persona .head{padding:16px 18px 14px;border-bottom:1px solid var(--line);border-top:3px solid var(--accent)}
+  .persona .role{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+  .persona .name{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-top:3px}
+  .persona .name span{font-weight:400;color:var(--faint);font-size:12px}
+  .attr{display:grid;grid-template-columns:96px 1fr;gap:0;font-size:11.5px}
+  .attr>div{padding:7px 18px;border-bottom:1px solid var(--line)}
+  .attr .k{color:var(--faint);font-weight:600;letter-spacing:.03em;background:#FAFAF7}
+  .attr .v{color:var(--ink)}
+  .persona .foot{padding:14px 18px;margin-top:auto}
+
+  /* DEP TAGS */
+  .dep-tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:2px;text-transform:uppercase}
+  .dep-REG{color:#7A5CB0;background:#EFEAF7}
+  .dep-TECH{color:var(--accent);background:var(--accent-soft)}
+  .dep-DATA{color:var(--green);background:var(--green-soft)}
+  .dep-ORG{color:var(--amber);background:var(--amber-soft)}
+  .dep-row{display:grid;grid-template-columns:78px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .dep-row:last-child{border-bottom:none}
+  .dep-row .d{font-size:12.5px;color:var(--muted)}
+  .dep-row .d b{color:var(--ink);font-weight:600}
+
+  /* WIREFRAME PANELS */
+  .wf-block{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start;margin-bottom:34px}
+  @media(max-width:900px){.wf-block{grid-template-columns:1fr}}
+  .wf{background:var(--surface);border:1px solid var(--line-2);border-radius:5px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .wf-chrome{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#EDECE6;border-bottom:1px solid var(--line-2)}
+  .wf-dot{width:9px;height:9px;border-radius:50%;background:#C9C7BD}
+  .wf-url{margin-left:10px;flex:1;background:#FBFBF8;border:1px solid var(--line);border-radius:3px;font-size:9.5px;color:var(--faint);padding:2px 9px;letter-spacing:.02em}
+  .wf-body{position:relative;padding:14px}
+  .anno-col h4{font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+  .anno-col .caption{font-size:11.5px;color:var(--faint);margin-bottom:14px}
+  .anno{display:grid;grid-template-columns:24px 1fr;gap:11px;margin-bottom:15px}
+  .anno .badge{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+  .anno .txt{font-size:11.8px;line-height:1.5}
+  .anno .txt b{font-weight:700}
+  .anno .txt .solve{display:block;color:var(--muted);margin-top:3px}
+  .anno .txt .solve::before{content:"Solves: ";font-weight:600;color:var(--red);font-size:10px;letter-spacing:.02em}
+
+  .pin{position:absolute;width:19px;height:19px;border-radius:50%;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);z-index:5;font-variant-numeric:tabular-nums}
+
+  /* MINI UI KIT (for wireframes) */
+  .u-panelrow{display:grid;grid-template-columns:0.9fr 1.9fr 1.1fr;gap:8px;height:290px}
+  .u-panel{border:1px solid var(--line);border-radius:3px;background:#FCFCFA;display:flex;flex-direction:column;min-width:0}
+  .u-ptitle{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line);background:#F3F2EC}
+  .u-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:#F3F2EC;overflow:hidden}
+  .u-tab{font-size:8.5px;padding:5px 7px;color:var(--faint);border-right:1px solid var(--line);white-space:nowrap}
+  .u-tab.on{background:#fff;color:var(--accent);font-weight:700;box-shadow:inset 0 -2px 0 var(--accent)}
+  .u-tree{padding:7px 8px;font-size:9.5px;line-height:1.85;overflow:hidden}
+  .u-tree .n{display:flex;align-items:center;gap:6px;color:var(--ink)}
+  .u-tree .n.sub{padding-left:14px}
+  .u-tree .n.sub2{padding-left:26px;color:var(--muted)}
+  .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .dot.g{background:var(--green)} .dot.r{background:var(--red)} .dot.a{background:var(--amber)} .dot.o{background:#fff;border:1.5px solid var(--slate)} .dot.s{background:var(--slate)}
+  .u-canvas{flex:1;position:relative;background:#FBFBF8;background-image:radial-gradient(var(--line) .8px,transparent .8px);background-size:15px 15px;overflow:hidden}
+  .node{position:absolute;border:1px solid var(--line-2);background:#fff;border-radius:3px;padding:5px 7px;font-size:8.5px;line-height:1.35;min-width:64px}
+  .node .nt{font-weight:700;font-size:8.5px;display:flex;align-items:center;gap:4px}
+  .node .nm{color:var(--faint);font-size:7.5px}
+  .node.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .node.fail{border-color:var(--red);background:var(--red-soft)}
+  .node.alarm{border-color:var(--line-2)}
+  .stream{position:absolute;background:#1f9bd6;color:#fff;font-size:7px;font-weight:600;padding:3px 5px;border-radius:3px;line-height:1.25;text-align:center}
+  .u-faults{padding:6px 8px;overflow:hidden}
+  .u-frow{display:grid;grid-template-columns:34px 1fr;gap:6px;font-size:8.5px;padding:4px 5px;border-bottom:1px solid var(--line);align-items:start}
+  .u-frow.hi{background:var(--red-soft)} .u-frow.med{background:var(--amber-soft)}
+  .u-frow .fid{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .u-mini-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:7px 8px 0}
+  .bell{color:var(--red);font-size:9px}
+
+  /* STATE MATRIX (wireframe) */
+  .state-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  @media(max-width:560px){.state-grid{grid-template-columns:repeat(2,1fr)}}
+  .st-cell{border:1px solid var(--line);border-radius:3px;padding:8px;background:#FBFBF8}
+  .st-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .st-mod{border:1.5px solid var(--line-2);border-radius:3px;background:#fff;padding:6px 7px;font-size:8.5px;line-height:1.3}
+  .st-mod .r{display:flex;align-items:center;gap:5px;font-weight:700}
+  .st-mod .s{color:var(--faint);font-size:7.5px;margin-top:2px}
+  .st-mod.hover{border-color:#3D82FF;box-shadow:0 0 0 2px #DCE9FF}
+  .st-mod.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);background:var(--accent-soft)}
+  .st-mod.failed{border-color:var(--red);background:var(--red-soft)}
+  .st-mod.undetected{border-style:dashed;border-color:var(--slate);background:#fff;opacity:.75}
+  .st-mod.alarm{border-color:var(--line-2)}
+  .st-mod.uncommissioned{border-color:var(--line-2);background:#F3F2EC;color:var(--muted)}
+
+  /* topology svg wrap */
+  .topo-wrap{width:100%;overflow-x:auto}
+  svg.topo{display:block;min-width:640px;width:100%;height:auto}
+
+  /* wizard wireframe */
+  .wz-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:12px;flex-wrap:wrap}
+  .wz-tab{font-size:9px;padding:6px 9px;color:var(--faint);border-bottom:2px solid transparent}
+  .wz-tab.on{color:var(--accent);font-weight:700;border-bottom-color:var(--accent)}
+  .wz-tab.err{color:var(--red)}
+  .wz-card{border:1px solid var(--line-2);border-radius:4px;padding:10px;max-width:270px;margin:0 auto;background:#FBFBF8}
+  .wz-mod{border:1px solid var(--line);border-radius:3px;background:#fff;padding:8px;margin-bottom:8px}
+  .wz-mod .t{font-size:9px;font-weight:700}
+  .wz-mod .t span{color:var(--faint);font-weight:400}
+  .wz-empty{border:1px dashed var(--line-2);height:16px;border-radius:2px;margin:6px 0;background:#fff}
+  .wz-add{border:1px dashed var(--accent-line);background:var(--accent-soft);border-radius:3px;text-align:center;padding:12px 6px;font-size:9px;font-weight:600;color:var(--accent);margin-bottom:8px}
+  .wz-add .plus{display:inline-flex;width:18px;height:18px;border-radius:3px;background:var(--accent);color:#fff;align-items:center;justify-content:center;font-size:12px;margin-bottom:4px}
+
+  ul.tight{margin:0;padding-left:17px}
+  ul.tight li{margin-bottom:6px;font-size:12.5px;color:var(--muted)}
+  ul.tight li b{color:var(--ink);font-weight:600}
+
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:20px;height:0;border-top:2px solid var(--accent)}
+  .legend .sw.dash{border-top-style:dashed}
+  .legend .sw.grey{border-top-color:var(--slate)}
+
+  footer{background:#00133D;color:#9DBBEE;padding:44px 0 40px;border-top:none}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:30px;justify-content:space-between}
+  footer h4{color:#EAF2FF;font-size:13px;margin-bottom:8px}
+  footer p{font-size:11.5px;line-height:1.6;max-width:46ch}
+  footer .fnote{font-size:10.5px;color:#7A93B8;border-left:2px solid #1F4E99;padding-left:12px;max-width:52ch}
+  footer a{color:#7FB0FF}
+
+  .kbd{font-size:10px;background:#F0EFE9;border:1px solid var(--line-2);border-radius:2px;padding:1px 5px;color:var(--muted);font-weight:600}
+  .rat-pill{font-size:9px;font-weight:700;letter-spacing:.05em;padding:1px 6px;border-radius:2px;border:1px solid currentColor}
+  .rat-lte{color:#1B7A3E} .rat-wcdma{color:#B45309} .rat-gsm{color:#005AFF}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <div class="nav-brand"><span class="nav-mark"></span>Nokia&nbsp;|&nbsp;D&amp;M&nbsp;·&nbsp;SingleRAN <span class="tag">UX Case Study</span></div>
+    <div class="nav-links">
+      <a href="#s00">00 Summary</a>
+      <a href="#s01">01 Problem</a>
+      <a href="#s02">02 Research</a>
+      <a href="#s03">03 Findings</a>
+      <a href="#s04">04 Personas</a>
+      <a href="#s05">05 AS-IS</a>
+      <a href="#s06">06 Pains</a>
+      <a href="#s07">07 Interventions</a>
+      <a href="#s08">08 TO-BE</a>
+      <a href="#s09">09 Principles</a>
+      <a href="#s10">10 Prototype</a>
+      <a href="#s11">11 Heuristics</a>
+      <a href="#s12">12 Impact</a>
+      <a href="#s13">13 Dependencies</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-in">
+    <span class="eyebrow">Nokia &nbsp;·&nbsp; Multi-RAT RAN Operations &nbsp;·&nbsp; UX Case Study &nbsp;·&nbsp; 2016</span>
+    <h1>One live view of the whole base station.</h1>
+    <p class="sub">
+      Diagnostics &amp; Maintenance for SingleRAN (D&amp;M) is a browser-based console for Single-RAN base stations. It takes the tangle of a live multi-technology site (its system and baseband modules, radio units, antenna lines, and the data streams between them) and renders it as a single, stateful topology that a field engineer at the cabinet and an operator at the NOC (network operations centre) can both read at a glance.
+    </p>
+    <div class="meta">
+      <span>GSM · WCDMA · LTE on one canvas</span>
+      <span>Site view · Cells view · Commissioning wizard</span>
+      <span>Fault &amp; alarm triage</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="n">7</div><div class="l">object states share one visual language, applied to every module type</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">radio access technologies represented on a single hardware canvas</div></div>
+      <div class="stat"><div class="n">20+</div><div class="l">distinct managed-object types, from cabinet to antenna carrier</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">staged, progressively-validated steps to commission a site</div></div>
+    </div>
+
+  </div>
+</header>
+
+<!-- ROLE / CONTEXT BAR -->
+<div style="background:var(--surface);border-bottom:1px solid var(--line-2)">
+  <div class="wrap rolebar">
+    <div style="padding:16px 18px 16px 0"><div class="card-k">Role</div><div style="font-size:12.5px;font-weight:600">Lead UX designer &amp; researcher</div></div>
+    <div style="padding:16px 18px;border-left:1px solid var(--line)"><div class="card-k">Focus</div><div style="font-size:12.5px;font-weight:600">Research · IA · interaction · visual system · prototype</div></div>
+    <div style="padding:16px 18px;border-left:1px solid var(--line)"><div class="card-k">Team</div><div style="font-size:12.5px;font-weight:600">1 PM · 2 front-end engineers · RAN domain SMEs</div></div>
+    <div style="padding:16px 18px;border-left:1px solid var(--line)"><div class="card-k">Timeline</div><div style="font-size:12.5px;font-weight:600">≈ 6 months · 2016</div></div>
+    <div style="padding:16px 0 16px 18px;border-left:1px solid var(--line)"><div class="card-k">Platform</div><div style="font-size:12.5px;font-weight:600">Browser-based internal tool · desktop</div></div>
+  </div>
+</div>
+
+<!-- 00 EXECUTIVE SUMMARY -->
+<section id="s00">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">00</div>
+      <div class="sec-titles"><span class="eyebrow">Executive Summary</span><h2>What the console does</h2></div>
+    </div>
+    <div class="g2" style="align-items:start">
+      <div>
+        <p class="lead">A Single-RAN base station is a dense hierarchy of physical hardware (a cabinet, one or more system modules, baseband sub-modules, radio modules, mast-head amplifiers, antennas, fans, power) wired together and mapped onto logical structures (cells, channel groups, antenna carriers), running three generations of mobile technology at once.</p>
+        <p class="lead muted">Historically that complexity lived in text fault logs, CLI output, and the engineer's own memory of the site. D&amp;M for SingleRAN puts it on one screen: a live topology where every object shows an unambiguous state, every physical and logical connection is drawn, and every alarm is shown on the module it came from. A guided wizard brings new hardware into service.</p>
+      </div>
+      <div class="accent-box">
+        <div class="card-k">The core move</div>
+        <div class="card-t">Draw the whole site as one live map.</div>
+        <div class="card-b">Replace lists and log lines with a spatial, stateful graph that matches how engineers already think about a site, module by module and link by link. Going from "an alarm fired" to "this radio, on this cell, over this cable" then becomes a matter of reading the screen rather than working it out.</div>
+        <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="rat-pill rat-gsm">GSM</span><span class="rat-pill rat-wcdma">WCDMA</span><span class="rat-pill rat-lte">LTE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 PROBLEM STATEMENT -->
+<section id="s01">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <div class="sec-titles"><span class="eyebrow">Problem Statement</span><h2>Why the base station is hard to operate</h2></div>
+    </div>
+    <p class="lead" style="margin-bottom:22px">Three properties of a modern base station make it hard to operate, and none of them are served by a flat, text-first tool.</p>
+    <div class="g3">
+      <div class="accent-box">
+        <div class="card-k">Density</div>
+        <div class="card-t">Dozens of objects, one chassis</div>
+        <div class="card-b">A single cabinet can hold a system module, extension modules, several baseband sub-modules and a stack of radio modules, each with its own serial number, product code, ports and health. A list scrolls; it doesn't show how they connect.</div>
+      </div>
+      <div class="accent-box">
+        <div class="card-k">Two kinds of connection</div>
+        <div class="card-t">Physical ≠ logical</div>
+        <div class="card-b">Cables and optical links (RP3/CPRI, S1) are one graph; the mapping of cells and antenna carriers onto radios is another. Engineers routinely misread one for the other, mis-locating faults.</div>
+      </div>
+      <div class="accent-box">
+        <div class="card-k">Multi-RAT, concurrently</div>
+        <div class="card-t">GSM, WCDMA and LTE at once</div>
+        <div class="card-b">The same hardware serves three technologies with three controllers (BSC, RNC, EPC/MME). Tools that split by technology hide the shared hardware that faults actually live on.</div>
+      </div>
+    </div>
+    <div class="accent-box red" style="margin-top:16px">
+      <div class="card-k" style="color:var(--red)">Consequence</div>
+      <div class="card-b" style="font-size:13px">When state is invisible and relationships are implicit, the time goes into <b>diagnosis</b> (which module, which link, which cell?) and <b>commissioning</b> (does what's plugged in match the plan?), not into the repair itself. Both lean on tribal knowledge, and both are where site visits over-run.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 RESEARCH APPROACH -->
+<section id="s02">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <div class="sec-titles"><span class="eyebrow">Research Approach</span><h2>How the design was researched</h2></div>
+    </div>
+    <div class="g2" style="align-items:start">
+      <div>
+        <p class="lead">The design is reasoned from three things: how the two operator roles actually work, the structure of the SingleRAN hardware domain, and an evaluation against established usability heuristics. Every decision in the prototype traces to a specific friction in the text-and-CLI workflow it replaces.</p>
+        <ul class="tight" style="margin-top:14px">
+          <li><b>Role modelling:</b> the field engineer working at the cabinet and the operator triaging remotely from the NOC, and where each loses time today.</li>
+          <li><b>Domain grounding:</b> the managed-object model (FSMF system module, FBBC baseband, RF modules, antenna line) and the two connection types, physical cabling and logical cell/carrier mapping.</li>
+          <li><b>Heuristic evaluation:</b> the design assessed against Nielsen's ten usability heuristics (see §11), including its weaknesses.</li>
+        </ul>
+      </div>
+      <div>
+        <table>
+          <thead><tr><th>Focus area</th><th>What it surfaced</th></tr></thead>
+          <tbody>
+            <tr><td><b>Field commissioning</b></td><td>Reconciling detected vs planned hardware by hand is the dominant time sink</td></tr>
+            <tr><td><b>NOC alarm triage</b></td><td>A fault ID without location or downstream impact drives unnecessary dispatch</td></tr>
+            <tr><td><b>Cross-RAT operations</b></td><td>Physical cabling and logical cell mapping get confused for one another</td></tr>
+            <tr><td><b>Managed-object model</b></td><td>Engineers reason in topology; the hierarchy needs a spatial form</td></tr>
+            <tr><td><b>Prior text/CLI tooling</b></td><td>State is invisible and has to be re-learned screen by screen</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 KEY FINDINGS -->
+<section id="s03">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <div class="sec-titles"><span class="eyebrow">Key Findings</span><h2>What engineers need from the console</h2></div>
+    </div>
+    <div class="g3">
+      <div class="box"><div class="card-k">Finding 01</div><div class="card-t">Engineers reason in topology, not in tables</div><div class="card-b">The primary workspace is a node-and-link canvas, not a grid. The site is modelled as a graph because that is the mental model people already hold.</div><span class="trace">Visible in: Site &amp; Cells view canvas</span></div>
+      <div class="box"><div class="card-k">Finding 02</div><div class="card-t">State must read at a glance, uniformly</div><div class="card-b">A single visual language (colour, fill, outline, badge) is applied identically across every object type, so a green dot means the same thing on a fan as on a cell.</div><span class="trace">Visible in: 7-state element matrix</span></div>
+      <div class="box"><div class="card-k">Finding 03</div><div class="card-t">Physical and logical links must be distinguishable</div><div class="card-b">Cabling and the cell/carrier mapping are drawn as different line treatments so a fault can be placed on the right layer.</div><span class="trace">Visible in: Cells view connections</span></div>
+      <div class="box"><div class="card-k">Finding 04</div><div class="card-t">"Not there yet" needs its own states</div><div class="card-b">Undetected (planned, absent) and Uncommissioned (present, unconfigured) are separated from Failed. In a log the three look identical, but they need different actions.</div><span class="trace">Visible in: Undetected / Uncommissioned states</span></div>
+      <div class="box"><div class="card-k">Finding 05</div><div class="card-t">A fault is only useful when it's tied to its object</div><div class="card-b">Faults, KPIs, parameters and info live in an object-scoped panel that follows selection, not in a detached global list.</div><span class="trace">Visible in: Details → Faults panel</span></div>
+      <div class="box"><div class="card-k">Finding 06</div><div class="card-t">Commissioning is knowledge-heavy and error-prone</div><div class="card-b">Bring-up is staged, and its errors are split into definition, relation and hardware classes, showing what to fix and where the mismatch is.</div><span class="trace">Visible in: Commissioning wizard tabs</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 PERSONAS -->
+<section id="s04">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <div class="sec-titles"><span class="eyebrow">Personas</span><h2>Who the console is for</h2></div>
+    </div>
+    <p class="lead muted" style="margin-bottom:22px">Three roles the console has to serve, from the cabinet to the NOC.</p>
+    <div class="g3">
+      <!-- Persona 1 -->
+      <div class="persona">
+        <div class="head">
+          <div class="role">Primary · Field Service Engineer</div>
+          <div class="name">Marek <span>· 38, on the mast</span></div>
+        </div>
+        <div class="attr">
+          <div class="k">Context</div><div class="v">At the cabinet, laptop tethered to the BTS local port</div>
+          <div class="k">Goal</div><div class="v">Commission or swap hardware and leave with every module green</div>
+          <div class="k">Reaches for</div><div class="v">Commissioning wizard · Site view · Undetected/Uncommissioned states</div>
+          <div class="k">Frustration</div><div class="v">Can't tell wrong-part from unseated-cable from not-yet-configured</div>
+        </div>
+        <div class="foot"><blockquote>If the plan expects a module and it isn't lighting up green, I need to know in one glance whether it's the wrong part, a bad cable, or just not commissioned yet.<cite>Field Service Engineer</cite></blockquote></div>
+      </div>
+      <!-- Persona 2 -->
+      <div class="persona">
+        <div class="head">
+          <div class="role">Primary · NOC Operator</div>
+          <div class="name">Aleksandra <span>· 31, remote</span></div>
+        </div>
+        <div class="attr">
+          <div class="k">Context</div><div class="v">Watching many sites; triaging alarms as they arrive</div>
+          <div class="k">Goal</div><div class="v">Decide, fast: dispatch a truck, or clear it from the desk</div>
+          <div class="k">Reaches for</div><div class="v">Faults panel · Alarms state · Site view · KPIs</div>
+          <div class="k">Frustration</div><div class="v">A fault ID with no location or downstream impact</div>
+        </div>
+        <div class="foot"><blockquote>An alarm ID means nothing until I can see which radio it's on and what it feeds. Otherwise I'm rolling a truck on a guess.<cite>NOC Operator</cite></blockquote></div>
+      </div>
+      <!-- Persona 3 -->
+      <div class="persona">
+        <div class="head">
+          <div class="role">Secondary · Integration / L2 Support</div>
+          <div class="name">Tomáš <span>· 44, back office</span></div>
+        </div>
+        <div class="attr">
+          <div class="k">Context</div><div class="v">Handles escalations the field and NOC can't close</div>
+          <div class="k">Goal</div><div class="v">Reconstruct the site's real wiring and cell mapping</div>
+          <div class="k">Reaches for</div><div class="v">Cells view · Data streams · Diagnostic · Developer tools</div>
+          <div class="k">Frustration</div><div class="v">People read a physical link as a logical one, or the reverse</div>
+        </div>
+        <div class="foot"><blockquote>Half my escalations are somebody reading a cable as a carrier mapping. Draw the two layers apart and the ticket closes itself.<cite>Integration / L2 Support</cite></blockquote></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 AS-IS JOURNEY -->
+<section id="s05">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <div class="sec-titles"><span class="eyebrow">AS-IS Journey</span><h2>How the work happens today</h2></div>
+    </div>
+    <p class="lead muted" style="margin-bottom:18px">Two representative flows before a topology-first console: fault triage (Aleksandra) and site bring-up (Marek).</p>
+    <table>
+      <thead><tr><th style="width:30px">#</th><th>Stage</th><th>Actor</th><th>Tool today</th><th>Friction</th></tr></thead>
+      <tbody>
+        <tr><td class="idc">1</td><td>Alarm arrives</td><td>NOC</td><td>Fault manager list</td><td>ID + text string, no location or hardware context</td></tr>
+        <tr><td class="idc">2</td><td>Locate the object</td><td>NOC</td><td>Memory · site records</td><td>Manual lookup of which module/serial the fault belongs to</td></tr>
+        <tr><td class="idc">3</td><td>Trace downstream impact</td><td>NOC → L2</td><td>CLI · wiring notes</td><td>No view of which cells/carriers the faulty unit feeds</td></tr>
+        <tr><td class="idc">4</td><td>Dispatch decision</td><td>NOC</td><td>Judgement</td><td>Truck rolled on incomplete picture; repeat visits</td></tr>
+        <tr><td class="idc">5</td><td>On-site: what's present?</td><td>Field</td><td>Visual + CLI scan</td><td>Detected vs planned reconciled by hand</td></tr>
+        <tr><td class="idc">6</td><td>Commission the site</td><td>Field</td><td>Wizard + spreadsheets</td><td>Parameter errors surface late, mixed with wiring errors</td></tr>
+        <tr><td class="idc">7</td><td>Verify all green</td><td>Field</td><td>Re-scan logs</td><td>No single confirmation that plan == reality</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 06 PAIN POINTS -->
+<section id="s06">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <div class="sec-titles"><span class="eyebrow">Pain Points</span><h2>Where time is lost today</h2></div>
+    </div>
+    <div class="g2">
+      <div class="accent-box red"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P01 · Faults have no home</div><span class="sev hi">High</span></div><div class="card-b">An alarm is a code and a string, detached from the module it describes and the services it affects.</div><span class="trace red">Derived from: Finding 05</span></div>
+      <div class="accent-box red"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P02 · The two link layers blur</div><span class="sev hi">High</span></div><div class="card-b">Physical cabling and logical cell/carrier mapping are held in the head, so faults land on the wrong layer.</div><span class="trace red">Derived from: Finding 03</span></div>
+      <div class="accent-box amber"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P03 · "Absent" is ambiguous</div><span class="sev med">Med</span></div><div class="card-b">Undetected, uncommissioned and failed all read as "not working," yet each needs a different action.</div><span class="trace">Derived from: Finding 04</span></div>
+      <div class="accent-box amber"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P04 · Multi-RAT is siloed</div><span class="sev med">Med</span></div><div class="card-b">Splitting tools by GSM/WCDMA/LTE hides the shared hardware that faults actually sit on.</div><span class="trace">Derived from: Finding 01</span></div>
+      <div class="accent-box amber"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P05 · Commissioning errors arrive late and mixed</div><span class="sev med">Med</span></div><div class="card-b">Parameter, relation and hardware problems surface together at the end, hard to attribute and fix.</div><span class="trace">Derived from: Finding 06</span></div>
+      <div class="accent-box slate"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div class="card-t">P06 · No single "plan == reality" check</div><span class="sev lo">Low</span></div><div class="card-b">Nothing confirms in one place that what's installed matches what was planned and configured.</div><span class="trace slate">Derived from: Finding 02, 04</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 INTERVENTION CATALOGUE -->
+<section id="s07">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <div class="sec-titles"><span class="eyebrow">Intervention Catalogue</span><h2>Source pain → design response → target outcome</h2></div>
+    </div>
+    <table>
+      <thead><tr><th style="width:70px">Ref</th><th>Source pain</th><th>Design response (visible in prototype)</th><th>Target outcome</th></tr></thead>
+      <tbody>
+        <tr><td class="idc">IV-01</td><td>P01 Faults have no home</td><td>Object-scoped Details panel (Info / Parameters / <b>Faults</b> / KPI) follows canvas selection; each fault row links back to its module</td><td>Alarm → module → impact read in one selection</td></tr>
+        <tr><td class="idc">IV-02</td><td>P02 Link layers blur</td><td>Distinct line treatments for physical cabling vs logical cell/carrier mapping, with labelled data streams (throughput, AxC)</td><td>Faults placed on the correct layer first time</td></tr>
+        <tr><td class="idc">IV-03</td><td>P03 "Absent" is ambiguous</td><td>Separate <b>Undetected</b>, <b>Uncommissioned</b> and <b>Failed</b> states in the shared visual language</td><td>Right corrective action chosen without a truck-roll</td></tr>
+        <tr><td class="idc">IV-04</td><td>P04 Multi-RAT siloed</td><td>One canvas carrying GSM, WCDMA and LTE together, with per-cell RAT tagging and shared-hardware nodes</td><td>Shared-hardware faults seen across all three RATs</td></tr>
+        <tr><td class="idc">IV-05</td><td>P05 Late, mixed errors</td><td>Staged wizard splitting <b>Definition</b>, <b>Relation</b> and <b>Hardware</b> errors into their own tabs, validated progressively</td><td>Errors attributed and fixed at their stage</td></tr>
+        <tr><td class="idc">IV-06</td><td>P06 No plan==reality check</td><td>Runtime view overlays detected hardware on the planned model; add-affordances show what the plan still expects</td><td>Single confirmation the site is built as planned</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 08 TO-BE JOURNEY -->
+<section id="s08">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">08</div>
+      <div class="sec-titles"><span class="eyebrow">TO-BE Journey</span><h2>The workflow with the console</h2></div>
+    </div>
+    <table>
+      <thead><tr><th style="width:30px">#</th><th>Stage</th><th>Actor</th><th>With D&amp;M for SingleRAN</th><th>Time cost</th></tr></thead>
+      <tbody>
+        <tr><td class="idc">1</td><td>Alarm arrives</td><td>NOC</td><td>Faulty object is already highlighted red on the site canvas</td><td>Seconds</td></tr>
+        <tr><td class="idc">2</td><td>Read impact</td><td>NOC</td><td>Select it → Faults panel + the cells/streams it feeds light up downstream</td><td>Seconds</td></tr>
+        <tr><td class="idc">3</td><td>Dispatch decision</td><td>NOC</td><td>Undetected vs Failed vs Alarm makes truck-or-desk obvious</td><td>Low</td></tr>
+        <tr><td class="idc">4</td><td>On-site: present?</td><td>Field</td><td>Runtime view shows detected hardware against the plan instantly</td><td>Low</td></tr>
+        <tr><td class="idc">5</td><td>Commission</td><td>Field</td><td>Staged wizard flags definition/relation/hardware errors in place</td><td>Reduced rework</td></tr>
+        <tr><td class="idc">6</td><td>Verify</td><td>Field</td><td>Every object green on one canvas = plan matches reality</td><td>One glance</td></tr>
+      </tbody>
+    </table>
+    <div class="accent-box green" style="margin-top:16px">
+      <div class="card-k" style="color:var(--green)">Net shift</div>
+      <div class="card-b" style="font-size:13px">Diagnosis becomes reading the canvas rather than reconstructing the topology from logs, and commissioning catches errors at each stage rather than all at once at the end. The steps that were slow in the current flow are handled by the tool rather than in the engineer's head.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 DESIGN PRINCIPLES -->
+<section id="s09">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">09</div>
+      <div class="sec-titles"><span class="eyebrow">Design Principles</span><h2>The principles behind the design</h2></div>
+    </div>
+    <div class="g2">
+      <div class="box"><div class="card-t">DP-01 · Topology is the primary object</div><div class="card-b">The site is a graph you navigate. Details, faults and params are shown for whatever object you select on that graph.</div><span class="trace">Derived from: Finding 01 · Pain P04</span></div>
+      <div class="box"><div class="card-t">DP-02 · One state language, everywhere</div><div class="card-b">Colour, fill, outline and badge mean the same thing on every object type. Learn the grammar once; apply it to the whole site.</div><span class="trace">Derived from: Finding 02 · Pain P06</span></div>
+      <div class="box"><div class="card-t">DP-03 · Draw both layers, keep them apart</div><div class="card-b">Physical and logical connections are always both visible, but never rendered the same way. The distinction is the whole point.</div><span class="trace">Derived from: Finding 03 · Pain P02</span></div>
+      <div class="box"><div class="card-t">DP-04 · Detail is object-scoped and one click away</div><div class="card-b">Info, parameters, faults and KPIs follow the selected object. Context is never detached from the thing it describes.</div><span class="trace">Derived from: Finding 05 · Pain P01</span></div>
+      <div class="box"><div class="card-t">DP-05 · Validate progressively, in place</div><div class="card-b">Errors are classed and staged so problems are caught where they arise, not dumped at the end of commissioning.</div><span class="trace">Derived from: Finding 06 · Pain P05</span></div>
+      <div class="box"><div class="card-t">DP-06 · Multi-RAT parity</div><div class="card-b">GSM, WCDMA and LTE are shown as equals on shared hardware. No technology is a second-class citizen or a separate tool.</div><span class="trace">Derived from: Finding 01 · Pain P04</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 PROTOTYPE SPECIFICATION -->
+<section id="s10">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">10</div>
+      <div class="sec-titles"><span class="eyebrow">Prototype Specification</span><h2>The screens, annotated</h2></div>
+    </div>
+    <p class="lead muted" style="margin-bottom:34px">Four core screens, rebuilt as annotated wireframes. Each annotation names the design decision and the problem it removes.</p>
+
+    <!-- 10.1 RUNTIME WORKSPACE -->
+    <div class="wf-block">
+      <div class="wf">
+        <div class="wf-chrome"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-url">admin · D&amp;M for SingleRAN · BTS runtime view · Site: Marcysia</span></div>
+        <div class="wf-body">
+          <div class="pin" style="top:20px;left:8px">1</div>
+          <div class="pin" style="top:20px;left:38%">2</div>
+          <div class="pin" style="top:170px;left:52%">3</div>
+          <div class="pin" style="top:58px;left:415px">4</div>
+          <div class="pin" style="top:20px;left:520px">5</div>
+          <div class="u-panelrow">
+            <!-- objects tree -->
+            <div class="u-panel">
+              <div class="u-tabs"><span class="u-tab">Timeline</span><span class="u-tab on">Objects</span><span class="u-tab">Errors</span></div>
+              <div class="u-tree">
+                <div class="n"><span class="dot g"></span>TRANSPORT MODULES</div>
+                <div class="n sub"><span class="dot g"></span>MME-1</div>
+                <div class="n"><span class="dot g"></span>SYSTEM MODULES</div>
+                <div class="n sub"><span class="dot g"></span>CABINET-1</div>
+                <div class="n sub2"><span class="dot g"></span>SMOD-1</div>
+                <div class="n"><span class="dot g"></span>RADIO MODULES</div>
+                <div class="n sub"><span class="dot r"></span>RMOD-1</div>
+                <div class="n sub"><span class="dot a"></span>RMOD-2</div>
+                <div class="n sub"><span class="dot g"></span>RMOD-3</div>
+                <div class="n"><span class="dot g"></span>CELLS</div>
+                <div class="n sub"><span class="dot g"></span>LNCELL-1</div>
+              </div>
+            </div>
+            <!-- canvas -->
+            <div class="u-panel">
+              <div class="u-tabs"><span class="u-tab">Cells</span><span class="u-tab on">Site</span><span class="u-tab">Data streams</span><span class="u-tab">Diagnostic</span></div>
+              <div class="u-canvas">
+                <div class="node" style="top:14px;left:12px"><div class="nt"><span class="dot g"></span>BSC · GSM</div><div class="nm">10.46.101.47</div></div>
+                <div class="node sel" style="top:70px;left:96px"><div class="nt"><span class="dot g"></span>SMOD-1 · LTE</div><div class="nm">FSMF · SN 472181A</div></div>
+                <div class="stream" style="top:96px;left:200px">1.83m · 6144Mb/s<br>Config &amp; Data Sync</div>
+                <div class="node fail" style="top:30px;right:12px"><div class="nt"><span class="bell">▲</span>RMODE-1</div><div class="nm">FXED</div></div>
+                <div class="node" style="top:150px;right:16px"><div class="nt"><span class="dot g"></span>PHYANT-7</div></div>
+                <div class="node" style="bottom:14px;left:120px"><div class="nt"><span class="dot g"></span>BBMOD-1</div><div class="nm">FBBC</div></div>
+                <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none">
+                  <path d="M70 30 C 120 40, 120 90, 150 96" fill="none" stroke="#005AFF" stroke-width="1.4"/>
+                  <path d="M230 96 C 300 96, 320 60, 360 55" fill="none" stroke="#005AFF" stroke-width="1.4" stroke-dasharray="4 3"/>
+                  <path d="M160 120 C 240 180, 320 180, 400 170" fill="none" stroke="#9A9C93" stroke-width="1.2"/>
+                </svg>
+              </div>
+            </div>
+            <!-- details -->
+            <div class="u-panel">
+              <div class="u-tabs"><span class="u-tab">Info</span><span class="u-tab">Param</span><span class="u-tab on">Faults</span><span class="u-tab">KPI</span></div>
+              <div style="padding:6px 8px 2px"><div style="font-size:10px;font-weight:700">SMOD-1</div><div style="font-size:7.5px;color:var(--faint)">Flexi system module outdoor FSMF</div></div>
+              <div class="u-faults">
+                <div class="u-frow hi"><span class="fid">7108</span><span>ToP master service 10.44.44.106 unusable</span></div>
+                <div class="u-frow med"><span class="fid">7107</span><span>RNC/FLEXI signalling link failure</span></div>
+                <div class="u-frow hi"><span class="fid">7109</span><span>Transport layer S1 connection failure</span></div>
+                <div class="u-frow"><span class="fid">65984</span><span>Some connectors are missing</span></div>
+                <div class="u-frow"><span class="fid">12342</span><span>SW release downloaded</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="anno-col">
+        <h4>10.1 · Runtime workspace</h4>
+        <div class="caption">Three-panel console: object tree · topology canvas · object detail.</div>
+        <div class="anno"><span class="badge">1</span><div class="txt"><b>Object tree with per-node status dots.</b> The managed-object hierarchy is browsable and every node carries its own health colour.<span class="solve">a flat fault log that never shows where an object sits in the site.</span></div></div>
+        <div class="anno"><span class="badge">2</span><div class="txt"><b>Topology canvas as the primary surface</b>, fronted by Site / Cells / Data-streams tabs.<span class="solve">reasoning about a graph through a table.</span></div></div>
+        <div class="anno"><span class="badge">3</span><div class="txt"><b>Data-stream label on the link:</b> throughput and purpose printed on the connection itself.<span class="solve">invisible link capacity and role.</span></div></div>
+        <div class="anno"><span class="badge">4</span><div class="txt"><b>Failed module rendered red, in place</b> on the canvas the moment it faults.<span class="solve">hunting for the faulty unit in a list.</span></div></div>
+        <div class="anno"><span class="badge">5</span><div class="txt"><b>Object-scoped Faults tab</b> (beside Info/Params/KPI) follows selection; rows link back to the module.<span class="solve">alarms detached from the thing they describe (Pain P01).</span></div></div>
+      </div>
+    </div>
+
+    <!-- 10.2 STATE LANGUAGE -->
+    <div class="wf-block">
+      <div class="wf">
+        <div class="wf-chrome"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-url">admin · D&amp;M for SingleRAN · element state reference</span></div>
+        <div class="wf-body">
+          <div class="pin" style="top:22px;left:14px">1</div>
+          <div class="pin" style="top:22px;right:14px">2</div>
+          <div class="pin" style="bottom:60px;left:24%">3</div>
+          <div class="pin" style="bottom:60px;left:52%">4</div>
+          <div class="state-grid">
+            <div class="st-cell"><div class="st-lbl">Normal</div><div class="st-mod"><div class="r"><span class="dot g"></span>SMOD-1</div><div class="s">on air · detected</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Hover</div><div class="st-mod hover"><div class="r"><span class="dot g"></span>SMOD-1</div><div class="s">actionable</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Selected</div><div class="st-mod selected"><div class="r"><span class="dot g"></span>SMOD-1</div><div class="s">detail loaded</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Failed</div><div class="st-mod failed"><div class="r"><span class="bell">▲</span>SMOD-1</div><div class="s">fault active</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Undetected</div><div class="st-mod undetected"><div class="r"><span class="dot o"></span>SMOD-1</div><div class="s">planned · absent</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Alarms</div><div class="st-mod alarm"><div class="r"><span class="dot g"></span>SMOD-1 <span class="bell">🔔</span></div><div class="s">alarm, still up</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Uncommissioned</div><div class="st-mod uncommissioned"><div class="r"><span class="dot g"></span>SMOD-1 🔧</div><div class="s">present · unconfigured</div></div></div>
+            <div class="st-cell"><div class="st-lbl">Applies to all</div><div class="st-mod" style="border-style:dashed"><div class="r">Cabinet · Radio · Antenna · Cell · Fan</div><div class="s">same grammar</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="anno-col">
+        <h4>10.2 · The state language</h4>
+        <div class="caption">One grammar of colour, fill, outline and badge, applied to every object type.</div>
+        <div class="anno"><span class="badge">1</span><div class="txt"><b>Green = normal / on-air, red = failed, amber = alarm.</b> The colour semantics never change between object types.<span class="solve">state you have to re-learn per screen (Pain P06).</span></div></div>
+        <div class="anno"><span class="badge">2</span><div class="txt"><b>Hover and Selected are distinct affordances:</b> one signals "actionable," the other "detail is loaded on the right."<span class="solve">not knowing what you're about to act on.</span></div></div>
+        <div class="anno"><span class="badge">3</span><div class="txt"><b>Undetected is its own state:</b> planned but absent, drawn hollow and dashed rather than red.<span class="solve">"missing" being confused with "broken" (Pain P03).</span></div></div>
+        <div class="anno"><span class="badge">4</span><div class="txt"><b>Uncommissioned carries a wrench icon, not an alarm bell:</b> present hardware that still needs configuration.<span class="solve">a truck rolled for something that just needs commissioning.</span></div></div>
+      </div>
+    </div>
+
+    <!-- 10.3 CELLS VIEW TOPOLOGY -->
+    <div class="wf-block">
+      <div class="wf">
+        <div class="wf-chrome"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-url">admin · D&amp;M for SingleRAN · Cells view · physical + logical</span></div>
+        <div class="wf-body">
+          <div class="pin" style="top:6px;left:6%">1</div>
+          <div class="pin" style="top:6px;left:40%">2</div>
+          <div class="pin" style="top:6px;left:66%">3</div>
+          <div class="pin" style="top:6px;right:6px">4</div>
+          <div class="topo-wrap">
+          <svg class="topo" viewBox="0 0 660 300" role="img" aria-label="Cells view topology from core to cell">
+            <defs>
+              <style>
+                .lbl{font:600 8px Inter,sans-serif;fill:#191A17}
+                .sub{font:5.5px Inter,sans-serif;fill:#9A9C93}
+                .box{fill:#fff;stroke:#D6D4C9;stroke-width:1;rx:3}
+              </style>
+            </defs>
+            <!-- physical solid links -->
+            <g fill="none" stroke="#005AFF" stroke-width="1.4">
+              <path d="M78 60 C 120 60, 120 120, 150 120"/>
+              <path d="M78 90 C 120 90, 140 150, 150 150"/>
+              <path d="M240 120 C 300 120, 300 70, 340 70"/>
+              <path d="M240 150 C 300 150, 320 120, 360 120"/>
+            </g>
+            <!-- logical dashed links -->
+            <g fill="none" stroke="#3D82FF" stroke-width="1.2" stroke-dasharray="4 3">
+              <path d="M430 70 C 480 70, 500 110, 540 110"/>
+              <path d="M430 120 C 480 120, 500 150, 540 150"/>
+              <path d="M240 190 C 320 210, 460 200, 540 180"/>
+            </g>
+            <!-- core -->
+            <rect class="box" x="16" y="30" width="62" height="22" rx="3"/><circle cx="24" cy="41" r="3" fill="#2C7A3E"/><text class="lbl" x="32" y="40">BSC</text><text class="sub" x="32" y="48">GSM</text>
+            <rect class="box" x="16" y="58" width="62" height="22" rx="3"/><circle cx="24" cy="69" r="3" fill="#2C7A3E"/><text class="lbl" x="32" y="68">RNC</text><text class="sub" x="32" y="76">WCDMA</text>
+            <rect class="box" x="16" y="86" width="62" height="22" rx="3"/><circle cx="24" cy="97" r="3" fill="#2C7A3E"/><text class="lbl" x="32" y="96">EPC</text><text class="sub" x="32" y="104">LTE · MME</text>
+            <!-- cabinet / baseband -->
+            <rect class="box" x="150" y="95" width="90" height="120" rx="4"/><text class="lbl" x="160" y="110">CABINET-1</text><text class="sub" x="160" y="118">SMOD · BBMOD</text>
+            <circle cx="156" cy="122" r="3" fill="#2C7A3E"/><text class="sub" x="163" y="125" style="font-size:6px">SMOD-1 · FSMF</text>
+            <circle cx="156" cy="152" r="3" fill="#2C7A3E"/><text class="sub" x="163" y="155" style="font-size:6px">BBMOD-1 · FBBC</text>
+            <circle cx="156" cy="190" r="3" fill="#2C7A3E"/><text class="sub" x="163" y="193" style="font-size:6px">FAN group</text>
+            <!-- radio module (failed) -->
+            <rect x="340" y="52" width="90" height="120" rx="4" fill="#F8E9E7" stroke="#BF2E22" stroke-width="1.2"/><text class="lbl" x="352" y="67" fill="#BF2E22">▲ RMODE-1</text><text class="sub" x="352" y="75">FXED · failed</text>
+            <rect x="350" y="82" width="70" height="10" fill="#fff" stroke="#e3c3c0"/><text class="sub" x="356" y="90" style="font-size:5px">ANT1 · ANT2 · ANT3</text>
+            <rect x="350" y="98" width="70" height="10" fill="#fff" stroke="#e3c3c0"/><text class="sub" x="356" y="106" style="font-size:5px">RF_EXT · RET</text>
+            <!-- antenna line -->
+            <rect class="box" x="540" y="52" width="104" height="52" rx="3"/><circle cx="548" cy="65" r="3" fill="#2C7A3E"/><text class="lbl" x="556" y="64">PHYANT-7</text><text class="sub" x="556" y="73">MHA · LNA · RET</text>
+            <rect class="box" x="540" y="112" width="104" height="70" rx="3"/><text class="lbl" x="550" y="127" fill="#1B7A3E">CHANNEL GROUP</text>
+            <text class="sub" x="550" y="137">LTE · LNCELL-24</text><text class="sub" x="550" y="146">FDD 20MHz · PCI 1</text>
+            <rect x="550" y="150" width="86" height="9" fill="#E8F1E9" stroke="#8bc39a"/><text class="sub" x="556" y="157" style="font-size:5px">RX/TX AxC 192 · 160</text>
+          </svg>
+          </div>
+          <div class="legend">
+            <span><span class="sw"></span> Physical link (cabling / optical RP3·CPRI·S1)</span>
+            <span><span class="sw dash"></span> Logical link (cell · antenna-carrier mapping)</span>
+            <span><span class="sw grey"></span> Shared / other</span>
+          </div>
+        </div>
+      </div>
+      <div class="anno-col">
+        <h4>10.3 · Cells view topology</h4>
+        <div class="caption">Left-to-right signal path, core → baseband → radio → antenna → cell.</div>
+        <div class="anno"><span class="badge">1</span><div class="txt"><b>Core controllers grouped together:</b> BSC (GSM), RNC (WCDMA) and EPC/MME (LTE) on one canvas.<span class="solve">tools split by technology hiding shared hardware (Pain P04).</span></div></div>
+        <div class="anno"><span class="badge">2</span><div class="txt"><b>Solid vs dashed lines separate the layers:</b> physical cabling is drawn solid, logical cell/carrier mapping dashed.<span class="solve">reading a cable as a carrier mapping (Pain P02).</span></div></div>
+        <div class="anno"><span class="badge">3</span><div class="txt"><b>A failed radio propagates visibly</b> down the chain toward the antennas and cells it serves.<span class="solve">no view of downstream impact when triaging.</span></div></div>
+        <div class="anno"><span class="badge">4</span><div class="txt"><b>Cells shown as channel groups with RAT + AxC streams</b> (RX/TX AxC 192/160), colour-coded by state.<span class="solve">carrier-level health being invisible.</span></div></div>
+      </div>
+    </div>
+
+    <!-- 10.4 COMMISSIONING WIZARD -->
+    <div class="wf-block">
+      <div class="wf">
+        <div class="wf-chrome"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-url">admin · D&amp;M for SingleRAN · Commissioning wizard · Not commissioned</span></div>
+        <div class="wf-body">
+          <div class="pin" style="top:14px;left:8px">1</div>
+          <div class="pin" style="top:120px;left:52%">2</div>
+          <div class="pin" style="bottom:70px;left:52%">3</div>
+          <div class="pin" style="top:14px;right:8px">4</div>
+          <div class="wz-tabs">
+            <span class="wz-tab on">Site build</span>
+            <span class="wz-tab">Parameters</span>
+            <span class="wz-tab err">Definition errors</span>
+            <span class="wz-tab err">Relation errors</span>
+            <span class="wz-tab err">Hardware errors</span>
+          </div>
+          <div class="wz-card">
+            <div style="font-size:9px;font-weight:700;display:flex;align-items:center;gap:5px"><span class="dot o"></span>CABINET-1 <span style="color:var(--faint);font-weight:400">FSMr3</span></div>
+            <div class="wz-mod" style="margin-top:8px">
+              <div class="t">SMOD-1 <span>· LTE WCDMA GSM · FSMF</span></div>
+              <div style="font-size:7px;color:var(--faint);margin:4px 0 2px">SN:</div>
+              <div class="wz-empty"></div>
+              <div class="wz-add"><span class="plus">+</span><br>Add TRS configuration</div>
+            </div>
+            <div class="wz-mod" style="display:flex;align-items:center;gap:6px"><span class="dot o"></span><span style="font-size:9px;font-weight:700">FAN Group</span></div>
+            <div class="wz-add"><span class="plus">+</span><br>Add transport module and configure TRS</div>
+          </div>
+        </div>
+      </div>
+      <div class="anno-col">
+        <h4>10.4 · Commissioning wizard</h4>
+        <div class="caption">Staged site bring-up with error classes as first-class tabs.</div>
+        <div class="anno"><span class="badge">1</span><div class="txt"><b>Header state reads "Not commissioned"</b> and every object sits hollow until built, showing the plan before real hardware fills it in.<span class="solve">no clear baseline of what still needs doing.</span></div></div>
+        <div class="anno"><span class="badge">2</span><div class="txt"><b>Empty serial fields and "Add…" affordances</b> show exactly what the plan still expects.<span class="solve">reconciling detected vs planned hardware by hand (Pain P06).</span></div></div>
+        <div class="anno"><span class="badge">3</span><div class="txt"><b>Build actions live inside the module</b> they configure: add transport or configure TRS in context.<span class="solve">context-switching between wizard and spreadsheets.</span></div></div>
+        <div class="anno"><span class="badge">4</span><div class="txt"><b>Definition / Relation / Hardware errors are separate tabs</b>, validated progressively.<span class="solve">late, mixed, unattributable commissioning errors (Pain P05).</span></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 11 HEURISTIC EVALUATION -->
+<section id="s11">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">11</div>
+      <div class="sec-titles"><span class="eyebrow">Heuristic Evaluation</span><h2>Evaluation against usability heuristics</h2></div>
+    </div>
+    <p class="lead muted" style="margin-bottom:22px">The design was evaluated against Nielsen Norman Group&#39;s ten usability heuristics. The console scores strongly on status visibility, consistency and error prevention. It also carries three weaknesses worth naming.</p>
+    <table>
+      <thead><tr><th style="width:26px">#</th><th>Heuristic</th><th style="width:96px">Verdict</th><th>Evidence &amp; gaps in the design</th></tr></thead>
+      <tbody>
+        <tr><td class="idc">1</td><td>Visibility of system status</td><td><span class="sev" style="color:var(--green);background:var(--green-soft)">Strong</span></td><td>Live state dots, on-air / alarm / failed, throughput printed on the data-stream links</td></tr>
+        <tr><td class="idc">2</td><td>Match to the real world</td><td><span class="sev" style="color:var(--green);background:var(--green-soft)">Strong</span></td><td>Topology mirrors the physical site; nodes named as real hardware (SMOD / RMOD / PHYANT)</td></tr>
+        <tr><td class="idc">3</td><td>User control &amp; freedom</td><td><span class="sev med">Gap</span></td><td>No visible undo / cancel / back in the wizard; commissioning needs a clear escape hatch</td></tr>
+        <tr><td class="idc">4</td><td>Consistency &amp; standards</td><td><span class="sev" style="color:var(--accent);background:var(--accent-soft)">Signature</span></td><td>The seven-state visual language applied identically to every object type</td></tr>
+        <tr><td class="idc">5</td><td>Error prevention</td><td><span class="sev" style="color:var(--green);background:var(--green-soft)">Strong</span></td><td>Staged wizard + definition / relation / hardware error classes; undetected vs uncommissioned</td></tr>
+        <tr><td class="idc">6</td><td>Recognition over recall</td><td><span class="sev" style="color:var(--green);background:var(--green-soft)">Strong</span></td><td>The topology shows the site's structure on screen, so engineers read it instead of recalling it</td></tr>
+        <tr><td class="idc">7</td><td>Flexibility &amp; efficiency</td><td><span class="sev med">Partial</span></td><td>Object-name and fault filters exist; explicit power-user shortcuts not yet surfaced</td></tr>
+        <tr><td class="idc">8</td><td>Aesthetic &amp; minimalist design</td><td><span class="sev hi">Risk</span></td><td>Cells view is very dense; crossing connection lines are a real legibility risk at scale</td></tr>
+        <tr><td class="idc">9</td><td>Diagnose &amp; recover from errors</td><td><span class="sev med">Partial</span></td><td>Faults give ID + readable text + object scope, but no suggested corrective action yet</td></tr>
+        <tr><td class="idc">10</td><td>Help &amp; documentation</td><td><span class="sev lo">Scoped out</span></td><td>Not present in these screens; deferred to a later release</td></tr>
+      </tbody>
+    </table>
+    <div class="g3" style="margin-top:16px">
+      <div class="accent-box red"><div class="card-t">Fix 1 · Add an escape hatch</div><div class="card-b">Undo / cancel and a clear "back" at every wizard stage (heuristic 3).</div></div>
+      <div class="accent-box red"><div class="card-t">Fix 2 · Tame density</div><div class="card-b">Progressive disclosure and link-bundling to reduce the crossing-line overload in Cells view (heuristic 8).</div></div>
+      <div class="accent-box amber"><div class="card-t">Fix 3 · Suggest the fix</div><div class="card-b">Pair each fault with a recommended next action, not just a description (heuristic 9).</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 RESULTS & IMPACT -->
+<section id="s12">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">12</div>
+      <div class="sec-titles"><span class="eyebrow">Expected Impact</span><h2>What the redesign was expected to change</h2></div>
+    </div>
+    <p class="lead muted" style="margin-bottom:22px">The figures below are the design targets set going into build, reasoned from the specific frictions the design removes. They were never claimed as measurements: the right-hand column is the validation plan scoped alongside them.</p>
+
+    <div class="g2" style="align-items:start">
+      <div class="accent-box green">
+        <div class="card-k" style="color:var(--green)">Projected operational impact</div>
+        <table style="border:none;margin-top:6px">
+          <tbody>
+            <tr><td style="padding-left:0"><b>Time to trace an alarm to its module</b></td><td style="text-align:right;color:var(--green);font-weight:700">minutes → one selection</td></tr>
+            <tr><td style="padding-left:0"><b>Site commissioning time</b></td><td style="text-align:right;color:var(--green);font-weight:700">↓ ~20%</td></tr>
+            <tr><td style="padding-left:0"><b>First-pass commissioning errors</b></td><td style="text-align:right;color:var(--green);font-weight:700">↓ ~30%</td></tr>
+            <tr><td style="padding-left:0"><b>Avoidable truck rolls</b> (better pre-dispatch triage)</td><td style="text-align:right;color:var(--green);font-weight:700">~15–20%</td></tr>
+            <tr><td style="padding-left:0"><b>Mean time to repair</b></td><td style="text-align:right;color:var(--green);font-weight:700">↓ ~15–20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="accent-box">
+        <div class="card-k">Validation plan at handoff</div>
+        <table style="border:none;margin-top:6px">
+          <tbody>
+            <tr><td style="padding-left:0"><b>Fault-localisation</b></td><td style="text-align:right">timed task test vs the text/CLI baseline</td></tr>
+            <tr><td style="padding-left:0"><b>Commissioning</b></td><td style="text-align:right">first-pass error rate + time-on-task, moderated</td></tr>
+            <tr><td style="padding-left:0"><b>Usability</b></td><td style="text-align:right">task success + SUS on the core flows</td></tr>
+            <tr><td style="padding-left:0"><b>Field impact</b></td><td style="text-align:right">truck-roll and MTTR tracking post-deployment</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-top:16px;align-items:start">
+      <div class="box">
+        <div class="card-k">How the projections are grounded</div>
+        <div class="card-b">These were conservative estimates, not measurements. They followed from the frictions the design removed: faster fault localisation means fewer wasted dispatches (a <b>truck roll</b> is sending a technician out to the site), and staged validation means fewer commissioning errors caught late. The figures were set at the low end on purpose, because the console improves <i>visibility and pre-dispatch diagnosis</i>, not predictive automation.</div>
+      </div>
+      <div class="accent-box slate">
+        <div class="card-k">Platform alignment</div>
+        <div class="card-b">The design's core bet, one browser-based console with one object model across all three RATs, matches the direction multi-RAT management tooling has taken since: a single interface unifying GSM, WCDMA and LTE operations instead of a separate tool per technology.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 DEPENDENCIES -->
+<section id="s13">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">13</div>
+      <div class="sec-titles"><span class="eyebrow">Dependencies &amp; Constraints</span><h2>What the console depends on</h2></div>
+    </div>
+    <div class="g2" style="align-items:start">
+      <div class="box">
+        <div class="dep-row"><div><span class="dep-tag dep-TECH">TECH</span></div><div class="d"><b>Live BTS O&amp;M telemetry.</b> Real-time object health, hardware detection and fault stream from the base station (local port or backhaul).</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-TECH">TECH</span></div><div class="d"><b>Fronthaul link status.</b> RP3 / CPRI / OBSAI and S1 state to render physical connections and their up/down health.</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-DATA">DATA</span></div><div class="d"><b>Managed-object model.</b> The full object taxonomy (cabinet → module → port → cell → carrier) that the tree and canvas are built from.</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-DATA">DATA</span></div><div class="d"><b>Network plan.</b> Planned configuration from NetAct so the runtime view can overlay detected-vs-planned and drive Undetected/Uncommissioned states.</div></div>
+      </div>
+      <div class="box">
+        <div class="dep-row"><div><span class="dep-tag dep-DATA">DATA</span></div><div class="d"><b>Fault dictionary.</b> Stable fault IDs → human text mapping so alarm rows are readable and consistently attributed.</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-ORG">ORG</span></div><div class="d"><b>Field ↔ NOC workflow alignment.</b> Both roles must trust one shared model; commissioning outputs must feed operations.</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-ORG">ORG</span></div><div class="d"><b>Per-RAT engineering teams.</b> GSM/WCDMA/LTE ownership boundaries have to accept a shared-hardware, single-canvas view.</div></div>
+        <div class="dep-row"><div><span class="dep-tag dep-REG">REG</span></div><div class="d"><b>Licensing &amp; RF compliance.</b> Feature/capacity license keys gate commissioning; RET tilt changes carry regional RF-emission constraints.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h4>Nokia &nbsp;·&nbsp; D&amp;M for SingleRAN</h4>
+      <p>UX case study on the diagnostics and maintenance console for Single-RAN base stations: one live topology view unifying GSM, WCDMA and LTE operations, from field commissioning to NOC-side fault triage.</p>
+    </div>
+    <div class="fnote">Role: Lead UX designer &amp; researcher &nbsp;·&nbsp; Timeline: approximately 6 months, 2016 &nbsp;·&nbsp; Platform: browser-based internal tool.</div>
+  </div>
+</footer>
+
+</body>
+</html>

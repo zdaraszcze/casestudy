@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UX Case Study: Transparency Register Case Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400;1,14..32,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F7F6F2; --surface:#FFFFFF; --accent:#E60000; --accent-lt:#FBEAEA; --accent-mid:#C97A75;
+  --ink:#1C1C1C; --g5:#444444; --g4:#6E6A61; --g3:#9A968C; --g2:#D3CFC4; --g1:#E9E8E3;
+  --line:#DEDDD7; --line-2:#ECEBE5;
+  --red:#7A1F1F; --red-lt:#F4E7E5; --red-bd:#E0C4C0;
+  --grn:#5C6B1E; --grn-lt:#F1F4DC; --grn-bd:#E4E9BE;
+  --amb:#7A4F00; --amb-lt:#F7F3DD; --amb-bd:#D9C48A;
+  --reg:#7A1F1F; --tech:#E60000; --data:#5A4000; --org:#5C6B1E;
+  --mono:'Inter',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:13px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  font-feature-settings:"cv05","ss01";
+}
+a{color:inherit;}
+::selection{background:var(--accent);color:#fff;}
+
+/* ── Layout shell ── */
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+.wrap-narrow{max-width:820px;margin:0 auto;padding:0 32px;}
+
+/* ── Sticky nav ── */
+.nav{position:sticky;top:0;z-index:80;background:rgba(244,243,239,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.nav-in{max-width:1080px;margin:0 auto;padding:0 32px;height:46px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.nav-brand{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);white-space:nowrap;}
+.nav-brand span{color:var(--g3);font-weight:600;}
+.nav-mark{width:7px;height:7px;background:var(--accent);flex-shrink:0;}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{font-size:11px;color:var(--g4);text-decoration:none;padding:5px 8px;border-radius:3px;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:500;transition:.13s;}
+.nav-links a:hover{color:var(--accent);background:var(--accent-lt);}
+
+/* ── Hero ── */
+.hero{background:var(--ink);color:#EDEDEA;padding:74px 0 60px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(900px 340px at 82% -10%,rgba(230,0,0,.4),transparent 70%);pointer-events:none;}
+.hero-in{position:relative;z-index:2;}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;}
+.hero h1{font-size:40px;line-height:1.08;font-weight:800;letter-spacing:-.02em;max-width:15ch;color:#fff;}
+.hero .sub{font-size:15px;line-height:1.6;color:#B7BCC6;max-width:60ch;margin-top:18px;font-weight:400;}
+.hero .meta{font-size:11px;color:#7A8091;margin-top:22px;letter-spacing:.02em;}
+.hero .meta b{color:#C9C4BC;font-weight:600;}
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border-top:1px solid rgba(255,255,255,.13);}
+.stat{padding:20px 22px 4px 0;border-right:1px solid rgba(255,255,255,.09);}
+.stat:last-child{border-right:none;}
+.stat .n{font-size:30px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1;font-variant-numeric:tabular-nums;}
+.stat .n small{font-size:15px;font-weight:600;color:var(--accent);}
+.stat .l{font-size:11px;color:#9096A3;margin-top:8px;line-height:1.4;}
+
+/* ── Disclaimer strip ── */
+.disc{background:var(--amb-lt);border-bottom:1px solid var(--amb-bd);}
+.disc-in{max-width:1080px;margin:0 auto;padding:11px 32px;display:flex;gap:11px;align-items:flex-start;font-size:11.5px;color:#6b4c0e;line-height:1.5;}
+.disc-in b{color:#4d3606;}
+.disc .tag{flex-shrink:0;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--amb);color:#fff;padding:3px 7px;border-radius:3px;margin-top:1px;}
+
+/* ── Section scaffolding ── */
+section{padding:56px 0;border-top:1px solid var(--line);}
+section:first-of-type{border-top:none;}
+.sec-head{display:flex;gap:18px;align-items:baseline;margin-bottom:26px;}
+.sec-num{font-size:12px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.05em;flex-shrink:0;padding-top:3px;width:34px;}
+.sec-titles .k{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--g3);margin-bottom:5px;}
+.sec-titles h2{font-size:23px;font-weight:800;letter-spacing:-.015em;line-height:1.15;}
+.lead{font-size:15px;line-height:1.62;color:var(--g5);max-width:68ch;}
+.lead+.lead{margin-top:13px;}
+p{max-width:72ch;}
+.body p+p{margin-top:12px;}
+.body{color:var(--g5);font-size:13px;line-height:1.64;}
+strong{font-weight:700;color:var(--ink);}
+
+/* ── Grids ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.mt24{margin-top:24px;}
+.mt16{margin-top:16px;}
+.mt32{margin-top:32px;}
+
+/* ── Accent boxes ── */
+.box{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:2px;padding:16px 18px;}
+.box.red{border-left-color:var(--red);}
+.box.grn{border-left-color:var(--grn);}
+.box.amb{border-left-color:var(--amb);}
+.box .bk{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g3);margin-bottom:7px;}
+.box h4{font-size:13.5px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;}
+.box p{font-size:12.5px;color:var(--g5);line-height:1.58;}
+.box .lil{font-size:11px;color:var(--g4);margin-top:9px;line-height:1.5;}
+
+/* Plain card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px;}
+
+/* ── Tables ── */
+.tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:2px;overflow:hidden;overflow-x:auto;}
+table.t{width:100%;border-collapse:collapse;font-size:12px;}
+table.t thead th{background:#FAF9F6;text-align:left;padding:9px 13px;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g4);border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom;}
+table.t td{padding:10px 13px;border-bottom:1px solid var(--line-2);color:var(--g5);line-height:1.5;vertical-align:top;}
+table.t tbody tr:last-child td{border-bottom:none;}
+table.t tbody tr:hover td{background:#FBFAF7;}
+table.t td b{color:var(--ink);}
+.cellnum{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);white-space:nowrap;}
+
+/* ── Quote ── */
+.quote{border-left:3px solid var(--accent-mid);padding:2px 0 2px 18px;margin:4px 0;}
+.quote p{font-style:italic;font-size:14px;color:var(--g5);line-height:1.55;max-width:60ch;}
+.quote cite{display:block;font-style:normal;font-size:11px;color:var(--g3);margin-top:8px;font-weight:600;letter-spacing:.02em;}
+
+/* ── Tags ── */
+.tag{display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;border-radius:3px;color:#fff;line-height:1;}
+.t-reg{background:var(--reg);} .t-tech{background:var(--tech);} .t-data{background:var(--data);} .t-org{background:var(--org);}
+.t-out{background:transparent;border:1px solid currentColor;}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.03em;}
+.p-red{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd);}
+.p-grn{background:var(--grn-lt);color:var(--grn);border:1px solid var(--grn-bd);}
+.p-amb{background:var(--amb-lt);color:var(--amb);border:1px solid var(--amb-bd);}
+.ref{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.04em;text-transform:uppercase;}
+
+/* ── Persona ── */
+.persona{background:var(--surface);border:1px solid var(--line);border-radius:2px;overflow:hidden;}
+.persona .ph{padding:15px 17px 13px;border-bottom:1px solid var(--line);background:#FAF9F6;}
+.persona .role{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);}
+.persona .pname{font-size:15px;font-weight:800;margin-top:5px;letter-spacing:-.01em;}
+.persona .pone{font-size:11.5px;color:var(--g4);margin-top:4px;line-height:1.45;}
+.attr{display:grid;grid-template-columns:104px 1fr;gap:2px 12px;padding:13px 17px;}
+.attr dt{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g3);padding:5px 0;border-bottom:1px solid var(--line-2);}
+.attr dd{font-size:12px;color:var(--g5);padding:5px 0;border-bottom:1px solid var(--line-2);line-height:1.45;}
+.attr dt:last-of-type,.attr dd:last-of-type{border-bottom:none;}
+.persona .pq{padding:12px 17px 15px;border-top:1px solid var(--line);}
+.persona .pq p{font-style:italic;font-size:12px;color:var(--g5);line-height:1.5;}
+
+/* ── Journey ── */
+.jrn{position:relative;margin-top:8px;}
+.jrn-step{display:grid;grid-template-columns:30px 1fr;gap:16px;}
+.jrn-rail{display:flex;flex-direction:column;align-items:center;}
+.jrn-dot{width:26px;height:26px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);color:var(--accent);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:2;font-variant-numeric:tabular-nums;}
+.jrn-step.pain .jrn-dot{border-color:var(--red);color:var(--red);}
+.jrn-step.good .jrn-dot{border-color:var(--grn);color:var(--grn);background:var(--grn-lt);}
+.jrn-line{width:2px;flex:1;background:var(--line);margin:2px 0;min-height:14px;}
+.jrn-step:last-child .jrn-line{display:none;}
+.jrn-body{padding-bottom:16px;}
+.jrn-body h5{font-size:13px;font-weight:700;letter-spacing:-.01em;}
+.jrn-body .stage{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-bottom:3px;}
+.jrn-body p{font-size:12px;color:var(--g5);margin-top:3px;line-height:1.55;}
+.jrn-emote{display:inline-block;font-size:10.5px;margin-top:7px;padding:2px 8px;border-radius:20px;font-weight:600;}
+.jrn-emote.neg{background:var(--red-lt);color:var(--red);}
+.jrn-emote.pos{background:var(--grn-lt);color:var(--grn);}
+
+/* ── Wireframe panels ── */
+.wf-block{margin-top:26px;}
+.wf-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:22px;align-items:start;}
+.browser{background:var(--surface);border:1px solid var(--g2);border-radius:5px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.02),0 10px 24px -18px rgba(20,26,40,.35);}
+.chrome{height:30px;background:#EDEBE5;border-bottom:1px solid var(--g2);display:flex;align-items:center;padding:0 11px;gap:6px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#CFCCC4;}
+.chrome .url{flex:1;height:17px;background:#F6F5F1;border:1px solid #E0DED7;border-radius:3px;margin-left:8px;font-size:9px;color:var(--g4);display:flex;align-items:center;padding:0 9px;letter-spacing:.02em;}
+.screen{padding:0;background:#fff;}
+
+/* mini wireframe primitives */
+.mw{font-size:10px;color:var(--g5);}
+.mw-app{display:grid;grid-template-columns:74px 1fr;min-height:250px;}
+.mw-side{background:#FAF9F6;border-right:1px solid var(--line);padding:9px 8px;}
+.mw-logo{font-weight:900;color:var(--accent);font-size:15px;letter-spacing:-.5px;}
+.mw-navt{font-size:8px;font-weight:700;color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin:11px 0 5px;}
+.mw-navi{font-size:9px;color:var(--accent);background:var(--accent-lt);border-left:2px solid var(--accent);padding:4px 6px;border-radius:0 2px 2px 0;font-weight:600;}
+.mw-main{padding:10px 12px;}
+.mw-top{display:flex;justify-content:space-between;align-items:center;font-size:8px;color:var(--g3);border-bottom:1px solid var(--line-2);padding-bottom:7px;margin-bottom:9px;}
+.mw-search{height:22px;border:1px solid var(--line);border-radius:2px;display:flex;align-items:center;padding:0 8px;font-size:9px;color:var(--g3);gap:6px;flex:1;}
+.mw-btn{height:22px;padding:0 9px;border-radius:2px;font-size:9px;font-weight:600;display:inline-flex;align-items:center;border:1px solid var(--line);color:var(--g5);white-space:nowrap;}
+.mw-btn.pri{background:var(--accent);color:#fff;border-color:var(--accent);}
+.mw-btn.nav{background:var(--accent);color:#fff;border-color:var(--accent);}
+.mw-btn.dgr{border-color:var(--red);color:var(--red);}
+.mw-row{display:flex;gap:7px;align-items:center;}
+.mw-tbl{width:100%;border-collapse:collapse;margin-top:9px;font-size:8.5px;}
+.mw-tbl th{background:#FAF9F6;text-align:left;padding:5px 6px;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g4);border-bottom:1px solid var(--line);}
+.mw-tbl td{padding:5px 6px;border-bottom:1px solid var(--line-2);color:var(--g5);}
+.mw-tbl a{color:var(--accent);font-weight:600;}
+.mw-badge{font-size:7.5px;font-weight:700;color:var(--red);}
+.mw-badge.mut{color:var(--g4);}
+.mw-panels{display:grid;grid-template-columns:1fr 150px;gap:9px;margin-bottom:10px;}
+.mw-co{border:1px solid var(--line);border-radius:2px;padding:9px 11px;}
+.mw-co .lab{font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--g3);}
+.mw-co .nm{font-size:11px;font-weight:800;margin:4px 0 6px;}
+.mw-kv{display:grid;grid-template-columns:auto 1fr;gap:1px 10px;font-size:8px;}
+.mw-kv .k{color:var(--g4);} .mw-kv .v{color:var(--ink);font-weight:600;text-align:right;}
+.mw-alert{background:var(--red);color:#fff;border-radius:2px;padding:9px 11px;display:flex;flex-direction:column;justify-content:center;}
+.mw-alert .al{font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.75;}
+.mw-alert .as{font-size:9px;font-weight:800;margin:2px 0 6px;}
+.mw-alert .ad{font-size:22px;font-weight:900;line-height:1;}
+.mw-alert .au{font-size:7px;opacity:.8;margin-top:3px;line-height:1.3;}
+.mw-cardt{font-size:9px;font-weight:800;margin:11px 0 6px;color:var(--ink);}
+.mw-tabs{display:flex;gap:1px;border-bottom:1px solid var(--line);margin-bottom:8px;overflow:hidden;}
+.mw-tab{font-size:7.5px;padding:5px 7px;color:var(--g4);white-space:nowrap;border-bottom:2px solid transparent;}
+.mw-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
+.mw-cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mw-cmp .h{font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--g5);margin-bottom:4px;}
+.mw-mini{border:1px solid var(--line);border-radius:2px;font-size:7.5px;}
+.mw-mini .r{display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid var(--line-2);}
+.mw-mini .r:last-child{border-bottom:none;}
+.mw-mini .r .k{color:var(--g4);} .mw-mini .r .v{font-weight:700;color:var(--ink);}
+.mw-mini .r .v.diff{color:var(--red);}
+.mw-disc{font-size:8px;color:var(--g5);padding-left:11px;position:relative;margin:3px 0;}
+.mw-disc::before{content:"•";position:absolute;left:2px;color:var(--red);font-weight:700;}
+.mw-actionbar{display:flex;justify-content:flex-end;gap:6px;border-top:1px solid var(--line);padding-top:9px;margin-top:11px;}
+.mw-ctx{border:1px solid var(--line);border-radius:2px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.mw-ctx .co{font-size:10px;font-weight:800;} .mw-ctx .mt{font-size:7.5px;color:var(--g4);}
+.mw-ctxa{display:flex;gap:9px;align-items:center;background:var(--red-lt);border:1px solid var(--red-bd);border-radius:2px;padding:4px 9px;}
+.mw-ctxa .bd{font-size:7px;font-weight:800;text-transform:uppercase;color:var(--red);}
+.mw-ctxa .dd{font-size:14px;font-weight:900;color:var(--red);line-height:1;}
+.mw-form h6{font-size:11px;font-weight:800;margin-bottom:3px;}
+.mw-form .fsub{font-size:8.5px;color:var(--g4);border-bottom:1px solid var(--line);padding-bottom:7px;margin-bottom:10px;}
+.mw-radio{border:1px solid var(--line);border-radius:2px;padding:7px 9px;margin-bottom:6px;display:flex;gap:7px;}
+.mw-radio.sel{border-color:var(--red);background:#fff;}
+.mw-radio .rc{width:11px;height:11px;border-radius:50%;border:2px solid var(--g3);flex-shrink:0;margin-top:1px;}
+.mw-radio.sel .rc{border-color:var(--accent);background:radial-gradient(circle,#fff 30%,var(--accent) 32%);}
+.mw-radio .rt{font-size:9px;font-weight:700;}
+.mw-radio .rd{font-size:8px;color:var(--g4);margin-top:2px;}
+.mw-trig{background:var(--red-lt);border-left:2px solid var(--red);font-size:7.5px;color:var(--g5);padding:4px 7px;margin-top:5px;border-radius:0 2px 2px 0;}
+.mw-fld{border:1px solid var(--line);border-radius:2px;height:20px;font-size:8px;color:var(--g3);display:flex;align-items:center;padding:0 8px;margin-bottom:8px;}
+.mw-ta{border:1px solid var(--line);border-radius:2px;height:44px;font-size:8px;color:var(--g3);padding:6px 8px;margin-bottom:5px;}
+.mw-lbl{font-size:8.5px;font-weight:700;color:var(--g5);margin-bottom:4px;}
+.mw-warn{background:var(--amb-lt);border:1px solid var(--amb-bd);border-radius:2px;padding:6px 9px;font-size:8px;color:#6b4c0e;margin-bottom:9px;}
+.mw-succ{text-align:center;padding:34px 12px;}
+.mw-succ .ic{font-size:30px;}
+.mw-succ .tt{font-size:12px;font-weight:800;margin-top:8px;}
+.mw-succ .ms{font-size:8.5px;color:var(--g4);margin-top:5px;max-width:34ch;margin-left:auto;margin-right:auto;line-height:1.5;}
+.mw-modal{border:1px solid var(--g2);border-radius:3px;box-shadow:0 8px 22px -12px rgba(0,0,0,.3);max-width:220px;margin:8px auto;}
+.mw-modal .mh{font-size:9px;font-weight:800;padding:8px 10px;border-bottom:1px solid var(--line);}
+.mw-modal.dgr .mh{color:var(--red);}
+.mw-modal .mstrip{background:var(--red-lt);border-bottom:1px solid var(--red-bd);color:var(--red);font-size:7px;font-weight:700;padding:4px 10px;}
+.mw-modal .mb{padding:8px 10px;font-size:8px;color:var(--g5);}
+.mw-modal .mf{display:flex;justify-content:flex-end;gap:5px;padding:7px 10px;border-top:1px solid var(--line);}
+
+/* annotation column */
+.wf-ann{padding-top:2px;}
+.wf-cap{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+.wf-screenname{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-bottom:14px;}
+.ann{display:grid;grid-template-columns:22px 1fr;gap:11px;margin-bottom:14px;}
+.ann-n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-variant-numeric:tabular-nums;margin-top:1px;}
+.ann-b h6{font-size:12px;font-weight:700;letter-spacing:-.01em;margin-bottom:2px;}
+.ann-b p{font-size:11.5px;color:var(--g5);line-height:1.5;}
+.ann-b .solves{font-size:10.5px;color:var(--g4);margin-top:4px;line-height:1.45;}
+.ann-b .solves b{color:var(--red);font-weight:700;}
+
+/* dependency */
+.dep{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:14px 16px;}
+.dep-h{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.dep-h h4{font-size:13px;font-weight:800;letter-spacing:-.01em;}
+.dep ul{list-style:none;}
+.dep li{font-size:11.5px;color:var(--g5);padding:6px 0 6px 15px;position:relative;border-top:1px solid var(--line-2);line-height:1.5;}
+.dep li:first-child{border-top:none;}
+.dep li::before{content:"";position:absolute;left:0;top:12px;width:5px;height:5px;background:var(--accent-mid);border-radius:50%;}
+.dep li b{color:var(--ink);}
+
+/* misc */
+.divlabel{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g3);margin:0 0 12px;}
+.note{font-size:11px;color:var(--g4);font-style:italic;margin-top:10px;line-height:1.5;}
+.kbd{font-family:var(--mono);font-size:11px;background:var(--g1);border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--g5);font-weight:600;}
+.hr-lite{height:1px;background:var(--line);border:none;margin:22px 0;}
+
+/* footer */
+footer{background:var(--ink);color:#9096A3;padding:34px 0 40px;}
+footer .fw{max-width:1080px;margin:0 auto;padding:0 32px;}
+footer .ft{font-size:12px;color:#C7CBD3;font-weight:600;letter-spacing:.02em;}
+footer .fmeta{font-size:11px;color:#6d7280;margin-top:8px;line-height:1.7;max-width:74ch;}
+footer .fmeta b{color:#9096A3;}
+footer .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.1);margin-top:20px;padding-top:16px;font-size:10.5px;color:#6d7280;letter-spacing:.03em;}
+
+/* responsive */
+@media(max-width:860px){
+  .wrap,.wrap-narrow{padding:0 20px;}
+  .nav-in{padding:0 20px;}
+  .disc-in{padding:11px 20px;}
+  .hero{padding:52px 0 44px;}
+  .hero h1{font-size:31px;}
+  .statrow{grid-template-columns:1fr 1fr;}
+  .stat{border-right:none;border-bottom:1px solid rgba(255,255,255,.09);padding-right:0;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .wf-grid{grid-template-columns:1fr;}
+  .mw-app{grid-template-columns:60px 1fr;}
+  .sec-head{gap:12px;}
+  .sec-num{width:26px;}
+  footer .fw{padding:0 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav class="nav">
+  <div class="nav-in">
+    <div class="nav-brand"><span class="nav-mark"></span>JPB &nbsp;|&nbsp; Transparency Register CM · <span>UX Case Study</span></div>
+    <div class="nav-links">
+      <a href="#s00">Executive Summary</a><a href="#s01">Problem Statement</a><a href="#s02">Research Approach</a><a href="#s03">Key Findings</a>
+      <a href="#s04">Personas</a><a href="#s05">AS-IS Journey</a><a href="#s06">Pain Points</a><a href="#s07">Interventions</a>
+      <a href="#s08">TO-BE Journey</a><a href="#s09">Design Principles</a><a href="#s10">Prototype Specification</a><a href="#s11">Dependencies</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="wrap hero-in">
+    <div class="eyebrow">JPB Compliance Technology &nbsp;·&nbsp; Regulatory Compliance Tooling &nbsp;·&nbsp; UX Case Study</div>
+    <h1>Resolving register discrepancies before the 90-day reporting deadline.</h1>
+    <p class="sub">A case-management workspace that compares the bank's own beneficial-ownership records against the public Transparency Register, lists exactly which fields fail to match, and records the analyst's resolution of each case before the statutory reporting window closes.</p>
+    <p class="meta"><b>Domain</b> AML / KYC beneficial-ownership discrepancy reporting &nbsp;·&nbsp; <b>Regime</b> EU 5AMLD / GwG §23a &nbsp;·&nbsp; <b>Primary user</b> Compliance officer &nbsp;·&nbsp; <b>Artifact</b> Wireframe specification (6 screens)</p>
+
+    <div class="statrow">
+      <div class="stat"><div class="n">67<small>%</small></div><div class="l">of bank BO records matched register data in one sample. The rest are discrepancies to work</div></div>
+      <div class="stat"><div class="n">90<small> days</small></div><div class="l">Statutory window on the screen before mandatory government reporting</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">Distinct remediation paths a single case can follow, embedded in the tool</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">Screens carry triage → investigation → terminal decision end to end</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ 00 EXECUTIVE SUMMARY ══════════ -->
+<section id="s00">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">00</div>
+      <div class="sec-titles"><div class="k">Executive Summary</div><h2>How a compliance officer works a discrepancy case.</h2></div>
+    </div>
+    <div class="g2">
+      <div class="body">
+        <p>Under the EU's anti-money-laundering framework, a bank must compare the beneficial-ownership information it holds on a client against the public Transparency Register, and act on any mismatch. When the two sources diverge, the bank takes on a time-limited obligation: investigate, correct, or report to the authorities, all within a deadline and with a defensible record of why.</p>
+        <p>The prototype is the workspace where that obligation is met. A <strong>compliance officer</strong> works a queue of flagged legal entities, opens a case to compare the bank's record and the registry's record <strong>side by side</strong>, follows the <strong>scenario-specific playbook</strong> shown in the follow-up tabs, and ends the case with one of three terminal actions (<em>plausible feedback received</em>, <em>escalate to committee</em>, or <em>close case</em>), each recorded for audit.</p>
+      </div>
+      <div>
+        <div class="box">
+          <div class="bk">The one-line thesis</div>
+          <h4>The tool displays each regulatory decision and its consequence on screen, instead of relying on the analyst to remember them.</h4>
+          <p>Where the discrepancy lies, what it triggers, how long is left, and what must be recorded are all shown directly in the interface.</p>
+        </div>
+        <div class="box grn mt16">
+          <div class="bk">What it is designed to speed up</div>
+          <h4>Discrepancy remediation &amp; reporting.</h4>
+          <p>It replaces a manual, multi-system, memory-dependent investigation of "why don't these two records agree, and what do I do about it" with a single guided flow that keeps a countdown visible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 01 PROBLEM STATEMENT ══════════ -->
+<section id="s01">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <div class="sec-titles"><div class="k">Problem Statement</div><h2>The obligation to reconcile two records.</h2></div>
+    </div>
+    <p class="lead">The 5th Anti-Money Laundering Directive requires obliged entities, banks among them, to check the beneficial-ownership data in the central register against what they collected through their own due diligence, and to report discrepancies without undue delay. The obligation recurs continually, and getting it wrong has regulatory consequences.</p>
+
+    <div class="g3 mt24">
+      <div class="box">
+        <div class="bk">The scale</div>
+        <p>In one analysis of financial institutions, beneficial-ownership data held by banks matched register data in only about two-thirds of examined cases. That leaves a large, standing population of mismatches to be worked.</p>
+        <p class="lil">Source: Transparency International analysis, reported 2026.</p>
+      </div>
+      <div class="box">
+        <div class="bk">The consequence</div>
+        <p>Left past its window, an unresolved discrepancy converts into a mandatory report to a government authority. That report is a legally weighted, externally visible event the bank would rather not trigger by oversight.</p>
+        <p class="lil">Shown in the tool as the red "90 days remaining before government reporting" panel.</p>
+      </div>
+      <div class="box">
+        <div class="bk">The difficulty</div>
+        <p>The right response depends on <em>where</em> the error lives (the bank's files, the registry, or both), and each path has different triggers, owners, and deadlines. This branch logic historically lived in analysts' heads and policy PDFs.</p>
+        <p class="lil">Shown in the tool as the five-way follow-up guidance and the three-way "where is the discrepancy" decision.</p>
+      </div>
+    </div>
+
+    <div class="box red mt24">
+      <div class="bk">Problem, stated as the user feels it</div>
+      <p style="font-size:14px;color:var(--g5);"><strong>"I have a queue of entities where our records and the register disagree. For each one I have to find exactly what doesn't match, decide whose mistake it is, chase the right person to fix it, and prove I did all of that, before a clock I can't see clearly runs out."</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 02 RESEARCH APPROACH ══════════ -->
+<section id="s02">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <div class="sec-titles"><div class="k">Research Approach</div><h2>How this was researched.</h2></div>
+    </div>
+    <div class="g2">
+      <div class="body">
+        <p>Fieldwork combined structured interviews with the compliance officers who work the discrepancy queue, shadowed walkthroughs of the current manual comparison process, and a review of the regulatory text governing the reporting obligation. Each persona, pain point, and principle connects to a specific detail of the work: a field that is captured, an action that is offered, a state that is made prominent, a step the workflow requires.</p>
+        <p>The regulatory obligation, the discrepancy taxonomy, and the match-rate data are grounded in published AML sources, so the problem is described the way this obligation works in practice.</p>
+      </div>
+      <div>
+        <div class="card">
+          <div class="divlabel">Research inputs</div>
+          <div class="tbl-wrap" style="border:none;">
+            <table class="t">
+              <thead><tr><th>Method</th><th>Participants</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><b>Stakeholder interviews</b></td><td>N=6 compliance officers</td><td>Mapped the manual comparison and diagnosis workflow end to end.</td></tr>
+                <tr><td><b>Process shadowing</b></td><td>N=3 sessions</td><td>Observed how a discrepancy case is actually assembled and worked today.</td></tr>
+                <tr><td><b>Regulatory analysis</b></td><td>5AMLD / GwG §23a</td><td>Established the discrepancy-reporting duty and the reporting window.</td></tr>
+                <tr><td><b>Industry benchmarking</b></td><td>Published AML sources</td><td>Established the beneficial-ownership match-rate baseline.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 03 KEY FINDINGS ══════════ -->
+<section id="s03">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <div class="sec-titles"><div class="k">Key Findings</div><h2>Five findings that shaped the design.</h2></div>
+    </div>
+    <p class="lead">These five findings are the spine of the design: every pain point, intervention and principle that follows traces back to one of them.</p>
+
+    <div class="tbl-wrap mt24">
+      <table class="t">
+        <thead><tr><th style="width:52px;">#</th><th>Finding</th><th>How the tool addresses it</th><th>Implication</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="cellnum">F01</span></td>
+            <td><b>The deadline dominates the risk.</b> A visible countdown to <em>government reporting</em> is the single most weighted element of a case.</td>
+            <td>Full-height red panel on the detail screen; the countdown follows the analyst into every sub-flow as a context bar.</td>
+            <td>Time-to-report is the variable the queue should be organised by.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">F02</span></td>
+            <td><b>Fault is directional.</b> A discrepancy can originate at the bank, at the registry, or both, and each origin starts a different downstream process.</td>
+            <td>The "is the issue at the bank or the registry?" radio, each option revealing its own <em>Triggers</em> consequence box.</td>
+            <td>Diagnosis (whose error) must precede action, and the tool has to make the consequence of each choice explicit.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">F03</span></td>
+            <td><b>Mismatch is field-level, not entity-level.</b> The "same" owner exists in both sources but disagrees on specific attributes.</td>
+            <td>Two parallel BO tables, <em>Bank (JPB)</em> versus <em>Federal Registry</em>, with a bulleted list naming each non-matching field (DOB, name, nationality, %, ownership role).</td>
+            <td>The comparison must be aligned attribute-by-attribute so the analyst can locate the exact difference.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">F04</span></td>
+            <td><b>The next step is scenario-dependent.</b> There are at least five recognised follow-up playbooks, easy to confuse.</td>
+            <td>Five-tab "what follow-up actions are required?" card, each tab a numbered 3-step procedure.</td>
+            <td>Procedural knowledge belongs in the tool at the point of decision, not in a separate manual.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">F05</span></td>
+            <td><b>Terminal actions are heavy and irreversible.</b> Escalating or closing carries audit and legal weight.</td>
+            <td>Forced reason + free-text justification, disabled-until-valid buttons, confirmation modals, a destructive-styled permanent close.</td>
+            <td>No case can leave the queue without a recorded, structured rationale.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 04 PERSONAS ══════════ -->
+<section id="s04">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <div class="sec-titles"><div class="k">Personas</div><h2>Who the tool is for.</h2></div>
+    </div>
+    <p class="lead">Three roles run through the workflow: the compliance officer works each case directly, the client advisor is pulled in when the client needs to be reached, and the advisory committee reviews the cases the officer can't resolve alone.</p>
+
+    <div class="g3 mt24">
+      <!-- Persona 1 -->
+      <div class="persona">
+        <div class="ph">
+          <div class="role">Primary · Operator</div>
+          <div class="pname">The Compliance Officer</div>
+          <div class="pone">Works the discrepancy queue end to end and owns the clock.</div>
+        </div>
+        <dl class="attr">
+          <dt>Goal</dt><dd>Resolve or correctly route every case before its reporting deadline.</dd>
+          <dt>Context</dt><dd>High case volume; each case a small investigation under time pressure.</dd>
+          <dt>Decides</dt><dd>Where the fault lies; escalate, close, or await correction.</dd>
+          <dt>Fear</dt><dd>Missing a deadline, or a closure that can't be defended in an audit.</dd>
+          <dt>Appears in</dt><dd><span class="ref">Header "Compliance Officer" · all action screens</span></dd>
+        </dl>
+        <div class="pq"><p>"I don't need the tool to think for me. I need it to stop me forgetting a step or a date."</p></div>
+      </div>
+      <!-- Persona 2 -->
+      <div class="persona">
+        <div class="ph">
+          <div class="role">Secondary · Relationship</div>
+          <div class="pname">The Client Advisor</div>
+          <div class="pone">Owns the client and is the channel to get data corrected.</div>
+        </div>
+        <dl class="attr">
+          <dt>Goal</dt><dd>Protect the client relationship while meeting the bank's obligation.</dd>
+          <dt>Context</dt><dd>Not in the tool daily; pulled in when the client must be contacted.</dd>
+          <dt>Decides</dt><dd>How and when to approach the client for an explanation or corrected form.</dd>
+          <dt>Fear</dt><dd>Being handed a compliance task with no context or deadline visibility.</dd>
+          <dt>Appears in</dt><dd><span class="ref">"Client Advisor" queue column · "inform the client" steps</span></dd>
+        </dl>
+        <div class="pq"><p>"Tell me exactly what's wrong and by when, and I'll handle the conversation."</p></div>
+      </div>
+      <!-- Persona 3 -->
+      <div class="persona">
+        <div class="ph">
+          <div class="role">Oversight · Escalation</div>
+          <div class="pname">The Advisory Committee (BAC)</div>
+          <div class="pone">Reviews the hard cases the officer can't resolve alone.</div>
+        </div>
+        <dl class="attr">
+          <dt>Goal</dt><dd>Make a defensible call on complex, high-risk or contested cases.</dd>
+          <dt>Context</dt><dd>Receives escalations; needs the reason and rationale up front.</dd>
+          <dt>Decides</dt><dd>Final disposition where policy or legal exposure is unclear.</dd>
+          <dt>Fear</dt><dd>Escalations that arrive without structured justification.</dd>
+          <dt>Appears in</dt><dd><span class="ref">"Escalate to BAC" flow · reason + justification fields</span></dd>
+        </dl>
+        <div class="pq"><p>"Give us the reason and the evidence in the same place, or we're guessing too."</p></div>
+      </div>
+    </div>
+    <p class="note">A fourth role, a compliance team lead monitoring queue health and SLA, sits outside this phase of the design: no dashboard or view for that role exists in the current screens.</p>
+  </div>
+</section>
+
+<!-- ══════════ 05 AS-IS JOURNEY ══════════ -->
+<section id="s05">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <div class="sec-titles"><div class="k">AS-IS Journey</div><h2>How the discrepancy gets worked without the tool.</h2></div>
+    </div>
+    <p class="lead">This is how a discrepancy gets worked today, before the tool. The friction below is what the design sets out to remove.</p>
+
+    <div class="jrn mt24">
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">1</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Notification</div><h5>A discrepancy is flagged somewhere upstream</h5>
+          <p>The analyst learns a client's register data no longer matches the bank's file, often via a report or alert detached from any workspace to act in.</p>
+          <span class="jrn-emote neg">Where do I even action this?</span></div></div>
+
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">2</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Assembly</div><h5>Pull both records from two different systems</h5>
+          <p>The bank's KYC record lives in the system of record; the registry data must be retrieved separately. The analyst gathers both by hand before any comparison can start.</p>
+          <span class="jrn-emote neg">Two tabs, two formats, one guess</span></div></div>
+
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">3</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Comparison</div><h5>Eyeball the two for what doesn't match</h5>
+          <p>Field-by-field visual comparison of names, dates, nationalities and ownership percentages. It is slow, and a subtle change like 85%→100% is easy to miss.</p>
+          <span class="jrn-emote neg">Did I catch every field?</span></div></div>
+
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">4</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Diagnosis</div><h5>Decide whose error it is, from memory</h5>
+          <p>Is the fault the bank's, the registry's, or both? The right follow-up depends on it, and the branching rules live in policy documents and experience.</p>
+          <span class="jrn-emote neg">Which playbook applies again?</span></div></div>
+
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">5</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Coordination</div><h5>Chase the client advisor, track the clock manually</h5>
+          <p>Email the advisor to reach the client; monitor the deadline in a spreadsheet or calendar reminder that lives outside the case.</p>
+          <span class="jrn-emote neg">Hope nothing slips past the date</span></div></div>
+
+      <div class="jrn-step pain"><div class="jrn-rail"><div class="jrn-dot">6</div></div>
+        <div class="jrn-body"><div class="stage">Disposition</div><h5>Resolve, escalate or report, then reconstruct the audit trail after</h5>
+          <p>Document the rationale retrospectively, hoping the record is complete enough to withstand review.</p>
+          <span class="jrn-emote neg">Can I prove I did this right?</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 06 PAIN POINTS ══════════ -->
+<section id="s06">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <div class="sec-titles"><div class="k">Pain Points</div><h2>Five frictions the design has to answer.</h2></div>
+    </div>
+    <div class="tbl-wrap mt16">
+      <table class="t">
+        <thead><tr><th style="width:48px;">#</th><th>Pain point</th><th>Cost to the user</th><th>Derived from</th><th style="width:70px;">Severity</th></tr></thead>
+        <tbody>
+          <tr><td><span class="cellnum">P1</span></td><td><b>The deadline is invisible</b> until it's nearly gone.</td><td>Cases tip into mandatory government reporting by oversight, not decision.</td><td><span class="ref">Finding F01</span></td><td><span class="pill p-red">Critical</span></td></tr>
+          <tr><td><span class="cellnum">P2</span></td><td><b>Comparison is manual</b> across two systems.</td><td>Slow, and subtle field changes get missed.</td><td><span class="ref">Finding F03</span></td><td><span class="pill p-red">High</span></td></tr>
+          <tr><td><span class="cellnum">P3</span></td><td><b>Branch logic lives in the analyst's head.</b></td><td>Inconsistent decisions; heavy training burden; single points of knowledge.</td><td><span class="ref">Findings F02, F04</span></td><td><span class="pill p-red">High</span></td></tr>
+          <tr><td><span class="cellnum">P4</span></td><td><b>The audit trail is reconstructed after the fact.</b></td><td>Weak defensibility; rework when records are questioned.</td><td><span class="ref">Finding F05</span></td><td><span class="pill p-amb">Medium</span></td></tr>
+          <tr><td><span class="cellnum">P5</span></td><td><b>Handoffs are informal</b> between officer, advisor and committee.</td><td>Context lost in email; no shared view of where a case stands.</td><td><span class="ref">Personas · Findings F04, F05</span></td><td><span class="pill p-amb">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 07 INTERVENTION CATALOGUE ══════════ -->
+<section id="s07">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <div class="sec-titles"><div class="k">Intervention Catalogue</div><h2>Source pain → design response → target outcome.</h2></div>
+    </div>
+    <p class="lead">Each intervention is a specific design move, mapped to the pain it answers and the directional outcome it is meant to produce.</p>
+
+    <div class="tbl-wrap mt24">
+      <table class="t">
+        <thead><tr><th style="width:56px;">Ref</th><th>Source pain</th><th>Design response (in the prototype)</th><th>Target outcome <span style="text-transform:none;font-weight:600;color:var(--g3);">(directional)</span></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="cellnum">I-01</span></td>
+            <td><span class="ref">P1</span> Deadline invisible</td>
+            <td>A persistent red countdown panel ("<b>90 days remaining before government reporting</b>", with due date) on the detail screen, restated as a context bar in every sub-flow.</td>
+            <td>Zero cases lost to a missed reporting window; deadline becomes the default sort of the queue.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">I-02</span></td>
+            <td><span class="ref">P2</span> Manual comparison</td>
+            <td>Two aligned BO tables, <b>Bank</b> versus <b>Federal Registry</b>, plus a plain-language <b>Discrepancy Details</b> list naming each non-matching field.</td>
+            <td>Faster, more complete mismatch identification; no missed field-level deltas.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">I-03</span></td>
+            <td><span class="ref">P3</span> Branch logic tacit</td>
+            <td>A five-tab follow-up playbook and a three-way "where is the discrepancy" decision, each option showing the process it <b>triggers</b>.</td>
+            <td>Consistent decisions across analysts; reduced onboarding time; fewer wrong-path errors.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">I-04</span></td>
+            <td><span class="ref">P4</span> Weak audit trail</td>
+            <td>Structured reason + mandatory justification, disabled-until-valid submits, confirmation modals, and an explicitly <b>permanent</b> close.</td>
+            <td>A complete, contemporaneous rationale on every disposition; defensible on review.</td>
+          </tr>
+          <tr>
+            <td><span class="cellnum">I-05</span></td>
+            <td><span class="ref">P5</span> Informal handoffs</td>
+            <td>Named workflow states (<b>Plausible feedback</b>, <b>Escalate to BAC</b>, <b>Close</b>), each with a defined next owner and a confirmation of what happens next.</td>
+            <td>Every handoff routed and recorded; shared visibility of case state.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 08 TO-BE JOURNEY ══════════ -->
+<section id="s08">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">08</div>
+      <div class="sec-titles"><div class="k">TO-BE Journey</div><h2>The same work inside the tool.</h2></div>
+    </div>
+    <p class="lead">The five interventions land in the sequence a case actually moves through, the same flow the six screens implement.</p>
+
+    <div class="jrn mt24">
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">1</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Triage · Dashboard</div><h5>Open the queue, sorted by what's most at risk</h5>
+          <p>Every flagged entity in one grid with its status, advisor and resolution date, so the analyst picks the case instead of hunting for it.</p>
+          <span class="jrn-emote pos">One place to start</span></div></div>
+
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">2</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Orient · Case detail</div><h5>See the clock and the conflict together</h5>
+          <p>The red countdown sits beside the two records; the Discrepancy Details list names exactly what fails to match.</p>
+          <span class="jrn-emote pos">I know what's wrong and how long I have</span></div></div>
+
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">3</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Act · Guided playbook</div><h5>Follow the tab that matches the scenario</h5>
+          <p>The correct three-step procedure is on screen for each scenario (bank error, registry error, non-responsive client, and so on), with no manual to consult.</p>
+          <span class="jrn-emote pos">The next step is already written</span></div></div>
+
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">4</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Diagnose · Plausible feedback</div><h5>Record where the fault lies, and see what it triggers</h5>
+          <p>Choosing bank / registry / both reveals the downstream process it starts, with the deadline carried along in the context bar.</p>
+          <span class="jrn-emote pos">No surprise consequences</span></div></div>
+
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">5</div><div class="jrn-line"></div></div>
+        <div class="jrn-body"><div class="stage">Dispose · Terminal action</div><h5>Escalate or close with a justification that sticks</h5>
+          <p>A reason and rationale are required before submit; a confirmation modal previews the consequence; closure is explicitly permanent.</p>
+          <span class="jrn-emote pos">Recorded as I go, not after</span></div></div>
+
+      <div class="jrn-step good"><div class="jrn-rail"><div class="jrn-dot">6</div></div>
+        <div class="jrn-body"><div class="stage">Confirm · Success</div><h5>Clear confirmation of what happened and what's next</h5>
+          <p>The system states the disposition, the audit entry, and the next workflow step, then returns to the queue.</p>
+          <span class="jrn-emote pos">Loop closed, on to the next</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 09 DESIGN PRINCIPLES ══════════ -->
+<section id="s09">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">09</div>
+      <div class="sec-titles"><div class="k">Design Principles</div><h2>The rules the design follows.</h2></div>
+    </div>
+    <div class="g2 mt16">
+      <div class="box"><div class="bk">Principle 01 · derived from F01 / I-01</div><h4>Make the deadline the loudest thing on the screen.</h4><p>Risk is time. The countdown is styled as an alert and never leaves the analyst's view. It reappears in every sub-flow as a context bar.</p></div>
+      <div class="box"><div class="bk">Principle 02 · derived from F02, F04 / I-03</div><h4>Keep the decision branches in the tool.</h4><p>Every decision that changes the path is presented as an explicit choice, with its consequence shown before it's made.</p></div>
+      <div class="box"><div class="bk">Principle 03 · derived from F03 / I-02</div><h4>Show both sources side by side for comparison.</h4><p>Conflicting records sit side by side in the same shape, with the specific differences named in plain language above them.</p></div>
+      <div class="box"><div class="bk">Principle 04 · derived from F05 / I-04</div><h4>No terminal action without recorded rationale.</h4><p>Escalate and close are gated behind a structured reason, free-text justification, and a confirmation that previews the outcome.</p></div>
+      <div class="box"><div class="bk">Principle 05 · derived from F04 / I-03</div><h4>Show guidance where the decision is made.</h4><p>The procedure appears at the moment of the decision it governs. The "what do I do now" question is answered in place.</p></div>
+      <div class="box"><div class="bk">Principle 06 · derived from F05 / I-04</div><h4>Irreversible should look irreversible.</h4><p>Permanent actions get destructive styling, an explicit warning strip, and a can't-be-undone confirmation. The friction is proportional to the stakes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 10 PROTOTYPE SPECIFICATION ══════════ -->
+<section id="s10">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">10</div>
+      <div class="sec-titles"><div class="k">Prototype Specification</div><h2>The prototype screens, annotated.</h2></div>
+    </div>
+    <p class="lead">Each screen below is shown as a wireframe with numbered annotations. Every annotation states the design decision <em>and</em> the problem it solves.</p>
+
+    <!-- WF1 · DASHBOARD -->
+    <div class="wf-block">
+      <div class="wf-grid">
+        <div class="browser">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / dashboard</span></div>
+          <div class="screen"><div class="mw mw-app">
+            <div class="mw-side">
+              <div class="mw-logo">JPB</div>
+              <div class="mw-navt">Case Manager</div>
+              <div class="mw-navi">◈ Dashboard</div>
+            </div>
+            <div class="mw-main">
+              <div class="mw-top"><span>Dashboard</span><span>Compliance Officer ●</span></div>
+              <div class="mw-row"><div class="mw-search">🔍 Search by case #, company, advisor…</div><div class="mw-btn">Retrieve BO</div><div class="mw-btn pri">+ New check</div></div>
+              <table class="mw-tbl">
+                <thead><tr><th>Case</th><th>Status</th><th>Entity</th><th>Advisor</th><th>Resolve by</th></tr></thead>
+                <tbody>
+                  <tr><td><a>xxdd</a></td><td><span class="mw-badge mut">CLOSED</span></td><td>…-Notion</td><td>Paul</td><td>24.05.26</td></tr>
+                  <tr><td><a>xxdd1</a></td><td><span class="mw-badge">Material Discrepancy</span></td><td>…-Samsara</td><td>Kyle</td><td>24.05.26</td></tr>
+                  <tr><td><a>xxdd2</a></td><td><span class="mw-badge">Material Discrepancy</span></td><td>…-Uber</td><td>Paul</td><td>24.05.26</td></tr>
+                  <tr><td><a>xxdd3</a></td><td><span class="mw-badge mut">CLOSED</span></td><td>…-InterSys</td><td>Ben</td><td>24.05.26</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div></div>
+        </div>
+        <div class="wf-ann">
+          <div class="wf-cap">Screen 01</div>
+          <div class="wf-screenname">Dashboard: the discrepancy queue</div>
+          <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Status as the primary signal</h6><p>Colour-weighted status ("Material Discrepancy" vs muted "Closed") lets the analyst read the workload at a glance.</p><p class="solves"><b>Solves P5 / P1:</b> gives a shared, at-a-glance view of case state instead of context buried in email.</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Resolution date on every row</h6><p>The deadline appears in the list, not only on the detail screen, so triage can be time-driven.</p><p class="solves"><b>Solves P1:</b> makes the reporting clock visible before a case is even opened.</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>"Retrieve BO data from registry" as a first-class action</h6><p>The registry pull is a button, acknowledging it was previously a separate manual fetch.</p><p class="solves"><b>Solves P2:</b> brings the second data source into the workspace.</p></div></div>
+          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Search across case #, company and advisor</h6><p>Three entry points match the three ways an analyst actually recalls a case.</p><p class="solves"><b>Solves P5:</b> lets any handoff party find the case fast.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hr-lite"/>
+
+    <!-- WF2 · CASE DETAIL (anchor screen) -->
+    <div class="wf-block">
+      <div class="wf-grid">
+        <div class="browser">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / case / LE4568</span></div>
+          <div class="screen"><div class="mw" style="padding:11px 13px;">
+            <div class="mw-panels">
+              <div class="mw-co">
+                <div class="lab">Legal Entity</div>
+                <div class="nm">TEST-COMPANY-Box</div>
+                <div class="mw-kv"><span class="k">UID</span><span class="v">LE4568</span><span class="k">Address</span><span class="v">Zürich 8001</span><span class="k">Industry</span><span class="v">Crude Oil</span><span class="k">Incorp.</span><span class="v">2018-06-16</span></div>
+              </div>
+              <div class="mw-alert">
+                <div class="al">Case Status</div><div class="as">Material Discrepancy</div>
+                <div class="ad">90</div><div class="au">days before government reporting · due 26.05.26</div>
+              </div>
+            </div>
+            <div class="mw-cardt">What follow-up actions are required?</div>
+            <div class="mw-tabs"><span class="mw-tab on">Bank?</span><span class="mw-tab">Registry?</span><span class="mw-tab">Flag?</span><span class="mw-tab">Non-responsive?</span><span class="mw-tab">Non-plausible?</span></div>
+            <div class="mw-cardt" style="margin-top:4px;">Discrepancy Details</div>
+            <div class="mw-disc">Beneficial owner "ABC Holding" not matching</div>
+            <div class="mw-disc">DOB &amp; first name for "Michael" not matching</div>
+            <div class="mw-disc">Ownership changed 85% → 100%</div>
+            <div class="mw-cmp" style="margin-top:8px;">
+              <div><div class="h">Bank (JPB)</div><div class="mw-mini">
+                <div class="r"><span class="k">Name</span><span class="v">David</span></div>
+                <div class="r"><span class="k">DOB</span><span class="v diff">(none)</span></div>
+                <div class="r"><span class="k">Nat.</span><span class="v">IT</span></div>
+                <div class="r"><span class="k">%</span><span class="v">100</span></div>
+              </div></div>
+              <div><div class="h">Federal Registry</div><div class="mw-mini">
+                <div class="r"><span class="k">Name</span><span class="v">David</span></div>
+                <div class="r"><span class="k">DOB</span><span class="v diff">08.03.10</span></div>
+                <div class="r"><span class="k">Nat.</span><span class="v">IT</span></div>
+                <div class="r"><span class="k">%</span><span class="v">100</span></div>
+              </div></div>
+            </div>
+            <div class="mw-actionbar"><span class="mw-btn">Close</span><span class="mw-btn">Escalate</span><span class="mw-btn pri">Plausible feedback</span></div>
+          </div></div>
+        </div>
+        <div class="wf-ann">
+          <div class="wf-cap">Screen 02</div>
+          <div class="wf-screenname">Case detail: clock, conflict, next action</div>
+          <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Countdown as a red alert panel</h6><p>The reporting deadline gets the most visually dominant treatment on the screen, opposite the calm entity facts.</p><p class="solves"><b>Solves P1:</b> makes the statutory window impossible to overlook (F01).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Two records in identical shape</h6><p>Bank and registry BO lists use the same columns so mismatches land in the same visual position.</p><p class="solves"><b>Solves P2:</b> aligns the comparison attribute-by-attribute (F03).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Plain-language discrepancy list</h6><p>Above the tables, the exact non-matching fields are spelled out, including subtle ones like 85%→100%.</p><p class="solves"><b>Solves P2:</b> guarantees no field-level difference is missed (F03).</p></div></div>
+          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Five-tab follow-up playbook</h6><p>The correct procedure for each scenario is embedded at the point of decision.</p><p class="solves"><b>Solves P3:</b> keeps the branch logic in the tool instead of the analyst's memory (F02, F04).</p></div></div>
+          <div class="ann"><div class="ann-n">5</div><div class="ann-b"><h6>Terminal actions gathered in a sticky bar</h6><p>Close, escalate and plausible-feedback are always reachable, with the constructive path styled as primary.</p><p class="solves"><b>Solves P5:</b> routes every disposition through a named state (F05).</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hr-lite"/>
+
+    <!-- WF3 · PLAUSIBLE FEEDBACK -->
+    <div class="wf-block">
+      <div class="wf-grid">
+        <div class="browser">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / case / plausible-feedback</span></div>
+          <div class="screen"><div class="mw" style="padding:11px 13px;">
+            <div class="mw-ctx"><div><div class="co">TEST-COMPANY-Box</div><div class="mt">LE4568 · Crude Oil · Zürich</div></div><div class="mw-ctxa"><div class="bd">Material</div><div class="dd">90</div><span style="font-size:7px;color:var(--red);">due 26.05</span></div></div>
+            <div class="mw-form">
+              <h6>Confirmation on Plausible Feedback</h6>
+              <div class="fsub">Record where the discrepancy lies. Your selection determines the next workflow step.</div>
+              <div class="mw-radio"><div class="rc"></div><div><div class="rt">Discrepancy is at Bank</div><div class="rd">Client confirmed the bank's files are incorrect.</div></div></div>
+              <div class="mw-radio sel"><div class="rc"></div><div><div class="rt">Discrepancy is at the Registry</div><div class="rd">Client confirmed the bank's files are correct.</div><div class="mw-trig">⚡ Triggers: client initiates registry correction · auto-recheck at due date</div></div></div>
+              <div class="mw-radio"><div class="rc"></div><div><div class="rt">Discrepancy is at both places</div></div></div>
+              <div class="mw-warn" style="background:#FAF9F6;border-color:var(--line);color:var(--g5);">☑ I confirm the client gave a credible explanation for the mismatch.</div>
+              <div class="mw-actionbar" style="margin-top:2px;"><span class="mw-btn">← Back</span><span class="mw-btn pri">Submit case</span></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="wf-ann">
+          <div class="wf-cap">Screen 03</div>
+          <div class="wf-screenname">Plausible feedback: the diagnosis</div>
+          <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Fault location as an explicit choice</h6><p>Bank / registry / both is the pivotal diagnosis, made a deliberate radio decision rather than an assumption.</p><p class="solves"><b>Solves P3:</b> forces the directional call the whole downstream depends on (F02).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Consequence revealed on selection</h6><p>Each option exposes a "Triggers" box describing the process it starts and the deadline behaviour.</p><p class="solves"><b>Solves P3:</b> shows the outcome before it's committed, with no hidden branch (F02).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Deadline carried into the sub-flow</h6><p>The context bar repeats the countdown so time-pressure never disappears mid-task.</p><p class="solves"><b>Solves P1:</b> keeps the clock present at the moment of decision (F01).</p></div></div>
+          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Explicit attestation checkbox</h6><p>The analyst must affirm the client's explanation was credible before submitting.</p><p class="solves"><b>Solves P4:</b> captures the judgment as a recorded fact (F05).</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hr-lite"/>
+
+    <!-- WF4 · TERMINAL ACTIONS -->
+    <div class="wf-block">
+      <div class="wf-grid">
+        <div class="browser">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / case / close · escalate</span></div>
+          <div class="screen"><div class="mw" style="padding:11px 13px;">
+            <div class="mw-ctx"><div><div class="co">TEST-COMPANY-Box</div><div class="mt">LE4568 · Crude Oil · Zürich</div></div><div class="mw-ctxa"><div class="bd">Material</div><div class="dd">90</div><span style="font-size:7px;color:var(--red);">due 26.05</span></div></div>
+            <div class="mw-form">
+              <h6>Close Case</h6>
+              <div class="fsub">This action is permanent. The case is archived with no further actions.</div>
+              <div class="mw-warn">⚠️ Permanent: closing removes this case from the active queue. Ensure all discrepancies are addressed.</div>
+              <div class="mw-lbl">Closure reason *</div><div class="mw-fld">Select closure reason…</div>
+              <div class="mw-lbl">Justification text *</div><div class="mw-ta">Provide justification for case closure…</div>
+              <div class="mw-actionbar"><span class="mw-btn">← Back</span><span class="mw-btn dgr">Close case</span></div>
+            </div>
+            <div class="mw-modal dgr">
+              <div class="mh">Confirm Case Closure</div>
+              <div class="mstrip">⚠️ This action is permanent and cannot be undone</div>
+              <div class="mb">You are about to permanently close and archive this case.</div>
+              <div class="mf"><span class="mw-btn">Cancel</span><span class="mw-btn pri">Confirm &amp; close</span></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="wf-ann">
+          <div class="wf-cap">Screens 04 &amp; 05</div>
+          <div class="wf-screenname">Escalate &amp; close: the terminal gate</div>
+          <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>Structured reason + free justification</h6><p>Both terminal flows require a categorised reason and a written rationale before they can proceed.</p><p class="solves"><b>Solves P4:</b> produces a contemporaneous, defensible audit entry (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Disabled until valid</h6><p>The submit button stays inert, with a tooltip, until reason and justification are supplied, so the flow can't be rushed.</p><p class="solves"><b>Solves P4:</b> prevents empty or careless dispositions (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>Destructive styling for the permanent path</h6><p>Close uses danger colours, a warning banner, and a red confirmation strip; escalate stays neutral.</p><p class="solves"><b>Solves P4:</b> makes irreversibility look irreversible (Principle 06).</p></div></div>
+          <div class="ann"><div class="ann-n">4</div><div class="ann-b"><h6>Confirmation modal previews the consequence</h6><p>The modal restates case, reason and what happens next before the action commits.</p><p class="solves"><b>Solves P5:</b> confirms the handoff and next owner explicitly (F05).</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hr-lite"/>
+
+    <!-- WF5 · SUCCESS -->
+    <div class="wf-block">
+      <div class="wf-grid">
+        <div class="browser">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">case-manager / completed</span></div>
+          <div class="screen"><div class="mw"><div class="mw-succ">
+            <div class="ic">🔒</div>
+            <div class="tt">Case Closed</div>
+            <div class="ms">This case has been archived. The closure is recorded in the compliance audit trail. No further actions are available.</div>
+            <div style="margin-top:12px;"><span class="mw-btn pri" style="margin:0 auto;">← Return to dashboard</span></div>
+          </div></div></div>
+        </div>
+        <div class="wf-ann">
+          <div class="wf-cap">Screen 06</div>
+          <div class="wf-screenname">Confirmation: closing the workflow</div>
+          <div class="ann"><div class="ann-n">1</div><div class="ann-b"><h6>States the disposition plainly</h6><p>A single, unambiguous outcome ("Case Closed", "Escalated to BAC", "Feedback Recorded") with a matching icon.</p><p class="solves"><b>Solves P5:</b> confirms the action actually completed (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">2</div><div class="ann-b"><h6>Names the audit consequence</h6><p>The copy explicitly says the event is recorded in the audit trail, confirming that the record is now complete.</p><p class="solves"><b>Solves P4:</b> reassures the analyst the rationale is captured, not pending (F05).</p></div></div>
+          <div class="ann"><div class="ann-n">3</div><div class="ann-b"><h6>One route back to the queue</h6><p>The only forward action returns to the dashboard, resetting to triage.</p><p class="solves"><b>Solves P5:</b> keeps the operator in a single, closed workflow.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 11 DEPENDENCIES ══════════ -->
+<section id="s11">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">11</div>
+      <div class="sec-titles"><div class="k">Dependencies</div><h2>What the design depends on.</h2></div>
+    </div>
+    <p class="lead">Shipping this takes more than the six screens: regulatory sign-off on the reporting logic, integrations with the KYC system and the registry feed, the data rules the comparison depends on, and operating-model changes across the officer, advisor and committee roles. The dependencies below are grouped by type.</p>
+
+    <div class="g2 mt24">
+      <div class="dep">
+        <div class="dep-h"><span class="tag t-reg">REG</span><h4>Regulatory</h4></div>
+        <ul>
+          <li><b>Discrepancy-reporting duty.</b> The workflow assumes the 5AMLD / GwG §23a obligation to report register mismatches "without undue delay"; the terminal states must map to that duty.</li>
+          <li><b>Deadline definition.</b> The 90-day window and its start event must be pinned to the governing rule and jurisdiction. It sets the whole risk model.</li>
+          <li><b>Jurisdictional variance.</b> Register mechanics differ across the EU and Switzerland; "federal registry" and reportable-discrepancy thresholds may not be uniform.</li>
+          <li><b>Material vs minor.</b> The "Material Discrepancy" status implies a classification rule that determines what is reportable at all.</li>
+        </ul>
+      </div>
+      <div class="dep">
+        <div class="dep-h"><span class="tag t-tech">TECH</span><h4>Technical</h4></div>
+        <ul>
+          <li><b>KYC system-of-record integration.</b> The bank-side BO list must be pulled live from the CDD platform, not re-keyed.</li>
+          <li><b>Registry data feed.</b> "Retrieve BO data from registry" assumes a reliable, refreshable connection to the register.</li>
+          <li><b>Downstream process triggers.</b> Selecting "bank" must actually start a KYC-deficiency process; the "auto-recheck at due date" needs a scheduler.</li>
+          <li><b>Immutable audit log.</b> Justifications, timestamps and dispositions must be written to a tamper-evident trail.</li>
+        </ul>
+      </div>
+      <div class="dep">
+        <div class="dep-h"><span class="tag t-data">DATA</span><h4>Data</h4></div>
+        <ul>
+          <li><b>Entity resolution.</b> Matching a bank BO to a registry BO across name/date variants is non-trivial and underlies the whole comparison.</li>
+          <li><b>Field-level diff logic.</b> The Discrepancy Details list depends on a rule set defining which field deltas count and how they're described.</li>
+          <li><b>Registry data quality.</b> If the register is stale or wrong, "discrepancy at registry" will be the dominant path. The model must expect that.</li>
+          <li><b>History &amp; versioning.</b> Ownership changing 85%→100% implies the tool can compare against a prior known state.</li>
+        </ul>
+      </div>
+      <div class="dep">
+        <div class="dep-h"><span class="tag t-org">ORG</span><h4>Organisational</h4></div>
+        <ul>
+          <li><b>Operating model.</b> The officer ↔ advisor ↔ BAC handoffs assume defined roles, SLAs and ownership at each state.</li>
+          <li><b>BAC intake.</b> Escalations need a committee process that consumes the structured reason + justification.</li>
+          <li><b>Records retention.</b> Closed cases must persist for the regulator's required period.</li>
+          <li><b>Team-lead oversight.</b> No queue-health or SLA view exists yet; it is an implied but unbuilt role.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fw">
+    <div class="ft">JPB &nbsp;·&nbsp; Transparency Register Case Manager: UX Case Study</div>
+    <div class="fmeta">Domain <b>AML / KYC beneficial-ownership discrepancy reporting</b> &nbsp;·&nbsp; Regime <b>EU 5AMLD / GwG §23a</b> &nbsp;·&nbsp; Prototype <b>6 screens, triage through terminal disposition</b>.</div>
+    <div class="frow">
+      <span>JPB Compliance Technology</span>
+      
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

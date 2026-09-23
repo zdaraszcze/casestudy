@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Assisted Onboarding: UX Research and Design Specification</title>
+<title>JPB · Digital Assisted Onboarding: UX Research and Design Specification</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#F4F3EF;--surface:#FFFFFF;--border:#CDCAC2;--border-strong:#9A9690;
-  --t1:#0A0A0A;--t2:#3C3C3C;--t3:#787878;
-  --accent:#1B3A6B;--accent-mid:#2D5BA8;--accent-light:#EBF0F8;
-  --red:#B5241C;--red-light:#FAEAEA;
-  --green:#1E5C3A;--green-light:#E7F4EC;
-  --amber:#7A4F00;--amber-light:#FDF4E3;
+  --bg:#F7F6F2;--surface:#FFFFFF;--border:#CDCAC2;--border-strong:#9A9690;
+  --t1:#1C1C1C;--t2:#444444;--t3:#787878;
+  --accent:#E60000;--accent-mid:#B30000;--accent-light:#FBEAEA;
+  --red:#7A1F1F;--red-light:#F4E7E5;
+  --green:#5C6B1E;--green-light:#F1F4DC;
+  --amber:#7A4F00;--amber-light:#F7F3DD;
 }
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.65;}
 nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);
   border-bottom:1px solid var(--border);padding:0 40px;
   display:flex;align-items:center;height:48px;overflow-x:auto;gap:0;}
-.nav-brand{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--t1);
+.nav-brand{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--t1);
   white-space:nowrap;margin-right:24px;padding-right:24px;border-right:1px solid var(--border);}
+.nav-mark{width:8px;height:8px;background:var(--accent);flex-shrink:0;}
+.nav-brand-sep{color:var(--border-strong);font-weight:400;margin:0 1px;}
 nav a{font-size:11px;font-weight:500;color:var(--t3);text-decoration:none;
   padding:5px 10px;white-space:nowrap;transition:color .15s;}
 nav a:hover{color:var(--accent);}
@@ -35,13 +37,13 @@ h2{font-size:22px;font-weight:700;letter-spacing:-.25px;color:var(--t1);}
 h3{font-size:15px;font-weight:600;letter-spacing:-.15px;}
 h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);}
 .label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);}
-.hero{background:var(--accent);color:#fff;padding:52px 56px 44px;margin-bottom:60px;}
-.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:12px;}
+.hero{background:var(--t1);color:#fff;padding:52px 56px 44px;margin-bottom:60px;border-top:4px solid var(--accent);position:relative;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
 .hero h1{color:#fff;margin-bottom:6px;}
-.hero-sub{font-size:15px;color:rgba(255,255,255,.65);font-weight:400;margin-bottom:32px;}
-.hero-stats{display:flex;gap:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);}
-.hs-val{font-size:24px;font-weight:800;display:block;}
-.hs-lab{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.72);font-weight:400;margin-bottom:32px;max-width:640px;}
+.hero-stats{display:flex;gap:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.18);flex-wrap:wrap;}
+.hs-val{font-size:26px;font-weight:800;display:block;color:var(--accent);}
+.hs-lab{font-size:10px;color:rgba(255,255,255,.62);text-transform:uppercase;letter-spacing:.08em;}
 .box{background:var(--surface);border:1px solid var(--border);padding:22px;}
 .box-accent{border-left:3px solid var(--accent);}
 .box-red{border-left:3px solid var(--red);background:var(--red-light);}
@@ -59,6 +61,8 @@ tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(0,0,0,.015);}
 .quote{border-left:2px solid var(--accent);padding:12px 16px;
   font-style:italic;font-size:12px;color:var(--t2);background:var(--accent-light);margin:16px 0;}
+.quote-attr{display:block;margin-top:8px;font-style:normal;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--accent-mid);}
 .p-attr{display:flex;justify-content:space-between;padding:6px 0;
   border-bottom:1px solid var(--border);font-size:12px;}
 .p-attr:last-child{border-bottom:none;}
@@ -87,7 +91,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
 @media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr;}}
 @media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr;}main{padding:32px 20px;}.hero{padding:32px;}.hero h1{font-size:26px;}}
 /* ── System B compatibility: s10 prototype content uses these classes ── */
-:root{--proto-accent:#1B3A6B;--proto-bg:#EBF0F8;--text-secondary:#3C3C3C;}
+:root{--proto-accent:#E60000;--proto-bg:#FBEAEA;--text-secondary:#444444;}
 .card,.card-proto{background:var(--surface);border:1px solid var(--border);padding:22px;}
 .card-proto{border-left:3px solid var(--accent);}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
@@ -95,8 +99,8 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
 .gap-16{margin-bottom:16px;}.gap-24{margin-bottom:24px;}.gap-32{margin-bottom:32px;}
 .section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);}
-.wireframe{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;margin-bottom:16px;}
-.wireframe-bar{background:#E2E8F0;padding:8px 12px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:6px;}
+.wireframe{background:#F7F6F2;border:1px solid #E3E0D8;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.wireframe-bar{background:#E3E0D8;padding:8px 12px;border-bottom:1px solid #E3E0D8;display:flex;align-items:center;gap:6px;}
 .wireframe-dot{width:8px;height:8px;border-radius:50%;}
 .annotation{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--t2);line-height:1.6;}
 .annotation:last-child{border-bottom:none;}
@@ -106,7 +110,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
 </head>
 <body>
 <nav>
-  <div class="nav-brand">Digital Assisted Onboarding</div>
+  <div class="nav-brand"><span class="nav-mark"></span>JPB <span class="nav-brand-sep">&nbsp;|&nbsp;</span> Digital Assisted Onboarding</div>
   <a href="#s00">Executive Summary</a>
   <a href="#s01">Problem Statement</a>
   <a href="#s02">Research Approach</a>
@@ -122,7 +126,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
 </nav>
 <main>
 <div class="hero">
-  <div class="hero-eyebrow">Private Banking Division &nbsp;·&nbsp; UX Research and Design Specification &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</div>
+  <div class="hero-eyebrow">JPB Global Wealth Management &nbsp;·&nbsp; Private Banking Division &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</div>
   <h1>Digital Assisted Onboarding</h1>
   <div class="hero-sub">Process analysis, research findings, and design specification for the redesign of the end-to-end client onboarding journey.</div>
   <div class="hero-stats">
@@ -208,7 +212,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           The current onboarding process spans 9 phases and 148 discrete steps, involving Client Advisors, Onboarding Specialists, Due Diligence Officers, and Client Operations teams across more than 20 systems. These systems operate without a shared data layer or orchestration logic. Client data entered in one platform does not propagate to others. Handoffs between phases are managed by email and shared drives rather than workflow automation.
         </p>
         <p style="color:var(--t2);">
-          The process was not designed end-to-end. It evolved incrementally as regulatory requirements and system capabilities were added over time. Manual effort now bridges the gaps between systems. Quality at each phase depends on individual practitioner discipline: the platform enforces nothing.
+          The process was not designed end-to-end. It evolved incrementally as regulatory requirements and system capabilities were added over time. Manual effort now bridges the gaps between systems. Quality at each phase depends on individual practitioner discipline. The platform enforces nothing.
         </p>
       </div>
     </div>
@@ -314,7 +318,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div>
           <h3 class="gap8">Data Entered Once, Used Nowhere</h3>
           <p style="color:var(--t2);margin-bottom:10px;">Data captured in the Onboarding Platform does not write back to the CA Portal or populate the document generation tool. Correspondence instructions entered during data capture never flow downstream, causing generated documents to contain blank or incorrect fields. Client Advisors re-enter the same data in three to five separate systems per case.</p>
-          <div class="quote">"I fill in the same client address in the onboarding form, then again in the document tool, then again when we need to generate a letter. There's no logic to it.": Client Advisor</div>
+          <div class="quote">"I fill in the same client address in the onboarding form, then again in the document tool, then again when we need to generate a letter. There's no logic to it."<span class="quote-attr">Client Advisor</span></div>
         </div>
       </div>
     </div>
@@ -326,7 +330,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           <h3 class="gap8">EDD Quality is a Front-Office Problem Solved in the Back Office</h3>
           <p style="color:var(--t2);margin-bottom:10px;">The Enhanced Due Diligence phase achieves a first-time-right rate of approximately 20%, based on participant recall corroborated by observed case queues. The primary cause is insufficient source-of-wealth narrative quality at submission, not regulatory threshold disagreement. Due Diligence Officers receive Word-template-based files with manually copied data and apply judgment that could be better informed by structured inputs. The 14-step sequential approval chain amplifies the cost of each iteration.</p>
           <p class="footnote">Baseline figure of ~20% requires validation against institutional case management data before targets are confirmed.</p>
-          <div class="quote">"The CA submits what they think is enough. I can see within 30 seconds it will need to come back. But I have to process it formally before I can return it.": Due Diligence Officer</div>
+          <div class="quote">"The CA submits what they think is enough. I can see within 30 seconds it will need to come back. But I have to process it formally before I can return it."<span class="quote-attr">Due Diligence Officer</span></div>
         </div>
       </div>
     </div>
@@ -337,7 +341,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div>
           <h3 class="gap8">Formalities Preparation Consumes Disproportionate Specialist Time</h3>
           <p style="color:var(--t2);margin-bottom:10px;">The Formalities phase involves 28 discrete manual sub-steps for document preparation. The workflow spans the Onboarding Platform, a document generation tool accessed via email, Adobe Acrobat for merging and flattening, DocBasket for QR code generation, and a shared drive for version management. No audit trail exists on the shared drive. Front office modifications to generated documents are undetectable after the fact. Onboarding Specialists estimate approximately 60% of their Phase 7 time goes on this mechanical work, not on checking whether cases are complete.</p>
-          <div class="quote">"I spend more time creating folder structures and flattening PDFs than I do checking whether a case is actually complete.": Client Onboarding Specialist</div>
+          <div class="quote">"I spend more time creating folder structures and flattening PDFs than I do checking whether a case is actually complete."<span class="quote-attr">Client Onboarding Specialist</span></div>
         </div>
       </div>
     </div>
@@ -348,7 +352,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div>
           <h3 class="gap8">The Signing and Opening Experience Frustrates Prospects at the Finish Line</h3>
           <p style="color:var(--t2);margin-bottom:10px;">Prospects identified via original documents cannot switch to electronic signing without a video identification call, and no online identification alternative exists. This creates a hard scheduling dependency that blocks same-day or asynchronous completion for any prospect identified by paper documents. Accounts are blocked for up to 3 days post-opening pending an overnight archive verification batch process, meaning prospects who complete signing and receive confirmation cannot access their account immediately.</p>
-          <div class="quote">"By the time we reach signing, the client has been waiting weeks. Then we tell them the account needs another 3 days to activate. The goodwill from completing the process evaporates.": Client Advisor</div>
+          <div class="quote">"By the time we reach signing, the client has been waiting weeks. Then we tell them the account needs another 3 days to activate. The goodwill from completing the process evaporates."<span class="quote-attr">Client Advisor</span></div>
         </div>
       </div>
     </div>
@@ -366,7 +370,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
       <h3 class="gap4">Marco Fischer</h3>
       <p class="muted small gap16">Senior Client Advisor, Private Banking &nbsp;·&nbsp; 38 years old</p>
       <div style="margin-bottom:16px;">
-        <div class="p-attr"><span class="p-key">Institution</span><span>Leading Global Private Bank</span></div>
+        <div class="p-attr"><span class="p-key">Institution</span><span>JPB Global Wealth Management</span></div>
         <div class="p-attr"><span class="p-key">AUM managed</span><span>~CHF 280M personal book</span></div>
         <div class="p-attr"><span class="p-key">Client portfolio</span><span>42 HNW, 6 UHNW active relationships</span></div>
         <div class="p-attr"><span class="p-key">Systems used daily</span><span>20+ platforms across onboarding lifecycle</span></div>
@@ -376,7 +380,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
       <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
         <li>Onboard clients without losing weeks to paperwork cycles</li>
         <li>Never be the one requesting a client's documents a second time</li>
-        <li>Get EDD cleared first-time: the 3-iteration average damages the relationship</li>
+        <li>Get EDD cleared on the first attempt; the 3-iteration average damages the relationship</li>
         <li>Spend time on client relationships, not system navigation</li>
       </ul>
       <h4 class="gap8">Core Friction Points</h4>
@@ -411,7 +415,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
       <h4 class="gap8">Core Friction Points</h4>
       <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
         <li>Document generation arrives by email with no platform integration</li>
-        <li>No audit trail on the shared drive: documents are overwritten without trace</li>
+        <li>No audit trail on the shared drive, so documents are overwritten without trace</li>
         <li>FINSA classification is not pre-filled in generated documents</li>
         <li>Branch office must be added manually to every case or CDH rejects</li>
       </ul>
@@ -439,7 +443,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
       </ul>
       <h4 class="gap8">Core Friction Points</h4>
       <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
-        <li>EDD module and PEP Screening Tool are not connected: parallel manual cross-referencing required</li>
+        <li>EDD module and PEP Screening Tool are not connected, so parallel manual cross-referencing is required</li>
         <li>DDO Word template requires manual copy-paste of case data from the ONB platform</li>
         <li>14 sequential approval steps make every returned case disproportionately expensive</li>
         <li>Source-of-wealth narratives are frequently qualitative, unsupported, and insufficient</li>
@@ -470,7 +474,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
       <ul style="font-size:12px;color:var(--t2);padding-left:14px;line-height:2;margin-bottom:14px;">
         <li>Source-of-wealth documentation requested multiple times across different channels</li>
         <li>No visibility of where the onboarding process stands at any point</li>
-        <li>Video identification call requires scheduling: blocks asynchronous completion</li>
+        <li>Video identification call requires scheduling, which blocks asynchronous completion</li>
         <li>Account remains blocked for days after signing confirmation received</li>
       </ul>
       <div class="quote">"I was told the account would be open within a week. Three weeks later I was still receiving requests for documents I had already provided. By the time it opened, I had already started conversations with another bank."</div>
@@ -488,279 +492,279 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
   <div class="swimlane-wrap">
     <svg class="swimlane-svg" width="1620" height="800" viewBox="0 0 1620 800" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;">
       <defs>
-        <marker id="arrowR" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#EF4444"/></marker>
-        <marker id="arrowG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#059669"/></marker>
+        <marker id="arrowR" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#A83A2E"/></marker>
+        <marker id="arrowG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5C6B1E"/></marker>
       </defs>
 
       <!-- Background -->
-      <rect x="0" y="0" width="1620" height="800" fill="#F8FAFC"/>
+      <rect x="0" y="0" width="1620" height="800" fill="#F7F6F2"/>
 
       <!-- Lane header column -->
-      <rect x="0" y="0" width="120" height="800" fill="#E2E8F0"/>
+      <rect x="0" y="0" width="120" height="800" fill="#E3E0D8"/>
       <!-- Lane label text (rotated) -->
-      <text x="60" y="105" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,105)" letter-spacing=".8">CLIENT</text>
-      <text x="60" y="295" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,295)" letter-spacing=".8">CLIENT ADVISOR</text>
-      <text x="60" y="495" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,495)" letter-spacing=".8">PROCESSING / OPS</text>
-      <text x="60" y="680" font-size="10" font-weight="700" fill="#475569" text-anchor="middle" transform="rotate(-90,60,680)" letter-spacing=".8">SYSTEMS</text>
+      <text x="60" y="105" font-size="10" font-weight="700" fill="#4A463D" text-anchor="middle" transform="rotate(-90,60,105)" letter-spacing=".8">CLIENT</text>
+      <text x="60" y="295" font-size="10" font-weight="700" fill="#4A463D" text-anchor="middle" transform="rotate(-90,60,295)" letter-spacing=".8">CLIENT ADVISOR</text>
+      <text x="60" y="495" font-size="10" font-weight="700" fill="#4A463D" text-anchor="middle" transform="rotate(-90,60,495)" letter-spacing=".8">PROCESSING / OPS</text>
+      <text x="60" y="680" font-size="10" font-weight="700" fill="#4A463D" text-anchor="middle" transform="rotate(-90,60,680)" letter-spacing=".8">SYSTEMS</text>
 
       <!-- Lane dividers -->
-      <line x1="120" y1="0" x2="1620" y2="0" stroke="#CBD5E1" stroke-width="1"/>
-      <line x1="120" y1="190" x2="1620" y2="190" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="390" x2="1620" y2="390" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="590" x2="1620" y2="590" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="780" x2="1620" y2="780" stroke="#CBD5E1" stroke-width="1"/>
+      <line x1="120" y1="0" x2="1620" y2="0" stroke="#D3CFC4" stroke-width="1"/>
+      <line x1="120" y1="190" x2="1620" y2="190" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="390" x2="1620" y2="390" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="590" x2="1620" y2="590" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="780" x2="1620" y2="780" stroke="#D3CFC4" stroke-width="1"/>
 
       <!-- Phase widths: 120px label + 9×166px = 1614px ≈ 1620 -->
       <!-- Phase start X: P1=120, P2=286, P3=452, P4=618, P5=784, P6=950, P7=1116, P8=1282, P9=1448 -->
 
       <!-- Phase header bands -->
-      <rect x="120" y="0" width="166" height="22" fill="#D1FAE5"/>
-      <text x="203" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">1 · LEAD GEN</text>
-      <rect x="286" y="0" width="166" height="22" fill="#D1FAE5" opacity=".85"/>
-      <text x="369" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">2 · PROSPECT</text>
-      <rect x="452" y="0" width="166" height="22" fill="#D1FAE5" opacity=".70"/>
-      <text x="535" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">3 · DATA CAPTURE</text>
-      <rect x="618" y="0" width="166" height="22" fill="#FEF3C7" opacity=".90"/>
-      <text x="701" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">4 · PEP CHECK</text>
-      <rect x="784" y="0" width="166" height="22" fill="#FEE2E2"/>
-      <text x="867" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">5 · EDD ⚠</text>
-      <rect x="950" y="0" width="166" height="22" fill="#D1FAE5" opacity=".60"/>
-      <text x="1033" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">6 · PRODUCTS</text>
-      <rect x="1116" y="0" width="166" height="22" fill="#FEF3C7" opacity=".75"/>
-      <text x="1199" y="15" font-size="8.5" font-weight="700" fill="#92400E" text-anchor="middle" letter-spacing=".4">7 · FORMALITIES</text>
-      <rect x="1282" y="0" width="166" height="22" fill="#D1FAE5" opacity=".50"/>
-      <text x="1365" y="15" font-size="8.5" font-weight="700" fill="#047857" text-anchor="middle" letter-spacing=".4">8 · SIGNING</text>
-      <rect x="1448" y="0" width="172" height="22" fill="#FEE2E2" opacity=".60"/>
-      <text x="1534" y="15" font-size="8.5" font-weight="700" fill="#B91C1C" text-anchor="middle" letter-spacing=".4">9 · BR OPENING</text>
+      <rect x="120" y="0" width="166" height="22" fill="#F1F4DC"/>
+      <text x="203" y="15" font-size="8.5" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".4">1 · LEAD GEN</text>
+      <rect x="286" y="0" width="166" height="22" fill="#F1F4DC" opacity=".85"/>
+      <text x="369" y="15" font-size="8.5" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".4">2 · PROSPECT</text>
+      <rect x="452" y="0" width="166" height="22" fill="#F1F4DC" opacity=".70"/>
+      <text x="535" y="15" font-size="8.5" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".4">3 · DATA CAPTURE</text>
+      <rect x="618" y="0" width="166" height="22" fill="#F7F3DD" opacity=".90"/>
+      <text x="701" y="15" font-size="8.5" font-weight="700" fill="#5C3D00" text-anchor="middle" letter-spacing=".4">4 · PEP CHECK</text>
+      <rect x="784" y="0" width="166" height="22" fill="#F4E7E5"/>
+      <text x="867" y="15" font-size="8.5" font-weight="700" fill="#7A1F1F" text-anchor="middle" letter-spacing=".4">5 · EDD ⚠</text>
+      <rect x="950" y="0" width="166" height="22" fill="#F1F4DC" opacity=".60"/>
+      <text x="1033" y="15" font-size="8.5" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".4">6 · PRODUCTS</text>
+      <rect x="1116" y="0" width="166" height="22" fill="#F7F3DD" opacity=".75"/>
+      <text x="1199" y="15" font-size="8.5" font-weight="700" fill="#5C3D00" text-anchor="middle" letter-spacing=".4">7 · FORMALITIES</text>
+      <rect x="1282" y="0" width="166" height="22" fill="#F1F4DC" opacity=".50"/>
+      <text x="1365" y="15" font-size="8.5" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".4">8 · SIGNING</text>
+      <rect x="1448" y="0" width="172" height="22" fill="#F4E7E5" opacity=".60"/>
+      <text x="1534" y="15" font-size="8.5" font-weight="700" fill="#7A1F1F" text-anchor="middle" letter-spacing=".4">9 · BR OPENING</text>
 
       <!-- Phase vertical dividers -->
-      <line x1="286" y1="22" x2="286" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="452" y1="22" x2="452" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="618" y1="22" x2="618" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="784" y1="22" x2="784" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="950" y1="22" x2="950" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="1116" y1="22" x2="1116" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="1282" y1="22" x2="1282" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
-      <line x1="1448" y1="22" x2="1448" y2="780" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="286" y1="22" x2="286" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="452" y1="22" x2="452" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="618" y1="22" x2="618" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="784" y1="22" x2="784" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="950" y1="22" x2="950" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1116" y1="22" x2="1116" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1282" y1="22" x2="1282" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
+      <line x1="1448" y1="22" x2="1448" y2="780" stroke="#D3CFC4" stroke-width="1" stroke-dasharray="3,4"/>
 
       <!-- ═══ CLIENT LANE (y: 22–190) ═══ -->
       <!-- P1: Not directly involved -->
-      <rect x="130" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="203" y="52" font-size="9" fill="#64748B" text-anchor="middle">Not directly</text>
-      <text x="203" y="65" font-size="9" fill="#64748B" text-anchor="middle">involved</text>
-      <text x="203" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+      <rect x="130" y="32" width="146" height="52" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="203" y="52" font-size="9" fill="#6E6A61" text-anchor="middle">Not directly</text>
+      <text x="203" y="65" font-size="9" fill="#6E6A61" text-anchor="middle">involved</text>
+      <text x="203" y="78" font-size="9" fill="#9A968C" text-anchor="middle">: passive :</text>
 
       <!-- P2: Not directly involved -->
-      <rect x="296" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="369" y="52" font-size="9" fill="#64748B" text-anchor="middle">CA creates prospect</text>
-      <text x="369" y="65" font-size="9" fill="#64748B" text-anchor="middle">without client input</text>
-      <text x="369" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+      <rect x="296" y="32" width="146" height="52" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="369" y="52" font-size="9" fill="#6E6A61" text-anchor="middle">CA creates prospect</text>
+      <text x="369" y="65" font-size="9" fill="#6E6A61" text-anchor="middle">without client input</text>
+      <text x="369" y="78" font-size="9" fill="#9A968C" text-anchor="middle">: passive :</text>
 
       <!-- P3: Provides data -->
-      <rect x="462" y="32" width="146" height="52" rx="5" fill="#A7F3D0" stroke="#059669"/>
-      <text x="535" y="52" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Provides ID, address,</text>
-      <text x="535" y="65" font-size="9" fill="#064E3B" text-anchor="middle">tax details, TIN</text>
-      <text x="535" y="78" font-size="9" fill="#059669" text-anchor="middle">😊 Cooperative</text>
+      <rect x="462" y="32" width="146" height="52" rx="5" fill="#E4E9BE" stroke="#5C6B1E"/>
+      <text x="535" y="52" font-size="9" font-weight="600" fill="#2E3510" text-anchor="middle">Provides ID, address,</text>
+      <text x="535" y="65" font-size="9" fill="#2E3510" text-anchor="middle">tax details, TIN</text>
+      <text x="535" y="78" font-size="9" fill="#5C6B1E" text-anchor="middle">😊 Cooperative</text>
 
       <!-- P4: Not involved -->
-      <rect x="628" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="701" y="52" font-size="9" fill="#64748B" text-anchor="middle">PEP background</text>
-      <text x="701" y="65" font-size="9" fill="#64748B" text-anchor="middle">check (no visibility)</text>
-      <text x="701" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: unaware :</text>
+      <rect x="628" y="32" width="146" height="52" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="701" y="52" font-size="9" fill="#6E6A61" text-anchor="middle">PEP background</text>
+      <text x="701" y="65" font-size="9" fill="#6E6A61" text-anchor="middle">check (no visibility)</text>
+      <text x="701" y="78" font-size="9" fill="#9A968C" text-anchor="middle">: unaware :</text>
 
       <!-- P5: Source of wealth (painful) -->
-      <rect x="794" y="32" width="146" height="52" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
-      <text x="867" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ Provides SOW docs</text>
-      <text x="867" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">Avg 3× requested</text>
-      <text x="867" y="76" font-size="9" fill="#DC2626" text-anchor="middle">😟 Frustrated</text>
+      <rect x="794" y="32" width="146" height="52" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="1.5"/>
+      <text x="867" y="50" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">⚠ Provides SOW docs</text>
+      <text x="867" y="63" font-size="9" fill="#4A1010" text-anchor="middle">Avg 3× requested</text>
+      <text x="867" y="76" font-size="9" fill="#93281E" text-anchor="middle">😟 Frustrated</text>
 
       <!-- P6: Not involved -->
-      <rect x="960" y="32" width="146" height="52" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="1033" y="52" font-size="9" fill="#64748B" text-anchor="middle">Not directly</text>
-      <text x="1033" y="65" font-size="9" fill="#64748B" text-anchor="middle">involved</text>
-      <text x="1033" y="78" font-size="9" fill="#94A3B8" text-anchor="middle">: passive :</text>
+      <rect x="960" y="32" width="146" height="52" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="1033" y="52" font-size="9" fill="#6E6A61" text-anchor="middle">Not directly</text>
+      <text x="1033" y="65" font-size="9" fill="#6E6A61" text-anchor="middle">involved</text>
+      <text x="1033" y="78" font-size="9" fill="#9A968C" text-anchor="middle">: passive :</text>
 
       <!-- P7: Receives document set -->
-      <rect x="1126" y="32" width="146" height="52" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
-      <text x="1199" y="50" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Reviews &amp; signs</text>
-      <text x="1199" y="63" font-size="9" fill="#78350F" text-anchor="middle">document pack</text>
-      <text x="1199" y="76" font-size="9" fill="#B45309" text-anchor="middle">😐 Waiting</text>
+      <rect x="1126" y="32" width="146" height="52" rx="5" fill="#F7F3DD" stroke="#A87A3D"/>
+      <text x="1199" y="50" font-size="9" font-weight="600" fill="#4A3000" text-anchor="middle">Reviews &amp; signs</text>
+      <text x="1199" y="63" font-size="9" fill="#4A3000" text-anchor="middle">document pack</text>
+      <text x="1199" y="76" font-size="9" fill="#7A4F00" text-anchor="middle">😐 Waiting</text>
 
       <!-- P8: Video ident + sign -->
-      <rect x="1292" y="32" width="146" height="52" rx="5" fill="#A7F3D0" stroke="#059669"/>
-      <text x="1365" y="50" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Video ID call</text>
-      <text x="1365" y="63" font-size="9" fill="#064E3B" text-anchor="middle">E-signature</text>
-      <text x="1365" y="76" font-size="9" fill="#059669" text-anchor="middle">😌 Almost there</text>
+      <rect x="1292" y="32" width="146" height="52" rx="5" fill="#E4E9BE" stroke="#5C6B1E"/>
+      <text x="1365" y="50" font-size="9" font-weight="600" fill="#2E3510" text-anchor="middle">Video ID call</text>
+      <text x="1365" y="63" font-size="9" fill="#2E3510" text-anchor="middle">E-signature</text>
+      <text x="1365" y="76" font-size="9" fill="#5C6B1E" text-anchor="middle">😌 Almost there</text>
 
       <!-- P9: Account opens (but blocked) -->
-      <rect x="1458" y="32" width="152" height="52" rx="5" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="1534" y="50" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Account opens but</text>
-      <text x="1534" y="63" font-size="9" fill="#7F1D1D" text-anchor="middle">blocked 1–3 days</text>
-      <text x="1534" y="76" font-size="9" fill="#DC2626" text-anchor="middle">😡 "Why wait more?"</text>
+      <rect x="1458" y="32" width="152" height="52" rx="5" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="1534" y="50" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">Account opens but</text>
+      <text x="1534" y="63" font-size="9" fill="#4A1010" text-anchor="middle">blocked 1–3 days</text>
+      <text x="1534" y="76" font-size="9" fill="#93281E" text-anchor="middle">😡 "Why wait more?"</text>
 
       <!-- Client emotion arc -->
-      <path d="M203 95 Q369 98 535 92 Q620 88 701 100 Q780 110 867 130 Q950 140 1033 108 Q1116 100 1199 104 Q1282 102 1365 96 Q1448 94 1534 115" stroke="#059669" stroke-width="1.5" fill="none" stroke-dasharray="5,3" opacity=".5"/>
+      <path d="M203 95 Q369 98 535 92 Q620 88 701 100 Q780 110 867 130 Q950 140 1033 108 Q1116 100 1199 104 Q1282 102 1365 96 Q1448 94 1534 115" stroke="#5C6B1E" stroke-width="1.5" fill="none" stroke-dasharray="5,3" opacity=".5"/>
 
       <!-- MoT -->
-      <circle cx="867" cy="148" r="8" fill="#DC2626"/>
+      <circle cx="867" cy="148" r="8" fill="#93281E"/>
       <text x="867" y="152" font-size="8" font-weight="700" fill="white" text-anchor="middle">MoT</text>
-      <text x="867" y="164" font-size="8" fill="#DC2626" text-anchor="middle">Trust erosion</text>
+      <text x="867" y="164" font-size="8" fill="#93281E" text-anchor="middle">Trust erosion</text>
 
-      <circle cx="1365" cy="120" r="8" fill="#059669"/>
+      <circle cx="1365" cy="120" r="8" fill="#5C6B1E"/>
       <text x="1365" y="124" font-size="8" font-weight="700" fill="white" text-anchor="middle">MoT</text>
-      <text x="1365" y="136" font-size="8" fill="#059669" text-anchor="middle">Relief</text>
+      <text x="1365" y="136" font-size="8" fill="#5C6B1E" text-anchor="middle">Relief</text>
 
       <!-- ═══ CLIENT ADVISOR LANE (y: 190–390) ═══ -->
-      <rect x="130" y="202" width="146" height="65" rx="5" fill="#A7F3D0" stroke="#059669"/>
-      <text x="203" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Receives lead via</text>
-      <text x="203" y="233" font-size="9" fill="#064E3B" text-anchor="middle">referral / PDH</text>
-      <text x="203" y="246" font-size="9" fill="#064E3B" text-anchor="middle">Qualifies in CAWB</text>
-      <text x="203" y="259" font-size="9" fill="#059669" text-anchor="middle">😊 Engaged</text>
+      <rect x="130" y="202" width="146" height="65" rx="5" fill="#E4E9BE" stroke="#5C6B1E"/>
+      <text x="203" y="220" font-size="9" font-weight="600" fill="#2E3510" text-anchor="middle">Receives lead via</text>
+      <text x="203" y="233" font-size="9" fill="#2E3510" text-anchor="middle">referral / PDH</text>
+      <text x="203" y="246" font-size="9" fill="#2E3510" text-anchor="middle">Qualifies in CAWB</text>
+      <text x="203" y="259" font-size="9" fill="#5C6B1E" text-anchor="middle">😊 Engaged</text>
 
-      <rect x="296" y="202" width="146" height="65" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
-      <text x="369" y="220" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Creates Type I prospect</text>
-      <text x="369" y="233" font-size="9" fill="#78350F" text-anchor="middle">in Client Advisor Portal</text>
-      <text x="369" y="246" font-size="9" fill="#78350F" text-anchor="middle">E-mail allowed usage</text>
-      <text x="369" y="259" font-size="9" fill="#B45309" text-anchor="middle">⚠ defaults to BLOCKED</text>
+      <rect x="296" y="202" width="146" height="65" rx="5" fill="#F7F3DD" stroke="#A87A3D"/>
+      <text x="369" y="220" font-size="9" font-weight="600" fill="#4A3000" text-anchor="middle">Creates Type I prospect</text>
+      <text x="369" y="233" font-size="9" fill="#4A3000" text-anchor="middle">in Client Advisor Portal</text>
+      <text x="369" y="246" font-size="9" fill="#4A3000" text-anchor="middle">E-mail allowed usage</text>
+      <text x="369" y="259" font-size="9" fill="#7A4F00" text-anchor="middle">⚠ defaults to BLOCKED</text>
 
-      <rect x="462" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
-      <text x="535" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">21 data fields across</text>
-      <text x="535" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">scrolling screens</text>
-      <text x="535" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">No writeback to CRM</text>
-      <text x="535" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Admin overload</text>
+      <rect x="462" y="202" width="146" height="65" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="1.5"/>
+      <text x="535" y="220" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">21 data fields across</text>
+      <text x="535" y="233" font-size="9" fill="#4A1010" text-anchor="middle">scrolling screens</text>
+      <text x="535" y="246" font-size="9" fill="#4A1010" text-anchor="middle">No writeback to CRM</text>
+      <text x="535" y="259" font-size="9" fill="#93281E" text-anchor="middle">😤 Admin overload</text>
 
-      <rect x="628" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
-      <text x="701" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">PEP pre-check via</text>
-      <text x="701" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">Excel (external tool)</text>
-      <text x="701" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">No ONB interface</text>
-      <text x="701" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Double data entry</text>
+      <rect x="628" y="202" width="146" height="65" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="1.5"/>
+      <text x="701" y="220" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">PEP pre-check via</text>
+      <text x="701" y="233" font-size="9" fill="#4A1010" text-anchor="middle">Excel (external tool)</text>
+      <text x="701" y="246" font-size="9" fill="#4A1010" text-anchor="middle">No ONB interface</text>
+      <text x="701" y="259" font-size="9" fill="#93281E" text-anchor="middle">😤 Double data entry</text>
 
-      <rect x="794" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
-      <text x="867" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ EDD submission</text>
-      <text x="867" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">Returns 3× avg</text>
-      <text x="867" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">SOW quality issues</text>
-      <text x="867" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😣 Relationship strained</text>
+      <rect x="794" y="202" width="146" height="65" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="2"/>
+      <text x="867" y="220" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">⚠ EDD submission</text>
+      <text x="867" y="233" font-size="9" fill="#4A1010" text-anchor="middle">Returns 3× avg</text>
+      <text x="867" y="246" font-size="9" fill="#4A1010" text-anchor="middle">SOW quality issues</text>
+      <text x="867" y="259" font-size="9" fill="#93281E" text-anchor="middle">😣 Relationship strained</text>
 
-      <rect x="960" y="202" width="146" height="65" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
-      <text x="1033" y="220" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">Configures products</text>
-      <text x="1033" y="233" font-size="9" fill="#7F1D1D" text-anchor="middle">one-by-one (no faves)</text>
-      <text x="1033" y="246" font-size="9" fill="#7F1D1D" text-anchor="middle">Slow default loading</text>
-      <text x="1033" y="259" font-size="9" fill="#DC2626" text-anchor="middle">😤 Tedious</text>
+      <rect x="960" y="202" width="146" height="65" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="1.5"/>
+      <text x="1033" y="220" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">Configures products</text>
+      <text x="1033" y="233" font-size="9" fill="#4A1010" text-anchor="middle">one-by-one (no faves)</text>
+      <text x="1033" y="246" font-size="9" fill="#4A1010" text-anchor="middle">Slow default loading</text>
+      <text x="1033" y="259" font-size="9" fill="#93281E" text-anchor="middle">😤 Tedious</text>
 
-      <rect x="1126" y="202" width="146" height="65" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
-      <text x="1199" y="220" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Reviews doc set</text>
-      <text x="1199" y="233" font-size="9" fill="#78350F" text-anchor="middle">from FSO</text>
-      <text x="1199" y="246" font-size="9" fill="#78350F" text-anchor="middle">Accepts ONB case</text>
-      <text x="1199" y="259" font-size="9" fill="#B45309" text-anchor="middle">😐 Passive reviewer</text>
+      <rect x="1126" y="202" width="146" height="65" rx="5" fill="#F7F3DD" stroke="#A87A3D"/>
+      <text x="1199" y="220" font-size="9" font-weight="600" fill="#4A3000" text-anchor="middle">Reviews doc set</text>
+      <text x="1199" y="233" font-size="9" fill="#4A3000" text-anchor="middle">from FSO</text>
+      <text x="1199" y="246" font-size="9" fill="#4A3000" text-anchor="middle">Accepts ONB case</text>
+      <text x="1199" y="259" font-size="9" fill="#7A4F00" text-anchor="middle">😐 Passive reviewer</text>
 
-      <rect x="1292" y="202" width="146" height="65" rx="5" fill="#D1FAE5" stroke="#059669"/>
-      <text x="1365" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Coordinates video</text>
-      <text x="1365" y="233" font-size="9" fill="#064E3B" text-anchor="middle">ident appointment</text>
-      <text x="1365" y="246" font-size="9" fill="#064E3B" text-anchor="middle">QR code expires: 7d</text>
-      <text x="1365" y="259" font-size="9" fill="#059669" text-anchor="middle">😌 Near the end</text>
+      <rect x="1292" y="202" width="146" height="65" rx="5" fill="#F1F4DC" stroke="#5C6B1E"/>
+      <text x="1365" y="220" font-size="9" font-weight="600" fill="#2E3510" text-anchor="middle">Coordinates video</text>
+      <text x="1365" y="233" font-size="9" fill="#2E3510" text-anchor="middle">ident appointment</text>
+      <text x="1365" y="246" font-size="9" fill="#2E3510" text-anchor="middle">QR code expires: 7d</text>
+      <text x="1365" y="259" font-size="9" fill="#5C6B1E" text-anchor="middle">😌 Near the end</text>
 
-      <rect x="1458" y="202" width="152" height="65" rx="5" fill="#D1FAE5" stroke="#059669"/>
-      <text x="1534" y="220" font-size="9" font-weight="600" fill="#064E3B" text-anchor="middle">Opens accounts in</text>
-      <text x="1534" y="233" font-size="9" fill="#064E3B" text-anchor="middle">Core Banking</text>
-      <text x="1534" y="246" font-size="9" fill="#064E3B" text-anchor="middle">(Subitop/Abacus)</text>
-      <text x="1534" y="259" font-size="9" fill="#059669" text-anchor="middle">😌 Done (almost)</text>
+      <rect x="1458" y="202" width="152" height="65" rx="5" fill="#F1F4DC" stroke="#5C6B1E"/>
+      <text x="1534" y="220" font-size="9" font-weight="600" fill="#2E3510" text-anchor="middle">Opens accounts in</text>
+      <text x="1534" y="233" font-size="9" fill="#2E3510" text-anchor="middle">Core Banking</text>
+      <text x="1534" y="246" font-size="9" fill="#2E3510" text-anchor="middle">(Subitop/Abacus)</text>
+      <text x="1534" y="259" font-size="9" fill="#5C6B1E" text-anchor="middle">😌 Done (almost)</text>
 
       <!-- ═══ PROCESSING / OPS LANE (y: 390–590) ═══ -->
       <!-- P1–P4: Not involved -->
-      <rect x="130" y="402" width="644" height="60" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="452" y="428" font-size="9" fill="#94A3B8" text-anchor="middle">Not directly involved in Phases 1–4 (CA/CAM responsibility)</text>
-      <text x="452" y="444" font-size="9" fill="#94A3B8" text-anchor="middle">FSO queue is already backed up before cases arrive</text>
+      <rect x="130" y="402" width="644" height="60" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="452" y="428" font-size="9" fill="#9A968C" text-anchor="middle">Not directly involved in Phases 1–4 (CA/CAM responsibility)</text>
+      <text x="452" y="444" font-size="9" fill="#9A968C" text-anchor="middle">FSO queue is already backed up before cases arrive</text>
 
       <!-- P5: EDD checklist review -->
-      <rect x="794" y="402" width="146" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5"/>
-      <text x="867" y="422" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ EDD checklist</text>
-      <text x="867" y="435" font-size="9" fill="#7F1D1D" text-anchor="middle">completeness check</text>
-      <text x="867" y="448" font-size="9" fill="#DC2626" text-anchor="middle">80% return rate</text>
+      <rect x="794" y="402" width="146" height="60" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="1.5"/>
+      <text x="867" y="422" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">⚠ EDD checklist</text>
+      <text x="867" y="435" font-size="9" fill="#4A1010" text-anchor="middle">completeness check</text>
+      <text x="867" y="448" font-size="9" fill="#93281E" text-anchor="middle">80% return rate</text>
 
       <!-- P6: Generates formalities -->
-      <rect x="960" y="402" width="146" height="60" rx="5" fill="#FEF3C7" stroke="#F59E0B"/>
-      <text x="1033" y="422" font-size="9" font-weight="600" fill="#78350F" text-anchor="middle">Claims case, sets up</text>
-      <text x="1033" y="435" font-size="9" fill="#78350F" text-anchor="middle">CAWB structure</text>
-      <text x="1033" y="448" font-size="9" fill="#B45309" text-anchor="middle">~60% no prospect</text>
+      <rect x="960" y="402" width="146" height="60" rx="5" fill="#F7F3DD" stroke="#A87A3D"/>
+      <text x="1033" y="422" font-size="9" font-weight="600" fill="#4A3000" text-anchor="middle">Claims case, sets up</text>
+      <text x="1033" y="435" font-size="9" fill="#4A3000" text-anchor="middle">CAWB structure</text>
+      <text x="1033" y="448" font-size="9" fill="#7A4F00" text-anchor="middle">~60% no prospect</text>
 
       <!-- P7: 28-step manual doc prep -->
-      <rect x="1126" y="402" width="146" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
-      <text x="1199" y="420" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ 28-step manual</text>
-      <text x="1199" y="433" font-size="9" fill="#7F1D1D" text-anchor="middle">doc prep: Adobe merge,</text>
-      <text x="1199" y="446" font-size="9" fill="#7F1D1D" text-anchor="middle">QR code, 4-eye check</text>
-      <text x="1199" y="459" font-size="9" fill="#DC2626" text-anchor="middle">🔴 High manual effort</text>
+      <rect x="1126" y="402" width="146" height="60" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="2"/>
+      <text x="1199" y="420" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">⚠ 28-step manual</text>
+      <text x="1199" y="433" font-size="9" fill="#4A1010" text-anchor="middle">doc prep: Adobe merge,</text>
+      <text x="1199" y="446" font-size="9" fill="#4A1010" text-anchor="middle">QR code, 4-eye check</text>
+      <text x="1199" y="459" font-size="9" fill="#93281E" text-anchor="middle">🔴 High manual effort</text>
 
       <!-- P8: Monitors signing -->
-      <rect x="1292" y="402" width="146" height="60" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="1365" y="422" font-size="9" fill="#64748B" text-anchor="middle">Monitors signing</text>
-      <text x="1365" y="435" font-size="9" fill="#64748B" text-anchor="middle">completion</text>
-      <text x="1365" y="448" font-size="9" fill="#94A3B8" text-anchor="middle">No Quality Desk</text>
+      <rect x="1292" y="402" width="146" height="60" rx="5" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="1365" y="422" font-size="9" fill="#6E6A61" text-anchor="middle">Monitors signing</text>
+      <text x="1365" y="435" font-size="9" fill="#6E6A61" text-anchor="middle">completion</text>
+      <text x="1365" y="448" font-size="9" fill="#9A968C" text-anchor="middle">No Quality Desk</text>
 
       <!-- P9: 25-step product opening -->
-      <rect x="1458" y="402" width="152" height="60" rx="5" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
-      <text x="1534" y="420" font-size="9" font-weight="600" fill="#7F1D1D" text-anchor="middle">⚠ 25-step product</text>
-      <text x="1534" y="433" font-size="9" fill="#7F1D1D" text-anchor="middle">opening: CDOC tagging,</text>
-      <text x="1534" y="446" font-size="9" fill="#7F1D1D" text-anchor="middle">PICH, archive</text>
-      <text x="1534" y="459" font-size="9" fill="#DC2626" text-anchor="middle">🔴 All manual</text>
+      <rect x="1458" y="402" width="152" height="60" rx="5" fill="#F4E7E5" stroke="#A83A2E" stroke-width="2"/>
+      <text x="1534" y="420" font-size="9" font-weight="600" fill="#4A1010" text-anchor="middle">⚠ 25-step product</text>
+      <text x="1534" y="433" font-size="9" fill="#4A1010" text-anchor="middle">opening: CDOC tagging,</text>
+      <text x="1534" y="446" font-size="9" fill="#4A1010" text-anchor="middle">PICH, archive</text>
+      <text x="1534" y="459" font-size="9" fill="#93281E" text-anchor="middle">🔴 All manual</text>
 
       <!-- ═══ SYSTEMS LANE (y: 590–780) ═══ -->
       <!-- P1 -->
-      <rect x="130" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="203" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Website / PDH</text>
-      <text x="203" y="632" font-size="8" fill="#64748B" text-anchor="middle">Referral database</text>
-      <text x="203" y="644" font-size="8" fill="#64748B" text-anchor="middle">E-mail</text>
+      <rect x="130" y="600" width="146" height="48" rx="4" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="203" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">Website / PDH</text>
+      <text x="203" y="632" font-size="8" fill="#6E6A61" text-anchor="middle">Referral database</text>
+      <text x="203" y="644" font-size="8" fill="#6E6A61" text-anchor="middle">E-mail</text>
 
       <!-- P2 -->
-      <rect x="296" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="369" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Client Advisor Portal</text>
-      <text x="369" y="632" font-size="8" fill="#64748B" text-anchor="middle">(CRM / CAWB)</text>
-      <text x="369" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ No writeback</text>
+      <rect x="296" y="600" width="146" height="48" rx="4" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="369" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">Client Advisor Portal</text>
+      <text x="369" y="632" font-size="8" fill="#6E6A61" text-anchor="middle">(CRM / CAWB)</text>
+      <text x="369" y="644" font-size="8" fill="#7A1F1F" text-anchor="middle">⚠ No writeback</text>
 
       <!-- P3 -->
-      <rect x="462" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="535" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform + CRM</text>
-      <text x="535" y="632" font-size="8" fill="#B91C1C" text-anchor="middle">+ Client Advisor Portal</text>
-      <text x="535" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ 3 siloed systems</text>
+      <rect x="462" y="600" width="146" height="48" rx="4" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="535" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">ONB Platform + CRM</text>
+      <text x="535" y="632" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Client Advisor Portal</text>
+      <text x="535" y="644" font-size="8" fill="#7A1F1F" text-anchor="middle">⚠ 3 siloed systems</text>
 
       <!-- P4 -->
-      <rect x="628" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="701" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform</text>
-      <text x="701" y="632" font-size="8" fill="#B91C1C" text-anchor="middle">+ Excel PEP file</text>
-      <text x="701" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ No interface</text>
+      <rect x="628" y="600" width="146" height="48" rx="4" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="701" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">ONB Platform</text>
+      <text x="701" y="632" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Excel PEP file</text>
+      <text x="701" y="644" font-size="8" fill="#7A1F1F" text-anchor="middle">⚠ No interface</text>
 
       <!-- P5 -->
-      <rect x="794" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="867" y="617" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">EDD Module + Cosima</text>
-      <text x="867" y="629" font-size="8" fill="#B91C1C" text-anchor="middle">+ Media Search</text>
-      <text x="867" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ PDF download/upload</text>
+      <rect x="794" y="600" width="146" height="48" rx="4" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="867" y="617" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">EDD Module + Cosima</text>
+      <text x="867" y="629" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Media Search</text>
+      <text x="867" y="641" font-size="8" fill="#7A1F1F" text-anchor="middle">+ PDF download/upload</text>
 
       <!-- P6 -->
-      <rect x="960" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="1033" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">ONB Platform</text>
-      <text x="1033" y="632" font-size="8" fill="#64748B" text-anchor="middle">Product Config Module</text>
-      <text x="1033" y="644" font-size="8" fill="#B91C1C" text-anchor="middle">⚠ Slow defaults</text>
+      <rect x="960" y="600" width="146" height="48" rx="4" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="1033" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">ONB Platform</text>
+      <text x="1033" y="632" font-size="8" fill="#6E6A61" text-anchor="middle">Product Config Module</text>
+      <text x="1033" y="644" font-size="8" fill="#7A1F1F" text-anchor="middle">⚠ Slow defaults</text>
 
       <!-- P7 -->
-      <rect x="1126" y="600" width="146" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="1199" y="615" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">DocGen + DocBasket</text>
-      <text x="1199" y="628" font-size="8" fill="#B91C1C" text-anchor="middle">+ Adobe + ShareDrive</text>
-      <text x="1199" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ Forms Kiosk + ONB</text>
+      <rect x="1126" y="600" width="146" height="48" rx="4" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="1199" y="615" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">DocGen + DocBasket</text>
+      <text x="1199" y="628" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Adobe + ShareDrive</text>
+      <text x="1199" y="641" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Forms Kiosk + ONB</text>
 
       <!-- P8 -->
-      <rect x="1292" y="600" width="146" height="48" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
-      <text x="1365" y="619" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">E-mail / Mobile App</text>
-      <text x="1365" y="632" font-size="8" fill="#64748B" text-anchor="middle">E-sign Platform</text>
-      <text x="1365" y="644" font-size="8" fill="#64748B" text-anchor="middle">Doc Processing Sys.</text>
+      <rect x="1292" y="600" width="146" height="48" rx="4" fill="#F0EEE8" stroke="#D3CFC4"/>
+      <text x="1365" y="619" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">E-mail / Mobile App</text>
+      <text x="1365" y="632" font-size="8" fill="#6E6A61" text-anchor="middle">E-sign Platform</text>
+      <text x="1365" y="644" font-size="8" fill="#6E6A61" text-anchor="middle">Doc Processing Sys.</text>
 
       <!-- P9 -->
-      <rect x="1458" y="600" width="152" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444"/>
-      <text x="1534" y="615" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">Digital Mailroom</text>
-      <text x="1534" y="628" font-size="8" fill="#B91C1C" text-anchor="middle">+ Core Banking</text>
-      <text x="1534" y="641" font-size="8" fill="#B91C1C" text-anchor="middle">+ Archive + PICH</text>
+      <rect x="1458" y="600" width="152" height="48" rx="4" fill="#F4E7E5" stroke="#A83A2E"/>
+      <text x="1534" y="615" font-size="8.5" font-weight="600" fill="#322F28" text-anchor="middle">Digital Mailroom</text>
+      <text x="1534" y="628" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Core Banking</text>
+      <text x="1534" y="641" font-size="8" fill="#7A1F1F" text-anchor="middle">+ Archive + PICH</text>
 
       <!-- System count callout -->
-      <rect x="130" y="656" width="1480" height="24" rx="4" fill="#FEE2E2" opacity=".5"/>
-      <text x="870" y="672" font-size="10" font-weight="700" fill="#B91C1C" text-anchor="middle">⚠ 20+ DISCONNECTED SYSTEMS: No orchestration layer: Manual handoffs at every phase boundary: Zero straight-through processing</text>
+      <rect x="130" y="656" width="1480" height="24" rx="4" fill="#F4E7E5" opacity=".5"/>
+      <text x="870" y="672" font-size="10" font-weight="700" fill="#7A1F1F" text-anchor="middle">⚠ 20+ DISCONNECTED SYSTEMS · NO ORCHESTRATION LAYER · MANUAL HANDOFFS AT EVERY PHASE BOUNDARY · ZERO STRAIGHT-THROUGH PROCESSING</text>
     </svg>
   </div>
   <div class="gap16"></div>
@@ -775,7 +779,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
     </div>
     <div class="box box-red" style="font-size:12px;">
       <strong style="display:block;margin-bottom:4px;">Phase 7: Formalities</strong>
-      28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, QR code generation, shared drive management, 4-eye check: all unorchestrated. No audit trail on shared drive.
+      28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, QR code generation, shared drive management, and the 4-eye check all run unorchestrated. No audit trail on shared drive.
     </div>
     <div class="box box-amber" style="font-size:12px;">
       <strong style="display:block;margin-bottom:4px;">Phase 9: BR Opening</strong>
@@ -841,7 +845,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
   <div class="sec-header"><span class="sec-num">07</span><h2>Intervention Catalogue</h2></div>
   <div class="box gap16" style="margin-bottom:16px;">
     <p style="font-size:12px;color:var(--t2);">
-      Each row maps an intervention to the pain point it addresses and the proposed design response. Interventions marked as regulated require Compliance and Legal sign-off before implementation: treat these as design directions, not confirmed scope. All outcome targets are directional pending technical validation and baseline measurement.
+      Each row maps an intervention to the pain point it addresses and the proposed design response. Interventions marked as regulated require Compliance and Legal sign-off before implementation. Treat these as design directions, not confirmed scope. All outcome targets are directional pending technical validation and baseline measurement.
     </p>
   </div>
   <div style="overflow-x:auto;">
@@ -904,7 +908,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <tr style="background:#FAFAF8;">
           <td><strong>Phase 7</strong><br><span class="muted small">Formalities</span></td>
           <td><strong>Document Generation Agent</strong><br><span class="small muted">Automated doc gen</span></td>
-          <td>28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, DocBasket QR code, shared drive: unorchestrated. FINSA classification not pre-filled. No audit trail.</td>
+          <td>28 manual sub-steps. Document generation by email, no platform integration. Adobe merge, DocBasket QR code, and shared drive all remain unorchestrated. FINSA classification not pre-filled. No audit trail.</td>
           <td>Document generation triggered automatically from approved ONB case data. FINSA classification, branch office, and e-signature eligibility pre-filled. QR code embedded. 4-eye check replaced by AI document verification with human exception queue. Immutable audit trail maintained in platform.</td>
           <td>28 steps to single submission. Routine FSO task time: ~60% to under 10% (self-reported baseline). CDH digital return rate near zero.</td>
           <td><span style="color:var(--red);font-weight:600;">Generative AI + Automation: Regulated</span>
@@ -926,7 +930,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           <td><strong>Automated Product Opening + PICH</strong><br><span class="small muted">Core Banking API</span></td>
           <td>Account opening in Core Banking is manual and disconnected from ONB Platform. CDOC tagging is manual. PICH trigger is manual. Account blocked up to 3 days. Explicitly cited in source research as automation opportunity.</td>
           <td>ONB case approval automatically triggers account and custody opening request via Core Banking API. PICH triggered automatically from recorded risk flags. CDOC auto-tagged via QR code integration. Status visible in real time to CA and prospect.</td>
-          <td>25-step manual process to automated workflow. CDOC manual tagging eliminated. Note: resolution of 3-day blocking requires separate Core Banking programme: outside scope of this engagement.</td>
+          <td>25-step manual process to automated workflow. CDOC manual tagging eliminated. Resolution of the 3-day blocking requires a separate Core Banking programme and sits outside the scope of this engagement.</td>
           <td><span style="color:var(--accent);font-weight:600;">API Automation</span>
             <div class="caveat">Core Banking API development required. Account unblocking timeline is a Core Banking programme dependency, not a UX deliverable. This intervention scopes the triggering and status layer only.</div>
           </td>
@@ -944,184 +948,184 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
   </div>
   <div class="swimlane-wrap">
     <svg class="swimlane-svg" width="1200" height="780" viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;">
-      <rect x="0" y="0" width="1200" height="780" fill="#F0FDFE"/>
+      <rect x="0" y="0" width="1200" height="780" fill="#F8F7F3"/>
 
       <!-- Lane headers -->
-      <rect x="0" y="0" width="120" height="780" fill="#CFFAFE"/>
-      <text x="60" y="95" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,95)" letter-spacing="1">CLIENT</text>
-      <text x="60" y="265" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,265)" letter-spacing="1">CLIENT ADVISOR</text>
-      <text x="60" y="445" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,445)" letter-spacing="1">COMPLIANCE</text>
-      <text x="60" y="625" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle" transform="rotate(-90,60,625)" letter-spacing="1">AI AGENTS</text>
+      <rect x="0" y="0" width="120" height="780" fill="#F1F4DC"/>
+      <text x="60" y="95" font-size="11" font-weight="700" fill="#4A5518" text-anchor="middle" transform="rotate(-90,60,95)" letter-spacing="1">CLIENT</text>
+      <text x="60" y="265" font-size="11" font-weight="700" fill="#4A5518" text-anchor="middle" transform="rotate(-90,60,265)" letter-spacing="1">CLIENT ADVISOR</text>
+      <text x="60" y="445" font-size="11" font-weight="700" fill="#4A5518" text-anchor="middle" transform="rotate(-90,60,445)" letter-spacing="1">COMPLIANCE</text>
+      <text x="60" y="625" font-size="11" font-weight="700" fill="#4A5518" text-anchor="middle" transform="rotate(-90,60,625)" letter-spacing="1">AI AGENTS</text>
 
       <!-- Lane dividers -->
-      <line x1="120" y1="0" x2="1200" y2="0" stroke="#A5F3FC" stroke-width="1"/>
-      <line x1="120" y1="190" x2="1200" y2="190" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="380" x2="1200" y2="380" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="570" x2="1200" y2="570" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="120" y1="760" x2="1200" y2="760" stroke="#A5F3FC" stroke-width="1"/>
+      <line x1="120" y1="0" x2="1200" y2="0" stroke="#F1F4DC" stroke-width="1"/>
+      <line x1="120" y1="190" x2="1200" y2="190" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="380" x2="1200" y2="380" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="570" x2="1200" y2="570" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="120" y1="760" x2="1200" y2="760" stroke="#F1F4DC" stroke-width="1"/>
 
       <!-- Phase headers -->
-      <rect x="120" y="0" width="156" height="20" fill="#0891B2" opacity=".8"/>
+      <rect x="120" y="0" width="156" height="20" fill="#5C6B1E" opacity=".8"/>
       <text x="198" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 1: PROSPECT (D0–1)</text>
-      <rect x="276" y="0" width="192" height="20" fill="#0891B2" opacity=".65"/>
+      <rect x="276" y="0" width="192" height="20" fill="#5C6B1E" opacity=".65"/>
       <text x="372" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 2: DIGITAL INTAKE (D1–3)</text>
-      <rect x="468" y="0" width="192" height="20" fill="#0891B2" opacity=".5"/>
+      <rect x="468" y="0" width="192" height="20" fill="#5C6B1E" opacity=".5"/>
       <text x="564" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 3: AI KYC (D3–8)</text>
-      <rect x="660" y="0" width="192" height="20" fill="#0891B2" opacity=".4"/>
+      <rect x="660" y="0" width="192" height="20" fill="#5C6B1E" opacity=".4"/>
       <text x="756" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 4: REVIEW (D8–12)</text>
-      <rect x="852" y="0" width="192" height="20" fill="#0891B2" opacity=".3"/>
+      <rect x="852" y="0" width="192" height="20" fill="#5C6B1E" opacity=".3"/>
       <text x="948" y="14" font-size="9" font-weight="700" fill="white" text-anchor="middle" letter-spacing=".5">PHASE 5: LIVE (D12–14)</text>
-      <rect x="1044" y="0" width="156" height="20" fill="#0891B2" opacity=".2"/>
-      <text x="1122" y="14" font-size="9" font-weight="700" fill="#0E7490" text-anchor="middle" letter-spacing=".5">PHASE 6: ONGOING</text>
+      <rect x="1044" y="0" width="156" height="20" fill="#5C6B1E" opacity=".2"/>
+      <text x="1122" y="14" font-size="9" font-weight="700" fill="#4A5518" text-anchor="middle" letter-spacing=".5">PHASE 6: ONGOING</text>
 
       <!-- Phase dividers -->
-      <line x1="276" y1="20" x2="276" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
-      <line x1="468" y1="20" x2="468" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
-      <line x1="660" y1="20" x2="660" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
-      <line x1="852" y1="20" x2="852" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
-      <line x1="1044" y1="20" x2="1044" y2="760" stroke="#A5F3FC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="276" y1="20" x2="276" y2="760" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="468" y1="20" x2="468" y2="760" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="660" y1="20" x2="660" y2="760" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="852" y1="20" x2="852" y2="760" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="2,4"/>
+      <line x1="1044" y1="20" x2="1044" y2="760" stroke="#F1F4DC" stroke-width="1" stroke-dasharray="2,4"/>
 
       <!-- ═══ CLIENT LANE ═══ -->
-      <rect x="136" y="30" width="124" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="198" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">CA sends secure</text>
-      <text x="198" y="64" font-size="10" fill="#164E63" text-anchor="middle">onboarding link</text>
-      <text x="198" y="78" font-size="10" fill="#0891B2" text-anchor="middle">😊 Impressed</text>
+      <rect x="136" y="30" width="124" height="55" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="198" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">CA sends secure</text>
+      <text x="198" y="64" font-size="10" fill="#2E3510" text-anchor="middle">onboarding link</text>
+      <text x="198" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">😊 Impressed</text>
 
-      <rect x="288" y="30" width="164" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="370" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Guided digital flow</text>
-      <text x="370" y="64" font-size="10" fill="#164E63" text-anchor="middle">Face ID + doc scan ×1</text>
-      <text x="370" y="78" font-size="10" fill="#0891B2" text-anchor="middle">😊 Smooth + Fast</text>
+      <rect x="288" y="30" width="164" height="55" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="370" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Guided digital flow</text>
+      <text x="370" y="64" font-size="10" fill="#2E3510" text-anchor="middle">Face ID + doc scan ×1</text>
+      <text x="370" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">😊 Smooth + Fast</text>
 
-      <rect x="480" y="30" width="162" height="55" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
-      <text x="561" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Live progress tracker</text>
-      <text x="561" y="64" font-size="10" fill="#064E3B" text-anchor="middle">"Step 2 of 4 complete"</text>
-      <text x="561" y="78" font-size="10" fill="#059669" text-anchor="middle">😌 Calm + Informed</text>
+      <rect x="480" y="30" width="162" height="55" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="561" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Live progress tracker</text>
+      <text x="561" y="64" font-size="10" fill="#2E3510" text-anchor="middle">"Step 2 of 4 complete"</text>
+      <text x="561" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">😌 Calm + Informed</text>
 
-      <rect x="672" y="30" width="162" height="55" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
-      <text x="753" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Notified: under review</text>
-      <text x="753" y="64" font-size="10" fill="#064E3B" text-anchor="middle">ETA shown in portal</text>
-      <text x="753" y="78" font-size="10" fill="#059669" text-anchor="middle">😊 Confident</text>
+      <rect x="672" y="30" width="162" height="55" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="753" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Notified: under review</text>
+      <text x="753" y="64" font-size="10" fill="#2E3510" text-anchor="middle">ETA shown in portal</text>
+      <text x="753" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">😊 Confident</text>
 
-      <rect x="864" y="30" width="162" height="55" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
-      <text x="945" y="50" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">✓ Account live: D12</text>
-      <text x="945" y="64" font-size="10" fill="#064E3B" text-anchor="middle">Interactive welcome</text>
-      <text x="945" y="78" font-size="10" fill="#059669" text-anchor="middle">Account active</text>
+      <rect x="864" y="30" width="162" height="55" rx="6" fill="#E4E9BE" stroke="#5C6B1E" stroke-width="2"/>
+      <text x="945" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">✓ Account live: D12</text>
+      <text x="945" y="64" font-size="10" fill="#2E3510" text-anchor="middle">Interactive welcome</text>
+      <text x="945" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">Account active</text>
 
-      <rect x="1056" y="30" width="128" height="55" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="1120" y="50" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Real-time dashboard</text>
-      <text x="1120" y="64" font-size="10" fill="#164E63" text-anchor="middle">AI insights + chat</text>
-      <text x="1120" y="78" font-size="10" fill="#0891B2" text-anchor="middle">Active post-onboarding</text>
+      <rect x="1056" y="30" width="128" height="55" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="1120" y="50" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Real-time dashboard</text>
+      <text x="1120" y="64" font-size="10" fill="#2E3510" text-anchor="middle">AI insights + chat</text>
+      <text x="1120" y="78" font-size="10" fill="#5C6B1E" text-anchor="middle">Active post-onboarding</text>
 
       <!-- Delight moments -->
-      <circle cx="945" cy="100" r="8" fill="#059669"/>
+      <circle cx="945" cy="100" r="8" fill="#5C6B1E"/>
       <text x="945" y="104" font-size="8" font-weight="700" fill="white" text-anchor="middle">✦</text>
-      <text x="945" y="116" font-size="8" fill="#059669" text-anchor="middle">Delight</text>
+      <text x="945" y="116" font-size="8" fill="#5C6B1E" text-anchor="middle">Delight</text>
 
-      <circle cx="561" cy="100" r="8" fill="#0891B2"/>
+      <circle cx="561" cy="100" r="8" fill="#E60000"/>
       <text x="561" y="104" font-size="8" font-weight="700" fill="white" text-anchor="middle">✦</text>
-      <text x="561" y="116" font-size="8" fill="#0891B2" text-anchor="middle">Trust signal</text>
+      <text x="561" y="116" font-size="8" fill="#E60000" text-anchor="middle">Trust signal</text>
 
       <!-- ═══ CA LANE ═══ -->
-      <rect x="136" y="200" width="124" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="198" y="220" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">AI pre-fills CRM</text>
-      <text x="198" y="234" font-size="10" fill="#164E63" text-anchor="middle">from referral data</text>
-      <text x="198" y="248" font-size="10" fill="#164E63" text-anchor="middle">Sends link via app</text>
-      <text x="198" y="262" font-size="10" fill="#0891B2" text-anchor="middle">Streamlined initiation</text>
+      <rect x="136" y="200" width="124" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="198" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">AI pre-fills CRM</text>
+      <text x="198" y="234" font-size="10" fill="#2E3510" text-anchor="middle">from referral data</text>
+      <text x="198" y="248" font-size="10" fill="#2E3510" text-anchor="middle">Sends link via app</text>
+      <text x="198" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">Streamlined initiation</text>
 
-      <rect x="288" y="200" width="164" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
-      <text x="370" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Monitors intake</text>
-      <text x="370" y="234" font-size="10" fill="#064E3B" text-anchor="middle">status in real time</text>
-      <text x="370" y="248" font-size="10" fill="#064E3B" text-anchor="middle">Zero manual re-entry</text>
-      <text x="370" y="262" font-size="10" fill="#059669" text-anchor="middle">😌 In control</text>
+      <rect x="288" y="200" width="164" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1"/>
+      <text x="370" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Monitors intake</text>
+      <text x="370" y="234" font-size="10" fill="#2E3510" text-anchor="middle">status in real time</text>
+      <text x="370" y="248" font-size="10" fill="#2E3510" text-anchor="middle">Zero manual re-entry</text>
+      <text x="370" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">😌 In control</text>
 
-      <rect x="480" y="200" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
-      <text x="561" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Notified of AI flags</text>
-      <text x="561" y="234" font-size="10" fill="#064E3B" text-anchor="middle">only if action needed</text>
-      <text x="561" y="248" font-size="10" fill="#064E3B" text-anchor="middle">Live KYC progress</text>
-      <text x="561" y="262" font-size="10" fill="#059669" text-anchor="middle">😊 Informed</text>
+      <rect x="480" y="200" width="162" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1"/>
+      <text x="561" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Notified of AI flags</text>
+      <text x="561" y="234" font-size="10" fill="#2E3510" text-anchor="middle">only if action needed</text>
+      <text x="561" y="248" font-size="10" fill="#2E3510" text-anchor="middle">Live KYC progress</text>
+      <text x="561" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">😊 Informed</text>
 
-      <rect x="672" y="200" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1"/>
-      <text x="753" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Reviews AI summary</text>
-      <text x="753" y="234" font-size="10" fill="#064E3B" text-anchor="middle">Approves or queries</text>
-      <text x="753" y="248" font-size="10" fill="#064E3B" text-anchor="middle">5 min not 2 hours</text>
-      <text x="753" y="262" font-size="10" fill="#059669" text-anchor="middle">😊 Efficient</text>
+      <rect x="672" y="200" width="162" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1"/>
+      <text x="753" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Reviews AI summary</text>
+      <text x="753" y="234" font-size="10" fill="#2E3510" text-anchor="middle">Approves or queries</text>
+      <text x="753" y="248" font-size="10" fill="#2E3510" text-anchor="middle">5 min not 2 hours</text>
+      <text x="753" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">😊 Efficient</text>
 
-      <rect x="864" y="200" width="162" height="60" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
-      <text x="945" y="220" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Client welcomed</text>
-      <text x="945" y="234" font-size="10" fill="#064E3B" text-anchor="middle">First call agenda</text>
-      <text x="945" y="248" font-size="10" fill="#064E3B" text-anchor="middle">AI-drafted by Copilot</text>
-      <text x="945" y="262" font-size="10" fill="#059669" text-anchor="middle">CA engaged</text>
+      <rect x="864" y="200" width="162" height="60" rx="6" fill="#E4E9BE" stroke="#5C6B1E" stroke-width="2"/>
+      <text x="945" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Client welcomed</text>
+      <text x="945" y="234" font-size="10" fill="#2E3510" text-anchor="middle">First call agenda</text>
+      <text x="945" y="248" font-size="10" fill="#2E3510" text-anchor="middle">AI-drafted by Copilot</text>
+      <text x="945" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">CA engaged</text>
 
-      <rect x="1056" y="200" width="128" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="1120" y="220" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">AI Copilot drafts</text>
-      <text x="1120" y="234" font-size="10" fill="#164E63" text-anchor="middle">client brief in 2 min</text>
-      <text x="1120" y="248" font-size="10" fill="#164E63" text-anchor="middle"></text>
-      <text x="1120" y="262" font-size="10" fill="#0891B2" text-anchor="middle">CA efficiency gain</text>
+      <rect x="1056" y="200" width="128" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="1120" y="220" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">AI Copilot drafts</text>
+      <text x="1120" y="234" font-size="10" fill="#2E3510" text-anchor="middle">client brief in 2 min</text>
+      <text x="1120" y="248" font-size="10" fill="#2E3510" text-anchor="middle"></text>
+      <text x="1120" y="262" font-size="10" fill="#5C6B1E" text-anchor="middle">CA efficiency gain</text>
 
       <!-- ═══ COMPLIANCE LANE ═══ -->
-      <rect x="136" y="390" width="316" height="60" rx="6" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="1"/>
-      <text x="294" y="415" font-size="10" font-weight="600" fill="#0C4A6E" text-anchor="middle">AI pre-screens all intake</text>
-      <text x="294" y="429" font-size="10" fill="#0C4A6E" text-anchor="middle">before file reaches queue</text>
-      <text x="294" y="443" font-size="10" fill="#0891B2" text-anchor="middle">≥70% first-time-right</text>
+      <rect x="136" y="390" width="316" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1"/>
+      <text x="294" y="415" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">AI pre-screens all intake</text>
+      <text x="294" y="429" font-size="10" fill="#2E3510" text-anchor="middle">before file reaches queue</text>
+      <text x="294" y="443" font-size="10" fill="#5C6B1E" text-anchor="middle">≥70% first-time-right</text>
 
-      <rect x="480" y="390" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
-      <text x="561" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Structured UBO tree</text>
-      <text x="561" y="424" font-size="10" fill="#064E3B" text-anchor="middle">AI-extracted, editable</text>
-      <text x="561" y="438" font-size="10" fill="#064E3B" text-anchor="middle">PEP: integrated screening</text>
-      <text x="561" y="452" font-size="10" fill="#059669" text-anchor="middle">✓ High-confidence review</text>
+      <rect x="480" y="390" width="162" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="561" y="410" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Structured UBO tree</text>
+      <text x="561" y="424" font-size="10" fill="#2E3510" text-anchor="middle">AI-extracted, editable</text>
+      <text x="561" y="438" font-size="10" fill="#2E3510" text-anchor="middle">PEP: integrated screening</text>
+      <text x="561" y="452" font-size="10" fill="#5C6B1E" text-anchor="middle">✓ High-confidence review</text>
 
-      <rect x="672" y="390" width="162" height="60" rx="6" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
-      <text x="753" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">Explainable AI risk</text>
-      <text x="753" y="424" font-size="10" fill="#064E3B" text-anchor="middle">score with evidence</text>
-      <text x="753" y="438" font-size="10" fill="#064E3B" text-anchor="middle">Human approves final</text>
-      <text x="753" y="452" font-size="10" fill="#059669" text-anchor="middle">✓ Audit-ready trail</text>
+      <rect x="672" y="390" width="162" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="753" y="410" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Explainable AI risk</text>
+      <text x="753" y="424" font-size="10" fill="#2E3510" text-anchor="middle">score with evidence</text>
+      <text x="753" y="438" font-size="10" fill="#2E3510" text-anchor="middle">Human approves final</text>
+      <text x="753" y="452" font-size="10" fill="#5C6B1E" text-anchor="middle">✓ Audit-ready trail</text>
 
-      <rect x="864" y="390" width="162" height="60" rx="6" fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
-      <text x="945" y="410" font-size="10" font-weight="600" fill="#064E3B" text-anchor="middle">1-click approval</text>
-      <text x="945" y="424" font-size="10" fill="#064E3B" text-anchor="middle">Full audit log auto-gen</text>
-      <text x="945" y="438" font-size="10" fill="#064E3B" text-anchor="middle">Regulator-ready</text>
+      <rect x="864" y="390" width="162" height="60" rx="6" fill="#E4E9BE" stroke="#5C6B1E" stroke-width="2"/>
+      <text x="945" y="410" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">1-click approval</text>
+      <text x="945" y="424" font-size="10" fill="#2E3510" text-anchor="middle">Full audit log auto-gen</text>
+      <text x="945" y="438" font-size="10" fill="#2E3510" text-anchor="middle">Regulator-ready</text>
 
-      <rect x="1056" y="390" width="128" height="60" rx="6" fill="#A5F3FC" stroke="#0891B2" stroke-width="1.5"/>
-      <text x="1120" y="410" font-size="10" font-weight="600" fill="#164E63" text-anchor="middle">Continuous AML</text>
-      <text x="1120" y="424" font-size="10" fill="#164E63" text-anchor="middle">monitoring AI</text>
-      <text x="1120" y="438" font-size="10" fill="#164E63" text-anchor="middle">Smart refresh alerts</text>
+      <rect x="1056" y="390" width="128" height="60" rx="6" fill="#F1F4DC" stroke="#5C6B1E" stroke-width="1.5"/>
+      <text x="1120" y="410" font-size="10" font-weight="600" fill="#2E3510" text-anchor="middle">Continuous AML</text>
+      <text x="1120" y="424" font-size="10" fill="#2E3510" text-anchor="middle">monitoring AI</text>
+      <text x="1120" y="438" font-size="10" fill="#2E3510" text-anchor="middle">Smart refresh alerts</text>
 
       <!-- ═══ AI AGENTS LANE ═══ -->
-      <rect x="136" y="580" width="124" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="198" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Prospect Agent</text>
-      <text x="198" y="612" font-size="9" fill="#78350F" text-anchor="middle">Deduplication</text>
-      <text x="198" y="626" font-size="9" fill="#78350F" text-anchor="middle">Type I→II auto-pass</text>
+      <rect x="136" y="580" width="124" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="198" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">Prospect Agent</text>
+      <text x="198" y="612" font-size="9" fill="#4A3000" text-anchor="middle">Deduplication</text>
+      <text x="198" y="626" font-size="9" fill="#4A3000" text-anchor="middle">Type I→II auto-pass</text>
 
-      <rect x="288" y="580" width="164" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="370" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Document AI</text>
-      <text x="370" y="612" font-size="9" fill="#78350F" text-anchor="middle">OCR + auto data-fill</text>
-      <text x="370" y="626" font-size="9" fill="#78350F" text-anchor="middle">Writeback to CRM</text>
+      <rect x="288" y="580" width="164" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="370" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">Document AI</text>
+      <text x="370" y="612" font-size="9" fill="#4A3000" text-anchor="middle">OCR + auto data-fill</text>
+      <text x="370" y="626" font-size="9" fill="#4A3000" text-anchor="middle">Writeback to CRM</text>
 
-      <rect x="480" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="561" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">PEP Screener</text>
-      <text x="561" y="612" font-size="9" fill="#78350F" text-anchor="middle">Integrated in ONB</text>
-      <text x="561" y="626" font-size="9" fill="#78350F" text-anchor="middle">Eliminates Excel step</text>
+      <rect x="480" y="580" width="162" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="561" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">PEP Screener</text>
+      <text x="561" y="612" font-size="9" fill="#4A3000" text-anchor="middle">Integrated in ONB</text>
+      <text x="561" y="626" font-size="9" fill="#4A3000" text-anchor="middle">Eliminates Excel step</text>
 
-      <rect x="672" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="753" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">EDD Gen AI</text>
-      <text x="753" y="612" font-size="9" fill="#78350F" text-anchor="middle">SOW / SIAP guidance</text>
-      <text x="753" y="626" font-size="9" fill="#78350F" text-anchor="middle">Doc verification AI</text>
+      <rect x="672" y="580" width="162" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="753" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">EDD Gen AI</text>
+      <text x="753" y="612" font-size="9" fill="#4A3000" text-anchor="middle">SOW / SIAP guidance</text>
+      <text x="753" y="626" font-size="9" fill="#4A3000" text-anchor="middle">Doc verification AI</text>
 
-      <rect x="864" y="580" width="162" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="945" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">DocGen Agent</text>
-      <text x="945" y="612" font-size="9" fill="#78350F" text-anchor="middle">Auto doc generation</text>
-      <text x="945" y="626" font-size="9" fill="#78350F" text-anchor="middle">Eliminates 28 steps</text>
+      <rect x="864" y="580" width="162" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="945" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">DocGen Agent</text>
+      <text x="945" y="612" font-size="9" fill="#4A3000" text-anchor="middle">Auto doc generation</text>
+      <text x="945" y="626" font-size="9" fill="#4A3000" text-anchor="middle">Eliminates 28 steps</text>
 
-      <rect x="1056" y="580" width="128" height="60" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
-      <text x="1120" y="598" font-size="9" font-weight="700" fill="#78350F" text-anchor="middle">Product Opening</text>
-      <text x="1120" y="612" font-size="9" fill="#78350F" text-anchor="middle">Auto PICH trigger</text>
-      <text x="1120" y="626" font-size="9" fill="#78350F" text-anchor="middle">CDOC auto-tagging</text>
+      <rect x="1056" y="580" width="128" height="60" rx="6" fill="#F7F3DD" stroke="#A87A3D" stroke-width="1.5"/>
+      <text x="1120" y="598" font-size="9" font-weight="700" fill="#4A3000" text-anchor="middle">Product Opening</text>
+      <text x="1120" y="612" font-size="9" fill="#4A3000" text-anchor="middle">Auto PICH trigger</text>
+      <text x="1120" y="626" font-size="9" fill="#4A3000" text-anchor="middle">CDOC auto-tagging</text>
 
       <!-- Timeline comparison bar -->
-      <rect x="136" y="650" width="1048" height="28" rx="4" fill="#A5F3FC" opacity=".4"/>
-      <rect x="136" y="650" width="490" height="28" rx="4" fill="#0891B2" opacity=".7"/>
+      <rect x="136" y="650" width="1048" height="28" rx="4" fill="#F1F4DC" opacity=".4"/>
+      <rect x="136" y="650" width="490" height="28" rx="4" fill="#5C6B1E" opacity=".7"/>
       <text x="381" y="668" font-size="10" font-weight="700" fill="white" text-anchor="middle">Standard: ≤5 days · EDD cases: ≤14 days (vs. 35–55 days AS-IS)</text>
-      <text x="800" y="668" font-size="10" fill="#0E7490" text-anchor="middle">EDD first-time-right target: ≥70% (vs. ~20% baseline)</text>
+      <text x="800" y="668" font-size="10" fill="#4A5518" text-anchor="middle">EDD first-time-right target: ≥70% (vs. ~20% baseline)</text>
     </svg>
   </div>
   <div class="gap16"></div>
@@ -1161,7 +1165,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">01</div>
         <div>
           <h3 class="gap8">Data Enters Once</h3>
-          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Client data collected at any point in the journey is written to a shared case record accessible to all downstream systems. No actor re-enters information already captured. Platform integrations enforce this: no bypass is available.</p>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Client data collected at any point in the journey is written to a shared case record accessible to all downstream systems. No actor re-enters information already captured. Platform integrations enforce this, and no bypass is available.</p>
           <p style="font-size:11px;color:var(--t3);">Derived from: Finding 01: Data Entered Once, Used Nowhere. Corroborated across all 14 CA diary study participants.</p>
         </div>
       </div>
@@ -1183,7 +1187,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">03</div>
         <div>
           <h3 class="gap8">Status is Always Visible</h3>
-          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Every actor in the onboarding process: Client Advisor, Onboarding Specialist, Due Diligence Officer, and prospect: has real-time visibility of where the case stands, what is pending, and who owns the next action. No actor learns of a problem by email. No prospect infers status from silence.</p>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Every actor in the onboarding process (Client Advisor, Onboarding Specialist, Due Diligence Officer, and prospect) has real-time visibility of where the case stands, what is pending, and who owns the next action. No actor learns of a problem by email. No prospect infers status from silence.</p>
           <p style="font-size:11px;color:var(--t3);">Derived from: Finding 04: Signing and Opening Experience. Corroborated across all 10 HNW prospect participants.</p>
         </div>
       </div>
@@ -1205,7 +1209,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <div style="font-size:36px;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;padding-top:4px;">05</div>
         <div>
           <h3 class="gap8">Automation Redirects Attention, Not Headcount</h3>
-          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Automating routine tasks in Formalities and Product Opening frees Onboarding Specialist and Client Operations capacity for exception handling, quality review, and client-facing work. Efficiency from automation should translate into better service: not a case for headcount reduction.</p>
+          <p style="color:var(--t2);font-size:13px;margin-bottom:10px;">Automating routine tasks in Formalities and Product Opening frees Onboarding Specialist and Client Operations capacity for exception handling, quality review, and client-facing work. Efficiency from automation should translate into better service, not into headcount reduction.</p>
           <p style="font-size:11px;color:var(--t3);">Derived from: Finding 03. Onboarding Specialists estimate ~60% of Phase 7 time is spent on low-value mechanical tasks.</p>
         </div>
       </div>
@@ -1229,55 +1233,55 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <h3 class="gap-16">Command Centre View</h3>
         <div class="wireframe">
           <div class="wireframe-bar">
-            <div class="wireframe-dot" style="background:#EF4444;"></div>
-            <div class="wireframe-dot" style="background:#F59E0B;"></div>
-            <div class="wireframe-dot" style="background:#22C55E;"></div>
-            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">CA Portal · Home</span>
+            <div class="wireframe-dot" style="background:#A83A2E;"></div>
+            <div class="wireframe-dot" style="background:#A87A3D;"></div>
+            <div class="wireframe-dot" style="background:#6B7D22;"></div>
+            <span style="font-size:10px; color:#9A968C; margin-left:8px;">CA Portal · Home</span>
           </div>
-          <div style="padding:16px; background:#F8FAFC;">
+          <div style="padding:16px; background:#F7F6F2;">
             <!-- Nav rail -->
             <div style="display:flex; gap:12px; margin-bottom:16px;">
-              <div style="width:120px; background:#E2E8F0; border-radius:6px; padding:8px; font-size:9px; color:#475569; line-height:2;">
+              <div style="width:120px; background:#E3E0D8; border-radius:6px; padding:8px; font-size:9px; color:#4A463D; line-height:2;">
                  Dashboard<br> Clients<br> Onboarding<br>Copilot<br> Meetings<br> Reports
               </div>
               <div style="flex:1;">
                 <!-- Greeting bar -->
-                <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
                   <div>
-                    <div style="font-size:10px; font-weight:700; color:#0F172A;">Good morning, [Advisor Name]</div>
-                    <div style="font-size:9px; color:#64748B;">3 items need your attention</div>
+                    <div style="font-size:10px; font-weight:700; color:#1C1C1C;">Good morning, [Advisor Name]</div>
+                    <div style="font-size:9px; color:#6E6A61;">3 items need your attention</div>
                   </div>
-                  <div style="background:#EA580C; color:white; font-size:9px; font-weight:700; padding:4px 8px; border-radius:12px;">3 Alerts</div>
+                  <div style="background:#E60000; color:white; font-size:9px; font-weight:700; padding:4px 8px; border-radius:12px;">3 Alerts</div>
                 </div>
                 <!-- KPI row -->
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px; margin-bottom:8px;">
-                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
-                    <div style="font-size:13px; font-weight:800; color:#0F172A;">47</div>
-                    <div style="font-size:8px; color:#64748B;">Active Clients</div>
+                  <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#1C1C1C;">47</div>
+                    <div style="font-size:8px; color:#6E6A61;">Active Clients</div>
                   </div>
-                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
-                    <div style="font-size:13px; font-weight:800; color:#059669;">€320M</div>
-                    <div style="font-size:8px; color:#64748B;">AUM</div>
+                  <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#5C6B1E;">€320M</div>
+                    <div style="font-size:8px; color:#6E6A61;">AUM</div>
                   </div>
-                  <div style="background:#FEE2E2; border:1px solid #FCA5A5; border-radius:6px; padding:8px; text-align:center;">
-                    <div style="font-size:13px; font-weight:800; color:#DC2626;">3</div>
-                    <div style="font-size:8px; color:#DC2626;">KYC Pending</div>
+                  <div style="background:#F4E7E5; border:1px solid #D9B3AE; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#93281E;">3</div>
+                    <div style="font-size:8px; color:#93281E;">KYC Pending</div>
                   </div>
-                  <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
-                    <div style="font-size:13px; font-weight:800; color:#7C3AED;">2</div>
-                    <div style="font-size:8px; color:#64748B;">Meetings Today</div>
+                  <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:8px; text-align:center;">
+                    <div style="font-size:13px; font-weight:800; color:#6B4A1E;">2</div>
+                    <div style="font-size:8px; color:#6E6A61;">Meetings Today</div>
                   </div>
                 </div>
                 <!-- Meeting strip -->
-                <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:8px;">
-                  <div style="font-size:9px; font-weight:700; color:#475569; margin-bottom:6px;">TODAY'S MEETINGS</div>
-                  <div style="background:#FFEDD5; border-radius:4px; padding:6px 8px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:9px; font-weight:600; color:#7C2D12;">10:00 · J. Wei · Quarterly Review</span>
-                    <span style="background:#EA580C; color:white; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">AI Brief Ready</span>
+                <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:8px;">
+                  <div style="font-size:9px; font-weight:700; color:#4A463D; margin-bottom:6px;">TODAY'S MEETINGS</div>
+                  <div style="background:#FBEAEA; border-radius:4px; padding:6px 8px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:9px; font-weight:600; color:#7A1F1F;">10:00 · J. Wei · Quarterly Review</span>
+                    <span style="background:#E60000; color:white; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">AI Brief Ready</span>
                   </div>
-                  <div style="background:#F1F5F9; border-radius:4px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:9px; font-weight:600; color:#334155;">14:30 · New Prospect · Intro</span>
-                    <span style="background:#E2E8F0; color:#475569; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">Generate Brief</span>
+                  <div style="background:#F0EEE8; border-radius:4px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:9px; font-weight:600; color:#322F28;">14:30 · New Prospect · Intro</span>
+                    <span style="background:#E3E0D8; color:#4A463D; font-size:8px; font-weight:700; padding:2px 6px; border-radius:10px;">Generate Brief</span>
                   </div>
                 </div>
               </div>
@@ -1297,7 +1301,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           </div>
           <div class="annotation">
             <div class="annotation-num">2</div>
-            <div><strong>KYC Pending count:</strong> Red card only appears if count ≥ 1. Shows count of files where CA input or client follow-up is required: not total files in compliance review. Tapping navigates to /onboarding/queue filtered to "Needs CA Action."</div>
+            <div><strong>KYC Pending count:</strong> Red card only appears if count ≥ 1. Shows the count of files where CA input or client follow-up is required, not the total files in compliance review. Tapping navigates to /onboarding/queue filtered to "Needs CA Action."</div>
           </div>
           <div class="annotation">
             <div class="annotation-num">3</div>
@@ -1324,57 +1328,57 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <h3 class="gap-16">Identity Verification Step</h3>
         <div class="wireframe">
           <div class="wireframe-bar">
-            <div class="wireframe-dot" style="background:#EF4444;"></div>
-            <div class="wireframe-dot" style="background:#F59E0B;"></div>
-            <div class="wireframe-dot" style="background:#22C55E;"></div>
-            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">CA Portal · Onboarding</span>
+            <div class="wireframe-dot" style="background:#A83A2E;"></div>
+            <div class="wireframe-dot" style="background:#A87A3D;"></div>
+            <div class="wireframe-dot" style="background:#6B7D22;"></div>
+            <span style="font-size:10px; color:#9A968C; margin-left:8px;">CA Portal · Onboarding</span>
           </div>
           <div style="padding:20px; background:white;">
             <!-- Progress bar -->
             <div style="margin-bottom:16px;">
-              <div style="display:flex; justify-content:space-between; font-size:9px; color:#64748B; margin-bottom:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:9px; color:#6E6A61; margin-bottom:4px;">
                 <span>Step 3 of 7</span><span>About 8 minutes remaining</span>
               </div>
-              <div style="background:#E2E8F0; border-radius:4px; height:4px;">
-                <div style="background:#0891B2; width:43%; height:4px; border-radius:4px;"></div>
+              <div style="background:#E3E0D8; border-radius:4px; height:4px;">
+                <div style="background:#E60000; width:43%; height:4px; border-radius:4px;"></div>
               </div>
               <div style="display:flex; justify-content:space-between; margin-top:6px;">
-                <div style="width:12%; text-align:center; font-size:8px; color:#059669;">✓ Intro</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#059669;">✓ Profile</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#0891B2; font-weight:700;">● ID</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Risk</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Wealth</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Consent</div>
-                <div style="width:12%; text-align:center; font-size:8px; color:#94A3B8;">Review</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#5C6B1E;">✓ Intro</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#5C6B1E;">✓ Profile</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#E60000; font-weight:700;">● ID</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#9A968C;">Risk</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#9A968C;">Wealth</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#9A968C;">Consent</div>
+                <div style="width:12%; text-align:center; font-size:8px; color:#9A968C;">Review</div>
               </div>
             </div>
             <!-- Step content -->
-            <div style="font-size:11px; font-weight:700; color:#0F172A; margin-bottom:4px;">Verify your identity</div>
-            <div style="font-size:10px; color:#64748B; margin-bottom:14px;">You only need to do this once. We'll securely store your verified identity for all future interactions.</div>
+            <div style="font-size:11px; font-weight:700; color:#1C1C1C; margin-bottom:4px;">Verify your identity</div>
+            <div style="font-size:10px; color:#6E6A61; margin-bottom:14px;">You only need to do this once. We'll securely store your verified identity for all future interactions.</div>
             <!-- Doc type selector -->
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:12px;">
-              <div style="border:2px solid #0891B2; background:#CFFAFE; border-radius:6px; padding:8px; text-align:center;">
+              <div style="border:2px solid #E60000; background:#FBEAEA; border-radius:6px; padding:8px; text-align:center;">
                 <div style="font-size:14px;">🛂</div>
-                <div style="font-size:9px; font-weight:700; color:#0E7490;">Passport</div>
-                <div style="font-size:8px; color:#0E7490;">Selected</div>
+                <div style="font-size:9px; font-weight:700; color:#B30000;">Passport</div>
+                <div style="font-size:8px; color:#B30000;">Selected</div>
               </div>
-              <div style="border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+              <div style="border:1px solid #E3E0D8; border-radius:6px; padding:8px; text-align:center;">
                 <div style="font-size:14px;">🪪</div>
-                <div style="font-size:9px; color:#64748B;">Nat. ID Card</div>
+                <div style="font-size:9px; color:#6E6A61;">Nat. ID Card</div>
               </div>
-              <div style="border:1px solid #E2E8F0; border-radius:6px; padding:8px; text-align:center;">
+              <div style="border:1px solid #E3E0D8; border-radius:6px; padding:8px; text-align:center;">
                 <div style="font-size:14px;">🚗</div>
-                <div style="font-size:9px; color:#64748B;">Driving Licence</div>
+                <div style="font-size:9px; color:#6E6A61;">Driving Licence</div>
               </div>
             </div>
             <!-- Camera area -->
-            <div style="background:#F8FAFC; border:2px dashed #CBD5E1; border-radius:8px; padding:20px; text-align:center; margin-bottom:12px;">
+            <div style="background:#F7F6F2; border:2px dashed #D3CFC4; border-radius:8px; padding:20px; text-align:center; margin-bottom:12px;">
               <div style="font-size:20px; margin-bottom:4px;">📷</div>
-              <div style="font-size:10px; font-weight:600; color:#334155;">Position passport in frame</div>
-              <div style="font-size:9px; color:#94A3B8;">AI will verify automatically</div>
+              <div style="font-size:10px; font-weight:600; color:#322F28;">Position passport in frame</div>
+              <div style="font-size:9px; color:#9A968C;">AI will verify automatically</div>
             </div>
-            <div style="background:#0891B2; color:white; text-align:center; padding:8px; border-radius:6px; font-size:10px; font-weight:700;">Open Camera</div>
-            <div style="text-align:center; margin-top:8px; font-size:8px; color:#94A3B8;">🔒 End-to-end encrypted · Not stored without consent</div>
+            <div style="background:#E60000; color:white; text-align:center; padding:8px; border-radius:6px; font-size:10px; font-weight:700;">Open Camera</div>
+            <div style="text-align:center; margin-top:8px; font-size:8px; color:#9A968C;">🔒 End-to-end encrypted · Not stored without consent</div>
           </div>
         </div>
       </div>
@@ -1402,7 +1406,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           </div>
           <div class="annotation">
             <div class="annotation-num">5</div>
-            <div><strong>Privacy reassurance footer:</strong> Encryption and consent messaging is persistent on every data-collection step. Not dismissible. Copy reviewed by legal. Links to full privacy notice (opens overlay, not new tab: keeps client in flow).</div>
+            <div><strong>Privacy reassurance footer:</strong> Encryption and consent messaging is persistent on every data-collection step. Not dismissible. Copy reviewed by legal. Links to full privacy notice (opens an overlay rather than a new tab, keeping the client in flow).</div>
           </div>
         </div>
       </div>
@@ -1417,54 +1421,54 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
         <h3 class="gap-16">AI-Assisted KYC File Review</h3>
         <div class="wireframe">
           <div class="wireframe-bar">
-            <div class="wireframe-dot" style="background:#EF4444;"></div>
-            <div class="wireframe-dot" style="background:#F59E0B;"></div>
-            <div class="wireframe-dot" style="background:#22C55E;"></div>
-            <span style="font-size:10px; color:#94A3B8; margin-left:8px;">Compliance · Case KYC-20291 · J. Wei</span>
+            <div class="wireframe-dot" style="background:#A83A2E;"></div>
+            <div class="wireframe-dot" style="background:#A87A3D;"></div>
+            <div class="wireframe-dot" style="background:#6B7D22;"></div>
+            <span style="font-size:10px; color:#9A968C; margin-left:8px;">Compliance · Case KYC-20291 · J. Wei</span>
           </div>
-          <div style="padding:16px; background:#F8FAFC; font-size:9px;">
+          <div style="padding:16px; background:#F7F6F2; font-size:9px;">
             <!-- Case header -->
-            <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
+            <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
               <div>
-                <div style="font-weight:700; color:#0F172A; font-size:10px;">Jonathan Wei · KYC-20291</div>
-                <div style="color:#64748B;">Received: Today 09:14 · Standard HNW · Singapore</div>
+                <div style="font-weight:700; color:#1C1C1C; font-size:10px;">Jonathan Wei · KYC-20291</div>
+                <div style="color:#6E6A61;">Received: Today 09:14 · Standard HNW · Singapore</div>
               </div>
               <div style="text-align:right;">
-                <div style="background:#D1FAE5; color:#059669; font-weight:700; padding:3px 8px; border-radius:10px; font-size:8px; display:inline-block; margin-bottom:2px;">AI Risk: LOW · 87/100</div>
-                <div style="color:#64748B; font-size:8px;">Straight-through eligible</div>
+                <div style="background:#F1F4DC; color:#5C6B1E; font-weight:700; padding:3px 8px; border-radius:10px; font-size:8px; display:inline-block; margin-bottom:2px;">AI Risk: LOW · 87/100</div>
+                <div style="color:#6E6A61; font-size:8px;">Straight-through eligible</div>
               </div>
             </div>
             <!-- AI Summary -->
-            <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:6px; padding:10px; margin-bottom:8px;">
-              <div style="font-weight:700; color:#92400E; margin-bottom:4px;">AI Assessment Summary</div>
-              <div style="color:#78350F; line-height:1.7;">
+            <div style="background:#FBF7EC; border:1px solid #D9C48A; border-radius:6px; padding:10px; margin-bottom:8px;">
+              <div style="font-weight:700; color:#5C3D00; margin-bottom:4px;">AI Assessment Summary</div>
+              <div style="color:#4A3000; line-height:1.7;">
                 Identity verified ✓ (biometric, D8)<br>
                 PEP: No match · Sanctions: Clear (OFAC, UN, EU)<br>
                 SOW: Tech exit (Series C), confirmed via ACRA (SG)<br>
                 UBO: Individual: no complex structure<br>
-                <span style="color:#DC2626;">⚠ Note: 1 adverse media result: 2019 minor dispute, resolved</span>
+                <span style="color:#93281E;">⚠ Note: 1 adverse media result: 2019 minor dispute, resolved</span>
               </div>
             </div>
             <!-- Evidence section -->
-            <div style="background:white; border:1px solid #E2E8F0; border-radius:6px; padding:10px; margin-bottom:8px;">
-              <div style="font-weight:700; color:#334155; margin-bottom:6px;">Evidence (AI-cited)</div>
+            <div style="background:white; border:1px solid #E3E0D8; border-radius:6px; padding:10px; margin-bottom:8px;">
+              <div style="font-weight:700; color:#322F28; margin-bottom:6px;">Evidence (AI-cited)</div>
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span>🛂 Passport (SGP): Verified D8</span><span style="color:#059669; font-weight:700;">✓ VALID</span>
+                  <span>🛂 Passport (SGP): Verified D8</span><span style="color:#5C6B1E; font-weight:700;">✓ VALID</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span>📋 SOW Statement: Tech exit 2022</span><span style="color:#059669; font-weight:700;">✓ VALID</span>
+                  <span>📋 SOW Statement: Tech exit 2022</span><span style="color:#5C6B1E; font-weight:700;">✓ VALID</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span>📰 Adverse media: 2019 commercial dispute</span><span style="color:#F59E0B; font-weight:700;">⚠ REVIEWED</span>
+                  <span>📰 Adverse media: 2019 commercial dispute</span><span style="color:#A87A3D; font-weight:700;">⚠ REVIEWED</span>
                 </div>
               </div>
             </div>
             <!-- Actions -->
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-              <div style="background:#059669; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✓ Approve</div>
-              <div style="background:#F59E0B; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">🔁 Raise RFI</div>
-              <div style="background:#EF4444; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✗ Decline</div>
+              <div style="background:#5C6B1E; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✓ Approve</div>
+              <div style="background:#A87A3D; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">🔁 Raise RFI</div>
+              <div style="background:#A83A2E; color:white; text-align:center; padding:6px; border-radius:6px; font-weight:700;">✗ Decline</div>
             </div>
           </div>
         </div>
@@ -1489,7 +1493,7 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
           </div>
           <div class="annotation">
             <div class="annotation-num">4</div>
-            <div><strong>RFI flow:</strong> "Raise RFI" opens an inline panel: not a new page: with pre-populated request templates (e.g., "Additional SOW evidence required for [field]"). CO selects and edits the specific item needed. Precision RFI avoids re-requesting documents already verified. Client receives a targeted, named request, not a generic "please resubmit."</div>
+            <div><strong>RFI flow:</strong> "Raise RFI" opens an inline panel, not a new page, with pre-populated request templates (e.g., "Additional SOW evidence required for [field]"). CO selects and edits the specific item needed. Precision RFI avoids re-requesting documents already verified. Client receives a targeted, named request, not a generic "please resubmit."</div>
           </div>
           <div class="annotation">
             <div class="annotation-num">5</div>
@@ -1628,11 +1632,14 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
 </section>
 <footer style="margin-top:80px;padding-top:32px;border-top:1.5px solid var(--t1);">
   <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-    <div>
-      <p style="font-size:13px;font-weight:600;color:var(--t1);">Digital Assisted Onboarding: UX Research and Design Specification</p>
-      <p style="font-size:11px;color:var(--t3);margin-top:4px;">Private Banking Division &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</p>
+    <div style="display:flex;align-items:center;gap:9px;">
+      <span style="width:8px;height:8px;background:var(--accent);display:inline-block;flex-shrink:0;"></span>
+      <div>
+        <p style="font-size:13px;font-weight:600;color:var(--t1);">JPB &nbsp;·&nbsp; Digital Assisted Onboarding: UX Research and Design Specification</p>
+        <p style="font-size:11px;color:var(--t3);margin-top:4px;">JPB Global Wealth Management &nbsp;·&nbsp; Private Banking Division &nbsp;·&nbsp; Q1–Q2 2025 &nbsp;·&nbsp; 10-Week Engagement</p>
+      </div>
     </div>
-    <p style="font-size:11px;color:var(--t3);">Confidential &nbsp;·&nbsp; Internal Distribution Only</p>
+    
   </div>
 </footer>
 </main>
