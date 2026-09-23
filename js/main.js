@@ -1,45 +1,24 @@
 /* =========================================================
-   Portfolio — page behaviour
-   - one orchestrated load moment (headline + network boot)
-   - index hover lights the matching cluster in the 3D hero
-   - in-page viewer with shareable links: #/tr/story, #/ran/screens
+   Portfolio — motion system and page behaviour
+   GSAP + ScrollTrigger + SplitText, Lenis smooth scroll,
+   a Three.js network behind the page, WebGL previews,
+   custom cursor, magnetic buttons, and an in-page viewer.
    ========================================================= */
+import { mountPreviewGL, setPreviewVelocity } from './preview-gl.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const root = document.documentElement;
+const { gsap, ScrollTrigger, SplitText, Lenis } = window;
+const hasGsap = !!(gsap && ScrollTrigger);
 
-/* ---------- Project data for the viewer ---------- */
+/* ---------- Viewer content ---------- */
 const PROJECTS = {
-  tr: {
-    title: 'Transparency Register Case Manager',
-    views: {
-      story: { label: 'Full story', src: 'case-studies/transparency-register.html' },
-      prototype: { label: 'Prototype', src: 'prototypes/transparency-register.html' },
-    },
-  },
-  onb: {
-    title: 'Digital Assisted Onboarding',
-    views: {
-      story: { label: 'Full story', src: 'case-studies/onboarding.html' },
-      prototype: { label: 'Prototype', src: 'prototypes/onboarding.html' },
-    },
-  },
-  gw: {
-    title: 'GraphWalk Workspace & Virtual Path',
-    views: {
-      story: { label: 'Full story', src: 'case-studies/graphwalk.html' },
-      prototype: { label: 'Prototype', src: 'prototypes/graphwalk.html' },
-    },
-  },
-  ran: {
-    title: 'D&M for SingleRAN',
-    views: {
-      story: { label: 'Full story', src: 'case-studies/singleran.html' },
-      screens: { label: 'Screens', gallery: true },
-    },
-  },
+  onb: { title: 'Digital Assisted Onboarding', views: { story: { label: 'Full story', src: 'case-studies/onboarding.html' }, prototype: { label: 'Prototype', src: 'prototypes/onboarding.html' } } },
+  ran: { title: 'D&M for SingleRAN', views: { story: { label: 'Full story', src: 'case-studies/singleran.html' }, screens: { label: 'Screens', gallery: true } } },
+  gw:  { title: 'GraphWalk Workspace & Virtual Path', views: { story: { label: 'Full story', src: 'case-studies/graphwalk.html' }, prototype: { label: 'Prototype', src: 'prototypes/graphwalk.html' } } },
+  tr:  { title: 'Transparency Register Case Manager', views: { story: { label: 'Full story', src: 'case-studies/transparency-register.html' }, prototype: { label: 'Prototype', src: 'prototypes/transparency-register.html' } } },
 };
-
 const RAN_SCREENS = [
   { src: 'assets/singleran/runtime-workspace', w: 1919, h: 1101, title: 'Runtime workspace', text: 'Object tree, live site topology and an object-scoped faults panel. Select a module and its alarms follow.' },
   { compare: true, before: 'assets/singleran/cells-view-v1', after: 'assets/singleran/cells-view-v2', title: 'Cells view, iteration', text: 'Drag to compare. v2 gives cells their own hexagon shape and labels the data stream on the link, so logical mapping can’t be mistaken for physical cabling.' },
@@ -50,77 +29,177 @@ const RAN_SCREENS = [
 ];
 
 /* =========================================================
-   Boot: split the headline into words, then play once
+   Smooth scroll
    ========================================================= */
-function splitWords(el) {
-  const words = el.textContent.trim().split(/\s+/);
-  el.setAttribute('aria-label', el.textContent.trim());
-  el.innerHTML = words.map((w, i) => `<span class="w" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`).join(' ');
+let lenis = null;
+if (hasGsap) gsap.registerPlugin(ScrollTrigger, ...(SplitText ? [SplitText] : []));
+if (Lenis && hasGsap && !reducedMotion) {
+  lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+  lenis.on('scroll', (e) => {
+    ScrollTrigger.update();
+    const v = e.velocity || 0;
+    network?.setVelocity(v);
+    setPreviewVelocity(Math.max(-1, Math.min(1, v / 40)));
+    skewTo?.(Math.max(-4, Math.min(4, v * 0.12)));
+  });
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
 }
-document.querySelectorAll('.kinetic').forEach(splitWords);
-document.querySelectorAll('.index li').forEach((li, i) => li.style.setProperty('--i', i));
-requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('is-booted')));
-
-document.querySelectorAll('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
-
-/* ---------- Top bar turns solid after the hero ---------- */
-const topbar = document.querySelector('.topbar');
-const onScroll = () => topbar.classList.toggle('is-solid', window.scrollY > window.innerHeight * 0.6);
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
-
-/* ---------- Star lines: JS fallback where CSS view timelines aren't supported ---------- */
-if (!CSS.supports('animation-timeline: view()') && !reducedMotion) {
-  const stars = document.querySelectorAll('.star');
-  stars.forEach((s) => s.style.setProperty('--fill', 0));
-  const style = document.createElement('style');
-  style.textContent = '.star::after{transform:scaleY(var(--fill,1));transition:transform .15s linear}';
-  document.head.appendChild(style);
-  const tick = () => {
-    const vh = window.innerHeight;
-    stars.forEach((s) => {
-      const r = s.getBoundingClientRect();
-      const p = (vh * 0.75 - r.top) / (r.height || 1);
-      s.style.setProperty('--fill', Math.max(0, Math.min(1, p)).toFixed(3));
-    });
-  };
-  window.addEventListener('scroll', tick, { passive: true });
-  tick();
-}
+const scrollToEl = (el) => (lenis ? lenis.scrollTo(el, { offset: 0, duration: 1.6 }) : el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' }));
 
 /* =========================================================
-   3D hero (loaded separately so a WebGL failure never breaks the page)
+   Network behind the page
    ========================================================= */
-let hero = null;
-const canvas = document.querySelector('.hero-canvas');
-(async () => {
+let network = null;
+const canvas = document.querySelector('.network');
+const netReady = (async () => {
   try {
-    const test = document.createElement('canvas');
-    if (!(test.getContext('webgl2') || test.getContext('webgl'))) throw new Error('no webgl');
-    const { createHero } = await import('./hero.js');
-    hero = createHero({
-      canvas,
-      labelEl: document.querySelector('.node-label'),
-      reducedMotion,
-      onReady: () => canvas.classList.add('is-ready'),
-    });
-  } catch (e) {
-    root.classList.add('no-webgl');
-  }
+    const t = document.createElement('canvas');
+    if (!(t.getContext('webgl2') || t.getContext('webgl'))) throw 0;
+    const { createNetwork } = await import('./network.js');
+    network = createNetwork({ canvas, labelEl: document.querySelector('.node-label'), reducedMotion, onReady: () => canvas.classList.add('is-ready') });
+  } catch (e) { root.classList.add('no-webgl'); }
 })();
+
+/* =========================================================
+   Load sequence
+   ========================================================= */
+function boot() {
+  root.classList.add('is-booted');
+  if (!hasGsap || reducedMotion) return;
+  const title = document.querySelector('.hero-title');
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  if (SplitText) {
+    const split = new SplitText(title, { type: 'lines,words', linesClass: 'line-mask', mask: 'lines' });
+    tl.from(split.words, { yPercent: 115, duration: 1.4, stagger: 0.045 }, 0.2);
+  } else {
+    tl.from(title, { y: 60, opacity: 0, duration: 1.2 }, 0.2);
+  }
+  tl.from('.index li', { y: 30, opacity: 0, duration: 1, stagger: 0.08 }, 0.9);
+}
+const start = () => { boot(); setupScroll(); };
+(document.fonts?.ready ? document.fonts.ready : Promise.resolve()).then(start);
+
+/* =========================================================
+   Scroll choreography
+   ========================================================= */
+let skewTo = null;
+function setupScroll() {
+  if (!hasGsap || reducedMotion) { root.classList.add('is-booted'); return; }
+  // progress bar
+  gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
+
+  // hero: headline drifts up and blurs out as you leave
+  gsap.to('.hero-copy', { yPercent: -30, opacity: 0, filter: 'blur(10px)', ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom 20%', scrub: true } });
+
+  // veil fades in behind case studies so text stays readable
+  gsap.to('.network-veil', { opacity: 1, ease: 'none', scrollTrigger: { trigger: '#onb', start: 'top bottom', end: 'top 40%', scrub: true } });
+
+  // camera focus per section
+  document.querySelectorAll('[data-focus]').forEach((sec) => {
+    const i = Number(sec.dataset.focus);
+    ScrollTrigger.create({
+      trigger: sec, start: 'top 55%', end: 'bottom 55%',
+      onToggle: (self) => { if (self.isActive) netReady.then(() => network?.setFocus(i)); },
+    });
+  });
+
+  // preview skew with scroll speed
+  const previews = gsap.utils.toArray('.preview');
+  const setters = previews.map((p) => gsap.quickTo(p, 'skewY', { duration: 0.6, ease: 'power3' }));
+  skewTo = (v) => setters.forEach((s) => s(v));
+
+  document.querySelectorAll('.case').forEach((c) => {
+    // top rule draws across
+    gsap.fromTo(c.querySelector('.case-head'), { '--s': 0 }, { '--s': 1, duration: 1.6, ease: 'expo.inOut', scrollTrigger: { trigger: c, start: 'top 85%' } });
+    gsap.from(c.querySelectorAll('.case-meta > div'), { y: 20, opacity: 0, duration: 0.9, stagger: 0.07, ease: 'power3.out', scrollTrigger: { trigger: c, start: 'top 80%' } });
+
+    // title: lines rise from a mask
+    const title = c.querySelector('.case-title');
+    if (SplitText) {
+      const split = new SplitText(title, { type: 'lines', mask: 'lines' });
+      gsap.from(split.lines, { yPercent: 110, duration: 1.3, stagger: 0.1, ease: 'expo.out', scrollTrigger: { trigger: title, start: 'top 82%' } });
+    }
+
+    // result: tag, number counts, label
+    const res = c.querySelector('.result');
+    gsap.from(res.children, { y: 24, opacity: 0, duration: 1, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: res, start: 'top 85%' } });
+    res.querySelectorAll('[data-count]').forEach((el) => {
+      const from = Number(el.dataset.from), to = Number(el.dataset.to), obj = { v: from };
+      el.textContent = from;
+      gsap.to(obj, { v: to, duration: 2, ease: 'power2.out', scrollTrigger: { trigger: res, start: 'top 85%' }, onUpdate: () => (el.textContent = Math.round(obj.v)) });
+    });
+
+    // STAR: line fills as you read, items light up
+    const star = c.querySelector('.star');
+    const track = document.createElement('span'); track.className = 'star-track';
+    const fill = document.createElement('span'); fill.className = 'star-fill';
+    star.prepend(track, fill);
+    gsap.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: star, start: 'top 75%', end: 'bottom 55%', scrub: true } });
+    star.querySelectorAll('li').forEach((li) => {
+      gsap.fromTo(li, { opacity: 0.25 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: li, start: 'top 85%', end: 'top 60%', scrub: true } });
+    });
+
+    gsap.from(c.querySelectorAll('.case-actions .btn'), { y: 20, opacity: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out', scrollTrigger: { trigger: c.querySelector('.case-actions'), start: 'top 92%' } });
+
+    // preview: window wipes open, image settles
+    const pv = c.querySelector('.preview');
+    gsap.fromTo(pv, { clipPath: 'inset(0% 0% 100% 0% round 10px)' }, { clipPath: 'inset(0% 0% 0% 0% round 10px)', duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: pv, start: 'top 85%' } });
+    gsap.fromTo(pv.querySelector('.preview-media'), { scale: 1.15 }, { scale: 1, duration: 1.8, ease: 'expo.out', scrollTrigger: { trigger: pv, start: 'top 85%' } });
+  });
+
+  ScrollTrigger.refresh();
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+}
 
 document.querySelectorAll('.index a').forEach((a) => {
   const i = Number(a.dataset.cluster);
-  const on = () => { hero?.setActive(i); a.classList.add('is-active'); };
-  const off = () => { hero?.setActive(-1); a.classList.remove('is-active'); };
-  a.addEventListener('pointerenter', on);
-  a.addEventListener('pointerleave', off);
-  a.addEventListener('focus', on);
-  a.addEventListener('blur', off);
+  a.addEventListener('pointerenter', () => { network?.setHover(i); a.classList.add('is-active'); });
+  a.addEventListener('pointerleave', () => { network?.setHover(-1); a.classList.remove('is-active'); });
+  a.addEventListener('focus', () => network?.setHover(i));
+  a.addEventListener('blur', () => network?.setHover(-1));
+  a.addEventListener('click', (e) => { e.preventDefault(); network?.setHover(-1); scrollToEl(document.querySelector(a.getAttribute('href'))); });
 });
+document.querySelector('.skip')?.addEventListener('click', (e) => { e.preventDefault(); scrollToEl(document.querySelector('#onb')); });
+
+/* ---------- WebGL previews (fine pointers only) ---------- */
+if (finePointer && !reducedMotion) {
+  document.querySelectorAll('.preview-media').forEach((m) => { try { mountPreviewGL(m, { reducedMotion }); } catch (e) {} });
+}
 
 /* =========================================================
-   Viewer + router
+   Cursor + magnetic buttons
+   ========================================================= */
+if (finePointer && !reducedMotion && hasGsap) {
+  root.classList.add('has-cursor');
+  const cur = document.querySelector('.cursor');
+  const label = cur.querySelector('.cursor-label');
+  const xTo = gsap.quickTo(cur, 'x', { duration: 0.35, ease: 'power3' });
+  const yTo = gsap.quickTo(cur, 'y', { duration: 0.35, ease: 'power3' });
+  window.addEventListener('pointermove', (e) => { xTo(e.clientX); yTo(e.clientY); }, { passive: true });
+  document.addEventListener('pointerover', (e) => {
+    const withLabel = e.target.closest('[data-cursor]');
+    const link = e.target.closest('a, button');
+    cur.classList.toggle('is-label', !!withLabel);
+    cur.classList.toggle('is-link', !withLabel && !!link);
+    label.textContent = withLabel ? withLabel.dataset.cursor : '';
+  });
+  document.addEventListener('pointerleave', () => cur.classList.add('is-hidden'));
+  document.addEventListener('pointerenter', () => cur.classList.remove('is-hidden'));
+
+  document.querySelectorAll('[data-magnetic]').forEach((el) => {
+    const x = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+    const y = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      x((e.clientX - r.left - r.width / 2) * 0.3); y((e.clientY - r.top - r.height / 2) * 0.4);
+    });
+    el.addEventListener('pointerleave', () => { x(0); y(0); });
+  });
+}
+
+/* =========================================================
+   Viewer + router (shareable links like #/ran/screens)
    ========================================================= */
 const dialog = document.querySelector('.viewer');
 const titleEl = dialog.querySelector('.viewer-title');
@@ -129,59 +208,49 @@ const bodyEl = dialog.querySelector('.viewer-body');
 const frame = dialog.querySelector('.viewer-frame');
 const loading = dialog.querySelector('.viewer-loading');
 const galleryEl = dialog.querySelector('.gallery');
-let openedFromPage = false;
-let lastTrigger = null;
-let galleryApi = null;
+let openedFromPage = false, lastTrigger = null, galleryApi = null;
 
 function parseHash() {
   const m = location.hash.match(/^#\/(\w+)\/(\w+)$/);
-  if (!m || !PROJECTS[m[1]] || !PROJECTS[m[1]].views[m[2]]) return null;
-  return { id: m[1], view: m[2] };
+  return m && PROJECTS[m[1]]?.views[m[2]] ? { id: m[1], view: m[2] } : null;
 }
 
 function render(route) {
-  if (!route) { closeDialog(); return; }
-  const p = PROJECTS[route.id];
-  const v = p.views[route.view];
+  if (!route) return closeDialog();
+  const p = PROJECTS[route.id], v = p.views[route.view];
   titleEl.textContent = p.title;
   tabsEl.innerHTML = '';
   Object.entries(p.views).forEach(([key, val]) => {
     const b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'tab');
-    b.textContent = val.label;
+    b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = val.label;
     b.setAttribute('aria-selected', String(key === route.view));
-    b.addEventListener('click', () => { if (key !== route.view) history.replaceState(history.state, '', `#/${route.id}/${key}`), render({ id: route.id, view: key }); });
+    b.addEventListener('click', () => { if (key === route.view) return; history.replaceState(history.state, '', `#/${route.id}/${key}`); render({ id: route.id, view: key }); });
     tabsEl.appendChild(b);
   });
 
   if (v.gallery) {
-    frame.hidden = true;
-    frame.removeAttribute('src');
-    loading.hidden = true;
-    galleryEl.hidden = false;
-    bodyEl.classList.add('is-gallery');
-    bodyEl.classList.remove('is-frame');
+    frame.hidden = true; frame.removeAttribute('src'); loading.hidden = true;
+    galleryEl.hidden = false; bodyEl.classList.add('is-gallery'); bodyEl.classList.remove('is-frame');
     galleryApi = galleryApi || buildGallery(galleryEl, RAN_SCREENS);
     galleryApi.show(0);
   } else {
-    galleryEl.hidden = true;
-    frame.hidden = false;
-    bodyEl.classList.remove('is-gallery');
-    bodyEl.classList.add('is-frame');
+    galleryEl.hidden = true; frame.hidden = false;
+    bodyEl.classList.remove('is-gallery'); bodyEl.classList.add('is-frame');
     frame.title = `${p.title}: ${v.label}`;
     if (frame.getAttribute('src') !== v.src) {
-      frame.classList.remove('is-loaded');
-      loading.hidden = false;
-      frame.onload = () => { frame.classList.add('is-loaded'); loading.hidden = true; };
+      frame.classList.remove('is-loaded'); loading.hidden = false;
+      frame.onload = () => {
+        frame.classList.add('is-loaded'); loading.hidden = true;
+        // Esc inside the prototype closes the viewer too
+        try { frame.contentWindow.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') requestClose(); }); } catch (err) {}
+      };
       frame.src = v.src;
     }
   }
-
   if (!dialog.open) {
     dialog.classList.remove('is-closing');
     dialog.showModal();
-    document.body.classList.add('is-locked');
+    lenis?.stop(); network?.pause(true);
     dialog.querySelector('.viewer-close').focus();
   }
 }
@@ -189,10 +258,9 @@ function render(route) {
 function closeDialog() {
   if (!dialog.open) return;
   const finish = () => {
-    dialog.close();
-    dialog.classList.remove('is-closing');
-    document.body.classList.remove('is-locked');
+    dialog.close(); dialog.classList.remove('is-closing');
     frame.removeAttribute('src');
+    lenis?.start(); network?.pause(false);
     lastTrigger?.focus({ preventScroll: true });
   };
   if (reducedMotion) return finish();
@@ -205,27 +273,44 @@ function requestClose() {
   else { history.replaceState(null, '', location.pathname + location.search); render(null); }
 }
 
+// Morph: the preview window grows into the viewer, then the viewer takes over
+function morphOpen(trigger, done) {
+  const pv = trigger.closest('.case')?.querySelector('.preview-media');
+  if (!pv || !hasGsap || reducedMotion) return done();
+  const r = pv.getBoundingClientRect();
+  const img = pv.querySelector('img');
+  const m = document.createElement('div');
+  m.className = 'morph';
+  m.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+  m.style.backgroundPosition = 'left top';
+  Object.assign(m.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  document.body.appendChild(m);
+  const pad = window.innerWidth <= 640 ? 0 : 12;
+  gsap.to(m, {
+    left: pad, top: pad + 64, width: window.innerWidth - pad * 2, height: window.innerHeight - pad * 2 - 64,
+    borderRadius: pad ? 0 : 0, duration: 0.8, ease: 'expo.inOut',
+    onComplete: () => { done(); gsap.to(m, { opacity: 0, duration: 0.35, delay: 0.15, onComplete: () => m.remove() }); },
+  });
+}
+
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-open]');
   if (!t) return;
   e.preventDefault();
   lastTrigger = t;
   const hash = `#/${t.dataset.open}/${t.dataset.view}`;
-  if (dialog.open) { history.replaceState(history.state, '', hash); }
-  else { history.pushState({ viewer: true }, '', hash); openedFromPage = true; }
-  render(parseHash());
+  if (dialog.open) { history.replaceState(history.state, '', hash); return render(parseHash()); }
+  history.pushState({ viewer: true }, '', hash); openedFromPage = true;
+  morphOpen(t, () => render(parseHash()));
 });
-
 dialog.querySelector('.viewer-close').addEventListener('click', requestClose);
-dialog.addEventListener('cancel', (e) => { e.preventDefault(); requestClose(); }); // Esc
-dialog.addEventListener('click', (e) => { if (e.target === dialog) requestClose(); }); // backdrop
+dialog.addEventListener('cancel', (e) => { e.preventDefault(); requestClose(); });
+dialog.addEventListener('click', (e) => { if (e.target === dialog) requestClose(); });
 window.addEventListener('popstate', () => { openedFromPage = false; render(parseHash()); });
-
-// Deep link on load (e.g. someone shares #/ran/screens)
 if (parseHash()) render(parseHash());
 
 /* =========================================================
-   Gallery for static screens: zoom, pan, compare, keyboard
+   Gallery for static screens: zoom, pan, compare, keyboard, swipe
    ========================================================= */
 function buildGallery(el, items) {
   el.innerHTML = `
@@ -244,7 +329,7 @@ function buildGallery(el, items) {
   const caption = el.querySelector('.gallery-caption');
   const count = el.querySelector('.gallery-count');
   const thumbs = el.querySelector('.thumbs');
-  inner.className = 'stage-inner';
+
   let index = 0;
   let zoom = { on: false, x: 0, y: 0 };
 

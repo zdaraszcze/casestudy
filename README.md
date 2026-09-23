@@ -7,8 +7,9 @@ A single-page portfolio with four case studies. Each case study opens its full s
 ```
 index.html              the landing page
 css/style.css           all styles and design tokens
-js/main.js              page behaviour, viewer, router, screens gallery
-js/hero.js              the 3D network in the hero (three.js, loaded from a CDN)
+js/main.js              motion system, cursor, viewer, router, screens gallery
+js/network.js           the 3D network behind the page (three.js)
+js/preview-gl.js        WebGL ripple and colour split on the preview images
 case-studies/           full case study pages
 prototypes/             clickable prototypes
 assets/previews/        preview images for the landing page
@@ -35,9 +36,11 @@ Then open http://localhost:8000.
 
 ## What to edit
 
-Search `index.html` for `EDIT:` to find your name, the about text, and contact links. Add your CV as `assets/cv.pdf` or remove that link.
+The case study order follows the page: Onboarding, SingleRAN, GraphWalk, Transparency Register. To add or change a project, add an `<article class="case">` block in `index.html`, a matching entry in the `PROJECTS` object in `js/main.js`, and a cluster in `CLUSTERS` in `js/network.js` (same order as the page).
 
-To add or change a project, add an `<article class="case">` block in `index.html` and a matching entry in the `PROJECTS` object at the top of `js/main.js`.
+## Libraries (loaded from jsDelivr)
+
+three.js 0.169, GSAP 3.13 with ScrollTrigger and SplitText, Lenis 1.3.
 
 ## Changes made to the supplied files
 
@@ -46,7 +49,6 @@ To add or change a project, add an `<article class="case">` block in `index.html
 
 ## Motion and accessibility
 
-- The 3D hero renders one still frame for people who have reduced motion turned on, and pauses when it's off-screen or the tab is hidden.
+- With reduced motion turned on, smooth scrolling, scroll animations, the cursor and the WebGL previews are switched off and the network renders as a still frame.
 - If WebGL isn't available, the hero falls back to a static background and the rest of the page works normally.
-- Scroll-linked effects use native CSS scroll-driven animations, with a small JavaScript fallback for browsers that don't support them yet.
 - The viewer is a native `<dialog>`: Esc and the browser back button both close it, and focus returns to the button that opened it.
