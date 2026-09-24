@@ -1,54 +1,47 @@
 # Portfolio
 
-A single-page portfolio with four case studies. Each case study opens its full story and prototype in an in-page viewer (never a new tab), with shareable links like `#/tr/story` or `#/ran/screens`.
+Product design case studies as one continuous journey: Discover → Define → Develop → Deliver, then four projects, each with its full story and prototype opening in the page.
+
+## Publish on GitHub Pages
+
+1. In your repository, **delete the old files first** (the previous version used `js/main.js`, `js/network.js`, `js/preview-gl.js` and a different `css/style.css`).
+2. Upload everything in this folder to the repository root, including the hidden `.nojekyll` file.
+3. Settings → Pages → "Deploy from a branch" → `main` / `(root)`.
+
+## Test locally
+
+Double-clicking `index.html` works for the journey, but the case studies and prototypes load best from a local server:
+
+    python3 -m http.server 8000
+
+then open http://localhost:8000.
 
 ## Structure
 
 ```
-index.html              the landing page
-css/style.css           all styles and design tokens
-js/main.js              motion system, cursor, viewer, router, screens gallery
-js/network.js           the 3D network behind the page (three.js)
-js/preview-gl.js        WebGL ripple and colour split on the preview images
-case-studies/           full case study pages
-prototypes/             clickable prototypes
-assets/previews/        preview images for the landing page
-assets/singleran/       SingleRAN screens (full size + thumbnails)
-.nojekyll               tells GitHub Pages to serve files as-is
+index.html                page markup and sharing preview tags
+css/style.css             all styles (dark and light)
+js/scene.js               the journey, cases, viewer, router
+js/vendor/three.min.js    three.js r158, bundled so the page doesn't depend on a CDN
+case-studies/             full stories (open in the in-page viewer)
+prototypes/               clickable prototypes (open in the in-page viewer)
+assets/previews/          preview images for the prototype windows
+assets/singleran/         SingleRAN screens gallery (full size + thumbnails)
+assets/og-image.png       sharing preview image (LinkedIn, Slack, …)
 ```
 
-## Publish on GitHub Pages
+## Links you can share
 
-1. Create a repository (for a personal site, name it `your-username.github.io`).
-2. Upload everything in this folder to the repository root, including `.nojekyll`.
-3. In the repository, go to Settings → Pages, set Source to "Deploy from a branch", choose `main` and `/ (root)`, and save.
-4. The site will be live at `https://your-username.github.io/` within a minute or two.
+- `…/casestudy/#/projects` opens directly on the four projects
+- `…/casestudy/#/onb`, `#/ran`, `#/gw`, `#/tr` open a case study
+- add `/story`, `/prototype` or (SingleRAN) `/screens` to open the viewer, e.g. `#/tr/story`
 
-## Test locally
+The browser's back button closes the viewer, then the case.
 
-Opening `index.html` directly from disk won't load the 3D hero, because browsers block JavaScript modules on `file://`. Run a local server instead:
+## If the site moves
 
-```
-python3 -m http.server 8000
-```
+`index.html` contains the site address in `canonical`, `og:url` and `og:image`. Update them if the repository name or domain changes, otherwise the LinkedIn preview image won't load.
 
-Then open http://localhost:8000.
+## Without WebGL
 
-## What to edit
-
-The case study order follows the page: Onboarding, SingleRAN, GraphWalk, Transparency Register. To add or change a project, add an `<article class="case">` block in `index.html`, a matching entry in the `PROJECTS` object in `js/main.js`, and a cluster in `CLUSTERS` in `js/network.js` (same order as the page).
-
-## Libraries (loaded from jsDelivr)
-
-three.js 0.169, GSAP 3.13 with ScrollTrigger and SplitText, Lenis 1.3.
-
-## Changes made to the supplied files
-
-- Removed the "Confidential · Internal Distribution Only" footer from both JPB case studies.
-- Replaced "BSU" with "JPB" in the Transparency Register prototype so it matches the case study.
-
-## Motion and accessibility
-
-- With reduced motion turned on, smooth scrolling, scroll animations, the cursor and the WebGL previews are switched off and the network renders as a still frame.
-- If WebGL isn't available, the hero falls back to a static background and the rest of the page works normally.
-- The viewer is a native `<dialog>`: Esc and the browser back button both close it, and focus returns to the button that opened it.
+If a browser can't run the 3D scene, the page still works: stages, project cards, case studies and the viewer all function over a quiet background.

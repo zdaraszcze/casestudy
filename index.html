@@ -3,206 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Product designer for complex, regulated systems</title>
-<meta name="description" content="Four case studies with working prototypes: private-bank onboarding, telecom network operations, investigative graph analytics and banking compliance.">
-<meta name="theme-color" content="#0A1017">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A1017'/%3E%3Ccircle cx='10' cy='20' r='3' fill='%2358D6D0'/%3E%3Ccircle cx='22' cy='11' r='3' fill='%2358D6D0'/%3E%3Ccircle cx='23' cy='23' r='2.5' fill='%23F2A43A'/%3E%3Cpath d='M10 20 22 11M22 11l1 12' stroke='%2358D6D0' stroke-width='1.4'/%3E%3C/svg%3E">
+<title>Product design case studies · mdaiux</title>
+<meta name="description" content="Four product design case studies, each with its prototype: private-bank onboarding, telecom network operations, graph analytics and banking compliance.">
+<meta name="theme-color" content="#071120">
+<link rel="canonical" href="https://zdaraszcze.github.io/casestudy/">
+<!-- Sharing preview (LinkedIn, Slack, etc.). If the site moves, update the two URLs below. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Product design case studies">
+<meta property="og:description" content="Projects start in ambiguity. Four case studies, from research to prototype to product.">
+<meta property="og:url" content="https://zdaraszcze.github.io/casestudy/">
+<meta property="og:image" content="https://zdaraszcze.github.io/casestudy/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23071120'/%3E%3Cpath d='M4 10 Q12 16 16 16 T28 9' stroke='%233FE0C5' stroke-width='2' fill='none'/%3E%3Cpath d='M4 22 Q12 16 16 16 T28 23' stroke='%23FFB547' stroke-width='2' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<script>
-  document.documentElement.classList.add('js');
-  // Safety net: if scripts fail to load, show everything after 3.5s.
-  setTimeout(function () { document.documentElement.classList.add('is-booted'); }, 3500);
-</script>
-<script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#onb">Skip to the work</a>
-<div class="scroll-progress" aria-hidden="true"></div>
+<div class="stage">
+  <canvas aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
 
-<!-- The network sits behind the whole page; the camera flies to each project's cluster as you scroll -->
-<canvas class="network" aria-hidden="true"></canvas>
-<div class="network-veil" aria-hidden="true"></div>
-<div class="node-label" aria-hidden="true"></div>
+  <h1 class="sr-only">Product design portfolio: four case studies</h1>
+  <a class="identity" href="https://www.linkedin.com/in/mdaiux/" target="_blank" rel="noopener" aria-label="LinkedIn profile: mdaiux (opens in a new tab)">
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+    LinkedIn <span class="ext" aria-hidden="true">↗</span>
+  </a>
 
-<div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
+  <div class="caption" aria-live="polite">
+    <p class="fade on" data-s="0"><span class="k">Discover</span><span class="t">Projects start in ambiguity.</span></p>
+    <p class="fade" data-s="1"><span class="k">Define</span><span class="t">Ambiguity is synthesised into insights.</span></p>
+    <p class="fade" data-s="2"><span class="k">Develop</span><span class="t">Insights spark prototypes.</span></p>
+    <p class="fade" data-s="3"><span class="k">Deliver</span><span class="t">Prototypes become products.</span></p>
+  </div>
+  <div class="shade" aria-hidden="true"></div>
 
-<main>
-  <section class="hero" data-focus="-1" aria-labelledby="hero-title">
-    <div class="hero-copy">
-      <h1 id="hero-title" class="hero-title">Product designer for complex, regulated systems.</h1>
+
+  <button class="card" type="button" data-i="0" style="--c: var(--onb)"><span class="card-domain">Private banking</span><span class="card-title">Digital Assisted Onboarding</span><span class="card-num">35–55 → ≤14</span><span class="card-lbl">days, complex cases (target)</span></button>
+  <button class="card" type="button" data-i="1" style="--c: var(--ran)"><span class="card-domain">Telecom operations</span><span class="card-title">D&amp;M for SingleRAN</span><span class="card-num">~20%</span><span class="card-lbl">faster commissioning (target)</span></button>
+  <button class="card" type="button" data-i="2" style="--c: var(--gw)"><span class="card-domain">Graph analytics</span><span class="card-title">GraphWalk Virtual Path</span><span class="card-num">0</span><span class="card-lbl">lines of hand-written JSON</span></button>
+  <button class="card" type="button" data-i="3" style="--c: var(--tr)"><span class="card-domain">Banking compliance</span><span class="card-title">Transparency Register</span><span class="card-num">90</span><span class="card-lbl">day deadline, always visible</span></button>
+
+  <section class="case" aria-live="polite" aria-label="Case study">
+    <button class="back anim" type="button" style="--d:0"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>All projects</button>
+    <div class="case-head">
+      <p class="eyebrow anim" style="--d:1"></p>
+      <h2 class="anim" style="--d:1"></h2>
+      <span class="tag anim" style="--d:2"></span>
+      <div class="num anim" style="--d:2"></div>
+      <p class="lbl anim" style="--d:2"></p>
     </div>
-
-    <ol class="index" aria-label="Case studies">
-      <li><a href="#onb" data-cluster="0"><span class="index-domain">Private banking</span><span class="index-title">Digital Assisted Onboarding</span></a></li>
-      <li><a href="#ran" data-cluster="1"><span class="index-domain">Telecom operations</span><span class="index-title">D&amp;M for SingleRAN</span></a></li>
-      <li><a href="#gw" data-cluster="2"><span class="index-domain">Graph analytics</span><span class="index-title">GraphWalk Workspace &amp; Virtual Path</span></a></li>
-      <li><a href="#tr" data-cluster="3"><span class="index-domain">Banking compliance</span><span class="index-title">Transparency Register Case Manager</span></a></li>
-    </ol>
+    <div>
+    <ol><span class="star-track" aria-hidden="true"></span><span class="star-fill" aria-hidden="true"></span></ol>
+    <button class="thumb-inline anim" type="button" style="--d:7; display:none; margin-top:18px; width:100%; padding:0; border:0; background:none; cursor:pointer" aria-label="Open the prototype preview"><img alt="" style="width:100%; aspect-ratio:16/10; object-fit:cover; object-position:left top; border-radius:8px; border:1px solid var(--rule)"></button>
+    <div class="actions anim" style="--d:7"><button type="button" class="act-story">Read the full story <span class="ar" aria-hidden="true">→</span></button><button type="button" class="act-proto"><span class="act-proto-t">Try the prototype</span> <span class="ar" aria-hidden="true">→</span></button></div>
+    <p class="next anim" style="--d:8"><span class="next-count"></span><span class="next-text"></span></p>
+    </div>
   </section>
-
-  <!-- ============ 1. ONBOARDING ============ -->
-  <article class="case" id="onb" data-focus="0" aria-labelledby="onb-title">
-    <header class="case-head">
-      <dl class="case-meta">
-        <div><dt>Client</dt><dd>JPB Private Banking</dd></div>
-        <div><dt>Length</dt><dd>10 weeks</dd></div>
-        <div><dt>Research</dt><dd>18 interviews, diary studies, 120-person survey</dd></div>
-        <div><dt>Output</dt><dd>Journey map, 9 interventions, prototype</dd></div>
-      </dl>
-      <h2 id="onb-title" class="case-title">148 steps across 20+ systems, mapped end to end for the first time.</h2>
-      <div class="result">
-        <span class="result-tag">Target</span>
-        <span class="result-num"><span class="result-from">35–55</span> <span class="result-arrow" aria-hidden="true">→</span> ≤<span data-count data-from="55" data-to="14">14</span></span>
-        <span class="result-label">days for the most complex cases</span>
-      </div>
-    </header>
-    <div class="case-body">
-      <ol class="star">
-        <li><span class="star-key">Situation</span><p>JPB didn't have a current, complete picture of what onboarding a private-banking client looked like end to end: 9 phases, 148 steps, 20+ systems.</p></li>
-        <li><span class="star-key">Task</span><p>Map the whole journey and find where the time actually goes.</p></li>
-        <li><span class="star-key">Action</span><p>Ten weeks of shadowing, diary studies, 18 interviews and a separate 120-person survey. One advisor summed it up: <q>I onboard a client and immediately switch between five systems.</q></p></li>
-        <li><span class="star-key">Result</span><p>Nine proposed interventions, aimed at bringing the most complex cases down from 35–55 days to under two weeks.</p></li>
-      </ol>
-      <div class="case-actions">
-        <a class="btn btn-primary" href="#/onb/story" data-open="onb" data-view="story" data-magnetic>Read the full story</a>
-        <a class="btn btn-ghost" href="#/onb/prototype" data-open="onb" data-view="prototype" data-magnetic>Try the prototype</a>
-      </div>
-      <a class="preview" href="#/onb/prototype" data-open="onb" data-view="prototype" data-cursor="Play" aria-label="Open the onboarding prototype">
-        <span class="preview-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="preview-media"><img src="assets/previews/onboarding.webp" width="1600" height="1000" loading="lazy" alt="Compliance console: AI assessment summary with cited evidence and approve, raise RFI and decline actions"></span>
-      </a>
+  <button class="pv" type="button" aria-label="Open the prototype preview"><span class="pv-chrome" aria-hidden="true"><i></i><i></i><i></i></span><span class="pv-media"><img alt=""><span class="pv-bubble" aria-hidden="true">Play</span></span><span class="pv-cta"><span class="pv-label">Try the prototype</span><span aria-hidden="true">→</span></span></button>
+  <button class="thumb" type="button" hidden aria-label="Open the prototype preview"><span class="thumb-chrome" aria-hidden="true"><i></i><i></i><i></i></span><span class="thumb-wrap"><img alt=""></span><span class="thumb-cta"><span class="thumb-label">Try the prototype</span><span aria-hidden="true">→</span></span></button>
+  <div class="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title">
+    <div class="viewer-bar">
+      <button class="viewer-close" type="button" aria-label="Close and return"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <h2 class="viewer-title" id="viewer-title"></h2>
+      <div class="viewer-tabs" role="tablist" aria-label="View"></div>
     </div>
-  </article>
-
-  <!-- ============ 2. SINGLERAN ============ -->
-  <article class="case" id="ran" data-focus="1" aria-labelledby="ran-title">
-    <header class="case-head">
-      <dl class="case-meta">
-        <div><dt>Client</dt><dd>Nokia, 2016</dd></div>
-        <div><dt>Role</dt><dd>Lead UX design and research</dd></div>
-        <div><dt>Length</dt><dd>6 months</dd></div>
-        <div><dt>Output</dt><dd>Console design, 6 key screens</dd></div>
-      </dl>
-      <h2 id="ran-title" class="case-title">One live view of the whole base station.</h2>
-      <div class="result">
-        <span class="result-tag">Target</span>
-        <span class="result-num">~<span data-count data-from="0" data-to="20">20</span>%</span>
-        <span class="result-label">faster site commissioning, with fewer truck rolls</span>
-      </div>
-    </header>
-    <div class="case-body">
-      <ol class="star">
-        <li><span class="star-key">Situation</span><p>A Single-RAN base station runs three mobile generations on shared hardware, but engineers were diagnosing it through flat text logs split by technology. Faults got misread and trucks rolled on guesses.</p></li>
-        <li><span class="star-key">Task</span><p>Lead UX design and research on a 6-month redesign of the diagnostics and maintenance console.</p></li>
-        <li><span class="star-key">Action</span><p>One live topology view, one visual language across 20+ hardware types, and a staged commissioning wizard that catches errors as they happen.</p></li>
-        <li><span class="star-key">Result</span><p>Design targets of about 20% faster commissioning and fewer avoidable truck rolls, with a validation plan attached at handoff.</p></li>
-      </ol>
-      <div class="case-actions">
-        <a class="btn btn-primary" href="#/ran/story" data-open="ran" data-view="story" data-magnetic>Read the full story</a>
-        <a class="btn btn-ghost" href="#/ran/screens" data-open="ran" data-view="screens" data-magnetic>Explore the screens</a>
-      </div>
-      <a class="preview" href="#/ran/screens" data-open="ran" data-view="screens" data-cursor="View" aria-label="Explore the SingleRAN screens">
-        <span class="preview-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="preview-media"><img src="assets/singleran/runtime-workspace.webp" width="1919" height="1101" loading="lazy" alt="BTS runtime view: object tree, live site topology and the faults panel for SMOD-1"></span>
-      </a>
-    </div>
-  </article>
-
-  <!-- ============ 3. GRAPHWALK ============ -->
-  <article class="case" id="gw" data-focus="2" aria-labelledby="gw-title">
-    <header class="case-head">
-      <dl class="case-meta">
-        <div><dt>Product</dt><dd>GraphWalk</dd></div>
-        <div><dt>Users</dt><dd>Investigators and analysts</dd></div>
-        <div><dt>Inputs</dt><dd>Requirements, docs, current screens</dd></div>
-        <div><dt>Status</dt><dd>Specification, one decision open</dd></div>
-      </dl>
-      <h2 id="gw-title" class="case-title">From hand-written JSON to a guided path builder.</h2>
-      <div class="result">
-        <span class="result-tag">Design outcome</span>
-        <span class="result-num"><span data-count data-from="120" data-to="0">0</span></span>
-        <span class="result-label">lines of hand-written JSON to create a new relationship</span>
-      </div>
-    </header>
-    <div class="case-body">
-      <ol class="star">
-        <li><span class="star-key">Situation</span><p>GraphWalk's Workspace held everything in flat tiles built for a handful of items, now holding 80 or more link charts per person with no hierarchy. Creating a new relationship meant hand-writing JSON with raw database IDs, and errors only surfaced as a 400 after submitting.</p></li>
-        <li><span class="star-key">Task</span><p>Fix both problems without separate screens per role and without touching the backend or API.</p></li>
-        <li><span class="star-key">Action</span><p>Working from requirements and docs rather than fresh interviews, I tagged every claim as fact or assumption so nothing got silently treated as settled. Then one answer for both problems: role-based views, and a guided path builder with live validation and a preview.</p></li>
-        <li><span class="star-key">Result</span><p>Still a specification. The open call on how much oversight new paths need before they save is pending.</p></li>
-      </ol>
-      <div class="case-actions">
-        <a class="btn btn-primary" href="#/gw/story" data-open="gw" data-view="story" data-magnetic>Read the full story</a>
-        <a class="btn btn-ghost" href="#/gw/prototype" data-open="gw" data-view="prototype" data-magnetic>Try the prototype</a>
-      </div>
-      <a class="preview" href="#/gw/prototype" data-open="gw" data-view="prototype" data-cursor="Play" aria-label="Open the GraphWalk prototype">
-        <span class="preview-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="preview-media"><img src="assets/previews/graphwalk.webp" width="1600" height="1000" loading="lazy" alt="Workspace: alerts pinned above routine work, user folders and readable item names"></span>
-      </a>
-    </div>
-  </article>
-
-  <!-- ============ 4. TRANSPARENCY REGISTER ============ -->
-  <article class="case" id="tr" data-focus="3" aria-labelledby="tr-title">
-    <header class="case-head">
-      <dl class="case-meta">
-        <div><dt>Client</dt><dd>JPB</dd></div>
-        <div><dt>Users</dt><dd>Compliance officers</dd></div>
-        <div><dt>Research</dt><dd>6 interviews, 3 shadowed sessions</dd></div>
-        <div><dt>Output</dt><dd>6-screen workspace and prototype</dd></div>
-      </dl>
-      <h2 id="tr-title" class="case-title">No case closes without a reason on record.</h2>
-      <div class="result">
-        <span class="result-tag">Design outcome</span>
-        <span class="result-num"><span data-count data-from="0" data-to="90">90</span></span>
-        <span class="result-label">day reporting deadline, visible on every screen of a case</span>
-      </div>
-    </header>
-    <div class="case-body">
-      <ol class="star">
-        <li><span class="star-key">Situation</span><p>Banks must check the ownership records they hold on business clients against a public registry, and about a third don't match. Once flagged, a case has 90 days before it becomes a mandatory government report.</p></li>
-        <li><span class="star-key">Task</span><p>At JPB I was brought in to design the tool compliance officers use to work these cases.</p></li>
-        <li><span class="star-key">Action</span><p>Interviews and shadowed sessions with officers doing this by hand showed the real problem: the deadline was invisible, the fault could sit on either side, and closing a case needed a real trail, not a note written after the fact.</p></li>
-        <li><span class="star-key">Result</span><p>A workspace built around those three things: a countdown that follows the officer everywhere, the two records shown side by side, and a decision flow that won't let a case close without a reason on record.</p></li>
-      </ol>
-      <div class="case-actions">
-        <a class="btn btn-primary" href="#/tr/story" data-open="tr" data-view="story" data-magnetic>Read the full story</a>
-        <a class="btn btn-ghost" href="#/tr/prototype" data-open="tr" data-view="prototype" data-magnetic>Try the prototype</a>
-      </div>
-      <a class="preview" href="#/tr/prototype" data-open="tr" data-view="prototype" data-cursor="Play" aria-label="Open the Transparency Register prototype">
-        <span class="preview-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="preview-media"><img src="assets/previews/transparency-register.webp" width="1600" height="1000" loading="lazy" alt="Case detail screen: entity facts, a red 90-day countdown panel and the five follow-up playbooks"></span>
-      </a>
-    </div>
-  </article>
-</main>
-
-<!-- In-page viewer: full story, prototype and screens open here, never in a new tab -->
-<dialog class="viewer" aria-labelledby="viewer-title">
-  <div class="viewer-bar">
-    <button class="viewer-close" type="button" aria-label="Close and return to the page">
-      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-    <h2 id="viewer-title" class="viewer-title"></h2>
-    <div class="viewer-tabs" role="tablist" aria-label="View"></div>
+    <iframe title="" hidden></iframe>
+    <div class="gallery" hidden></div>
   </div>
-  <div class="viewer-body">
-    <div class="viewer-loading" aria-hidden="true"><span></span></div>
-    <p class="viewer-hint">Prototypes are built for desktop. Rotate your phone or pinch to zoom.</p>
-    <iframe class="viewer-frame" title="" data-lenis-prevent></iframe>
-    <div class="gallery" hidden data-lenis-prevent></div>
-  </div>
-</dialog>
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Prototype preview"><figure><img alt=""><figcaption><span>In the full site this opens the live prototype in the in-page viewer.</span><button type="button">Close</button></figcaption></figure></div>
+  <p class="shape-note" aria-hidden="true"></p>
 
-<script type="module" src="js/main.js"></script>
+  <button class="skip" type="button">Skip to projects <span aria-hidden="true">→</span></button>
+  <button class="cue" type="button" aria-label="Next step"><span class="mouse">Scroll</span><span class="touch">Swipe up</span><i aria-hidden="true"></i></button>
+
+  <nav class="dd" aria-label="Design process stages">
+    <canvas class="dd-map" aria-hidden="true"></canvas>
+    <div class="dd-labels">
+      <button type="button" data-go="0"><b>Discover</b><span>ambiguity</span></button>
+      <button type="button" data-go="1"><b>Define</b><span>synthesis</span></button>
+      <button type="button" data-go="2"><b>Develop</b><span>prototype</span></button>
+      <button type="button" data-go="3"><b>Deliver</b><span>product</span></button>
+    </div>
+  </nav>
+</div>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/scene.js"></script>
 </body>
 </html>
