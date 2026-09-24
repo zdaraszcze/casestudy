@@ -364,7 +364,34 @@
     { src: 'assets/singleran/state-language-small', w: 1120, h: 536, title: 'State language on small objects', text: 'The same grammar scaled down to controllers, cabinets and antennas.' },
     { src: 'assets/singleran/commissioning-wizard', w: 1908, h: 1102, title: 'Commissioning wizard', text: 'Staged site build with definition, relation and hardware errors split into their own tabs.' },
   ];
-  const viewer = document.querySelector('.viewer'), vFrame = viewer.querySelector('iframe'), vTabs = viewer.querySelector('.viewer-tabs');
+  const viewer = document.querySelector('.viewer'), vTabs = viewer.querySelector('.viewer-tabs');
+  // A fresh iframe for every document: it starts on a blank page, so its first load replaces that page
+  // instead of adding a browser-history step (which made the first click on ✕ go "back" inside the document).
+  let vFrame = viewer.querySelector('iframe');
+  function freshFrame() {
+    const f = document.createElement('iframe');
+    f.title = vFrame.title; f.hidden = vFrame.hidden;
+    vFrame.replaceWith(f); vFrame = f;
+    f.addEventListener('load', () => {
+      try {
+        const w = f.contentWindow, doc = f.contentDocument;
+        w.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeViewerNow(); });
+        // in-page section links scroll smoothly instead of adding history steps
+        doc.addEventListener('click', (e) => {
+          const a = e.target.closest && e.target.closest('a[href^="#"]');
+          if (!a) return;
+          const id = decodeURIComponent(a.getAttribute('href').slice(1));
+          const t = id && (doc.getElementById(id) || doc.querySelector(`[name="${id}"]`));
+          e.preventDefault();
+          if (t) t.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+        }, true);
+        // documents that change their own URL hash also stop adding history steps
+        const origPush = w.history.pushState.bind(w.history);
+        w.history.pushState = (st, t, url) => w.history.replaceState(st, t, url);
+      } catch (err) {}
+    });
+    return f;
+  }
   let vOpen = false, vReturn = null;
   const galleryEl = viewer.querySelector('.gallery');
   let galleryApi = null;
@@ -383,25 +410,38 @@
       vTabs.appendChild(b);
     });
     if (view === 'screens') {
-      vFrame.hidden = true; vFrame.removeAttribute('src'); galleryEl.hidden = false;
+      if (vFrame.getAttribute('src')) freshFrame();
+      vFrame.hidden = true; galleryEl.hidden = false;
       galleryApi = galleryApi || buildGallery(galleryEl, RAN_SCREENS);
       galleryApi.show(0);
     } else {
       galleryEl.hidden = true; vFrame.hidden = false;
       vFrame.title = `${p.name}: ${view === 'story' ? 'full story' : 'prototype'}`;
-      if (vFrame.getAttribute('src') !== d[view]) vFrame.src = d[view];
+      if (vFrame.getAttribute('src') !== d[view]) { freshFrame(); vFrame.src = d[view]; }
     }
     if (!fromHistory && !vOpen) history.pushState({ pf: 'view' }, '', `#/${p.id}/${view}`);
     if (!vOpen) { vReturn = document.activeElement; vOpen = true; viewer.classList.add('on'); viewer.querySelector('.viewer-close').focus(); }
   }
-  function closeViewer() { if (!vOpen) return; vOpen = false; viewer.classList.remove('on'); setTimeout(() => { if (!vOpen) vFrame.removeAttribute('src'); }, 450); vReturn?.focus({ preventScroll: true }); }
+  function closeViewer() {
+    if (!vOpen) return; vOpen = false; viewer.classList.remove('on');
+    setTimeout(() => { if (!vOpen) { freshFrame(); vFrame.hidden = true; } }, 450);   // drop the document (and anything it did) completely
+    vReturn?.focus({ preventScroll: true });
+  }
+  // ✕, Esc: close on the first click, then tidy the address bar/history without depending on what happened inside the document
+  function closeViewerNow() {
+    if (!vOpen) return;
+    const id = caseIdx >= 0 ? PROJECTS[caseIdx].id : '';
+    closeViewer();
+    if (history.state && history.state.pf === 'view') history.back();   // our own step: back returns to the case entry (route() sees nothing left to do)
+    else history.replaceState(history.state, '', id ? `#/${id}` : '#');
+  }
   // closing goes back in history when we added the entry ourselves, so the browser's back button and the UI agree
   function navBack(fallback) {
     if (history.state && history.state.pf) history.back();
     else { history.replaceState(null, '', fallback); route(); }
   }
-  viewer.querySelector('.viewer-close').addEventListener('click', () => navBack(caseIdx >= 0 ? `#/${PROJECTS[caseIdx].id}` : '#'));
-  vFrame.addEventListener('load', () => { try { vFrame.contentWindow.addEventListener('keydown', (e) => { if (e.key === 'Escape') navBack(`#/${PROJECTS[caseIdx].id}`); }); } catch (err) {} });
+  viewer.querySelector('.viewer-close').addEventListener('click', closeViewerNow);
+  freshFrame();
   caseEl.querySelector('.act-story').addEventListener('click', () => openViewer('story'));
   thumb.addEventListener('click', () => openViewer(PROJECTS[caseIdx].id === 'ran' ? 'screens' : 'proto'));
   thumb.addEventListener('pointermove', (e) => {
@@ -461,7 +501,7 @@
     else goStage(stage + d);
   });
   addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && vOpen) return navBack(`#/${PROJECTS[caseIdx].id}`);
+    if (e.key === 'Escape' && vOpen) return closeViewerNow();
     if (vOpen) return;
     if (e.key === 'Escape') { if (lightbox.classList.contains('on')) { lightbox.classList.remove('on'); return; } if (caseIdx >= 0) { locked = false; return navBack('#'); } }
     const next = ['ArrowDown', 'PageDown', ' '].includes(e.key), prev = ['ArrowUp', 'PageUp'].includes(e.key);
@@ -577,6 +617,9 @@
   let last = performance.now(), flowT = 0;
   function frame(now) {
     requestAnimationFrame(frame);
+  const pin = (el) => el && el.addEventListener('scroll', () => { if (el.scrollTop || el.scrollLeft) { el.scrollTop = 0; el.scrollLeft = 0; } });
+  pin(stageEl); pin(document.scrollingElement || document.documentElement); pin(document.querySelector('.viewer'));
+  addEventListener('scroll', () => { if (scrollX || scrollY) scrollTo(0, 0); });
 
     const dt = clamp((now - last) / 1000, 0, .05); last = now;   // never negative (the first frame can be timestamped earlier)
     const time = now / 1000;
